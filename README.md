@@ -1,1 +1,3 @@
-"# wi¤ayXp-backend" 
+# WiÃ±ayXp-frontend
+
+- *npm run dev*
