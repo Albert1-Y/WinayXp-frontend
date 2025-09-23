@@ -15,19 +15,21 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
     useEffect(() => {
-        if (rol === "administrador" || rol === "tutor" || rol === "estudiante") 
-            {
+        if (rol === "administrador" || rol === "tutor" || rol === "estudiante") {
             navigate("/dashboard");
-        }
-        else (rol === null || rol === undefined)
-            {
+        } else if (rol === null || rol === undefined) {
             navigate("/");
         }
     }, [rol]);
 
+    // Redirige al backend para iniciar el flujo de Google OAuth
+    const handleGoogleLogin = () => {
+        window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+    };
+
     // Fetch ranking data on component mount
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_URL}/cedhi/login`)
+        fetch(`${import.meta.env.VITE_API_URL}/api/login`)
             .then(response => response.json())
             .then(data => {
                 const sortedData = data.sort((a, b) => b.credito_total - a.credito_total);
@@ -87,7 +89,7 @@ const Login = () => {
         };
 
         // Realiza el POST para enviar email y password
-        fetch(`${import.meta.env.VITE_API_URL}/cedhi/login`, {
+        fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -171,6 +173,7 @@ const Login = () => {
                     <div className="logo-container">
                         <img src="/Wiñay.png" alt="Wiñay Logo" className="login-logo" />
                     </div>
+                                <Button text="Iniciar sesión con Google" styleType="google" type="button" onClick={handleGoogleLogin} />
                     <h2>Ranking de Estudiantes</h2>
                     <Table columns={columns} data={rankingData.slice(0, 10)} customRender={customRender} />
                 </div>
