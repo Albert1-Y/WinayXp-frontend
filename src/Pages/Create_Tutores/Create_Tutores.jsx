@@ -16,7 +16,7 @@ const CreateTutores = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    rol: 'tutor'
+    rol: 'tutor',
   });
 
   const [errors, setErrors] = useState({
@@ -25,7 +25,7 @@ const CreateTutores = () => {
     apellido: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   // Efecto para escuchar los cambios en el estado del navbar
@@ -38,7 +38,11 @@ const CreateTutores = () => {
 
     // Observamos cambios en el DOM para detectar cuando el navbar cambia
     const observer = new MutationObserver(handleNavbarChange);
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
 
     // Verificación inicial
     handleNavbarChange();
@@ -50,9 +54,9 @@ const CreateTutores = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Validación en tiempo real
@@ -60,9 +64,9 @@ const CreateTutores = () => {
   };
 
   const handleRoleChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      rol: e.target.value.toLowerCase()
+      rol: e.target.value.toLowerCase(),
     }));
   };
 
@@ -124,16 +128,17 @@ const CreateTutores = () => {
         break;
     }
 
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: error
+      [name]: error,
     }));
   };
 
   const validateForm = () => {
     // Validar todos los campos antes de enviar
-    Object.keys(formData).forEach(key => {
-      if (key !== 'rol') { // No validamos el rol ya que siempre tiene un valor por defecto
+    Object.keys(formData).forEach((key) => {
+      if (key !== 'rol') {
+        // No validamos el rol ya que siempre tiene un valor por defecto
         validateField(key, formData[key]);
       }
     });
@@ -173,25 +178,24 @@ const CreateTutores = () => {
         credentials: 'include',
         body: JSON.stringify(tutorData),
       })
-        .then(response => {
+        .then((response) => {
           if (response.ok) {
             alert('Creado exitosamente');
             navigate('/tutores'); // Redirigir después del éxito
             return response.json();
           } else {
-            return response.json().then(data => {
+            return response.json().then((data) => {
               throw new Error(data.message || 'Error en la solicitud');
             });
           }
         })
-        .then(data => {
+        .then((data) => {
           console.log(data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error al enviar los datos :', error);
           alert(`Error: ${error.message || 'Hubo un error al registrar'}`);
         });
-      
     } catch (error) {
       console.error('Error al crear tutor:', error);
       alert('Error de conexión');
@@ -199,130 +203,124 @@ const CreateTutores = () => {
   };
 
   return (
-      <div className={`create-tutores-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
-        <Navbar />
-        <div className="create-tutores-content">
-          <h1 className="create-tutores-title">Crear personal administrativo</h1>
-          <h3 className="create-tutores-subtitle">
-            Añade un nuevo personal al sistema
-          </h3>
+    <div className={`create-tutores-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
+      <Navbar />
+      <div className="create-tutores-content">
+        <h1 className="create-tutores-title">Crear personal administrativo</h1>
+        <h3 className="create-tutores-subtitle">Añade un nuevo personal al sistema</h3>
 
-          <div className="info-container">
-            <h2 className="info-title">Información Personal</h2>
-            <p className="info-subtitle">
-              Ingresa la información básica del personal
-            </p>
+        <div className="info-container">
+          <h2 className="info-title">Información Personal</h2>
+          <p className="info-subtitle">Ingresa la información básica del personal</p>
 
-            <div className="info-grid">
-              <div className="input-group">
-                <TextField
-                    placeholder="DNI"
-                    name="dni"
-                    value={formData.dni}
-                    onChange={handleChange}
-                />
-                {errors.dni && <div className="error-message">{errors.dni}</div>}
-              </div>
-
-              <div className="input-group">
-                <TextField
-                    placeholder="Nombre"
-                    name="nombre_persona"
-                    value={formData.nombre_persona}
-                    onChange={handleChange}
-                />
-                {errors.nombre_persona && <div className="error-message">{errors.nombre_persona}</div>}
-              </div>
-
-              <div className="input-group">
-                <TextField
-                    placeholder="Apellidos"
-                    name="apellido"
-                    value={formData.apellido}
-                    onChange={handleChange}
-                />
-                {errors.apellido && <div className="error-message">{errors.apellido}</div>}
-              </div>
-
-              <div className="input-group">
-                <TextField
-                    placeholder="Correo Electrónico"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                />
-                {errors.email && <div className="error-message">{errors.email}</div>}
-              </div>
+          <div className="info-grid">
+            <div className="input-group">
+              <TextField
+                placeholder="DNI"
+                name="dni"
+                value={formData.dni}
+                onChange={handleChange}
+              />
+              {errors.dni && <div className="error-message">{errors.dni}</div>}
             </div>
-          </div>
 
-          <div className="academic-container">
-            <h2 className="academic-title">Tipo de Rol</h2>
-            <p className="academic-subtitle">Selecciona el rol que tendrá el usuario en el sistema</p>
-
-            <div className="gender-group">
-              <label>
-                <input
-                    type="radio"
-                    name="rol"
-                    value="Administrador"
-                    checked={formData.rol === 'administrador'}
-                    onChange={handleRoleChange}
-                /> Administrador
-              </label>
-              <label>
-                <input
-                    type="radio"
-                    name="rol"
-                    value="Tutor"
-                    checked={formData.rol === 'tutor'}
-                    onChange={handleRoleChange}
-                /> Tutor
-              </label>
+            <div className="input-group">
+              <TextField
+                placeholder="Nombre"
+                name="nombre_persona"
+                value={formData.nombre_persona}
+                onChange={handleChange}
+              />
+              {errors.nombre_persona && (
+                <div className="error-message">{errors.nombre_persona}</div>
+              )}
             </div>
-          </div>
 
-          <div className="academic-container">
-            <h2 className="academic-title">Credenciales de Acceso</h2>
-            <div className="academic-grid">
-              <div className="input-group">
-                <TextField
-                    placeholder="Contraseña"
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                />
-                {errors.password && <div className="error-message">{errors.password}</div>}
-              </div>
-
-              <div className="input-group">
-                <TextField
-                    placeholder="Confirmar Contraseña"
-                    type="password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                />
-                {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
-              </div>
+            <div className="input-group">
+              <TextField
+                placeholder="Apellidos"
+                name="apellido"
+                value={formData.apellido}
+                onChange={handleChange}
+              />
+              {errors.apellido && <div className="error-message">{errors.apellido}</div>}
             </div>
-          </div>
 
-          <div className="action-buttons">
-            <Button
-                text="Cancelar"
-                styleType="white"
-                onClick={() => navigate('/tutores')}
-            />
-            <Button
-                text="Guardar Personal"
-                styleType="black"
-                onClick={handleSubmit}
-            />
+            <div className="input-group">
+              <TextField
+                placeholder="Correo Electrónico"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && <div className="error-message">{errors.email}</div>}
+            </div>
           </div>
         </div>
+
+        <div className="academic-container">
+          <h2 className="academic-title">Tipo de Rol</h2>
+          <p className="academic-subtitle">Selecciona el rol que tendrá el usuario en el sistema</p>
+
+          <div className="gender-group">
+            <label>
+              <input
+                type="radio"
+                name="rol"
+                value="Administrador"
+                checked={formData.rol === 'administrador'}
+                onChange={handleRoleChange}
+              />{' '}
+              Administrador
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="rol"
+                value="Tutor"
+                checked={formData.rol === 'tutor'}
+                onChange={handleRoleChange}
+              />{' '}
+              Tutor
+            </label>
+          </div>
+        </div>
+
+        <div className="academic-container">
+          <h2 className="academic-title">Credenciales de Acceso</h2>
+          <div className="academic-grid">
+            <div className="input-group">
+              <TextField
+                placeholder="Contraseña"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {errors.password && <div className="error-message">{errors.password}</div>}
+            </div>
+
+            <div className="input-group">
+              <TextField
+                placeholder="Confirmar Contraseña"
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              {errors.confirmPassword && (
+                <div className="error-message">{errors.confirmPassword}</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="action-buttons">
+          <Button text="Cancelar" styleType="white" onClick={() => navigate('/tutores')} />
+          <Button text="Guardar Personal" styleType="black" onClick={handleSubmit} />
+        </div>
       </div>
+    </div>
   );
 };
 

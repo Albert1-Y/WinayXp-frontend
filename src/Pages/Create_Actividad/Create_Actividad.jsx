@@ -1,12 +1,12 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import Navbar from '../Navbar/Navbar';
-import NavbarT from "../Navbar/NavbarT";
+import NavbarT from '../Navbar/NavbarT';
 import TextField from '../../components/TextField/TextField';
 import Button from '../../components/button/Button';
 import { useNavigate } from 'react-router-dom';
 import './Create_Actividad.css';
-import {AuthContext} from "../../context/AuthContext.jsx";
-import NavbarE from "../Navbar/NavbarE.jsx";
+import { AuthContext } from '../../context/AuthContext.jsx';
+import NavbarE from '../Navbar/NavbarE.jsx';
 
 const Create_Actividad = () => {
   const { rol } = useContext(AuthContext);
@@ -21,7 +21,7 @@ const Create_Actividad = () => {
     lugar: '',
     creditos: '',
     año: '',
-    semestre: ''
+    semestre: '',
   });
 
   // Estado para los errores de validación
@@ -33,7 +33,7 @@ const Create_Actividad = () => {
     creditos: '',
     año: '',
     semestre: '',
-    fechas: ''  // Para errores relacionados con la comparación de fechas
+    fechas: '', // Para errores relacionados con la comparación de fechas
   });
 
   // Efecto para detectar el estado del navbar colapsado
@@ -46,7 +46,11 @@ const Create_Actividad = () => {
 
     // Observamos cambios en el DOM para detectar cuando el navbar cambia
     const observer = new MutationObserver(handleNavbarChange);
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
 
     // Verificación inicial
     handleNavbarChange();
@@ -58,14 +62,14 @@ const Create_Actividad = () => {
 
   const renderNavbar = () => {
     switch (rol) {
-      case "administrador":
+      case 'administrador':
         return <Navbar />;
-      case "tutor":
+      case 'tutor':
         return <NavbarT />;
       default:
-        alert("Tu sesión ha expirado");
+        alert('Tu sesión ha expirado');
         localStorage.clear();
-        navigate("/");
+        navigate('/');
         return null;
     }
   };
@@ -102,14 +106,14 @@ const Create_Actividad = () => {
 
           // Si existe fecha fin, comparar
           if (formData.fecha_fin && new Date(formData.fecha_fin) <= selectedDate) {
-            setErrors(prev => ({
+            setErrors((prev) => ({
               ...prev,
-              fechas: 'La fecha de inicio debe ser anterior a la fecha de fin'
+              fechas: 'La fecha de inicio debe ser anterior a la fecha de fin',
             }));
           } else {
-            setErrors(prev => ({
+            setErrors((prev) => ({
               ...prev,
-              fechas: ''
+              fechas: '',
             }));
           }
         }
@@ -120,14 +124,14 @@ const Create_Actividad = () => {
           error = 'La fecha de fin es obligatoria';
         } else if (formData.fecha_inicio && new Date(value) <= new Date(formData.fecha_inicio)) {
           error = 'La fecha de fin debe ser posterior a la fecha de inicio';
-          setErrors(prev => ({
+          setErrors((prev) => ({
             ...prev,
-            fechas: 'La fecha de inicio debe ser anterior a la fecha de fin'
+            fechas: 'La fecha de inicio debe ser anterior a la fecha de fin',
           }));
         } else {
-          setErrors(prev => ({
+          setErrors((prev) => ({
             ...prev,
-            fechas: ''
+            fechas: '',
           }));
         }
         break;
@@ -183,16 +187,16 @@ const Create_Actividad = () => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: newValue
+      [name]: newValue,
     }));
 
     // Validación en tiempo real
     const error = validateField(name, newValue);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: error
+      [name]: error,
     }));
   };
 
@@ -202,7 +206,7 @@ const Create_Actividad = () => {
     const newErrors = {};
 
     // Validar cada campo
-    Object.keys(formData).forEach(key => {
+    Object.keys(formData).forEach((key) => {
       const error = validateField(key, formData[key]);
       newErrors[key] = error;
       if (error) {
@@ -231,7 +235,7 @@ const Create_Actividad = () => {
 
     // Combina el año y semestre en el formato 2025-II
     const semestreFinal = `${formData.año}-${formData.semestre}`;
-    
+
     const actividadData = {
       nombre_actividad: formData.nombre_actividad,
       fecha_inicio: formData.fecha_inicio,
@@ -240,39 +244,41 @@ const Create_Actividad = () => {
       creditos: parseInt(formData.creditos),
       semestre: semestreFinal,
     };
-  
+
     console.log('Datos de actividad:', actividadData);
-  
+
     // Realiza el POST para guardar la actividad
     fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/CrearActividad`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(actividadData),
-      credentials: "include"
+      credentials: 'include',
     })
-    .then(response => {
-      if (response.ok) { 
-        alert('Actividad creada exitosamente');
-        navigate('/actividad'); // Redirigir después del éxito
-        return response.json();
-      } else {
-        return response.json().then(data => {
-          throw new Error(data.message || 'Hubo un error en la creación de la actividad');
-        });
-      }
-    })
-    .then(data => {
-      console.log('Respuesta del servidor:', data);
-    })
-    .catch(error => {
-      console.error('Error al guardar la actividad:', error);
-      alert(`Error: ${error.message || 'Hubo un error en la solicitud, por favor intente más tarde'}`);
-    });
+      .then((response) => {
+        if (response.ok) {
+          alert('Actividad creada exitosamente');
+          navigate('/actividad'); // Redirigir después del éxito
+          return response.json();
+        } else {
+          return response.json().then((data) => {
+            throw new Error(data.message || 'Hubo un error en la creación de la actividad');
+          });
+        }
+      })
+      .then((data) => {
+        console.log('Respuesta del servidor:', data);
+      })
+      .catch((error) => {
+        console.error('Error al guardar la actividad:', error);
+        alert(
+          `Error: ${error.message || 'Hubo un error en la solicitud, por favor intente más tarde'}`
+        );
+      });
   };
 
-  const semestres = ["I", "II"];
+  const semestres = ['I', 'II'];
 
   return (
     <div className={`create-actividad-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
@@ -286,14 +292,12 @@ const Create_Actividad = () => {
           <p className="info-subtitle">Ingresa los detalles de la actividad</p>
 
           {/* Error general para fechas */}
-          {errors.fechas && (
-            <div className="error-message error-general">{errors.fechas}</div>
-          )}
+          {errors.fechas && <div className="error-message error-general">{errors.fechas}</div>}
 
           <div className="info-grid">
             <div className="field-container">
               <label>Nombre de la Actividad</label>
-              <TextField 
+              <TextField
                 placeholder="Nombre de la Actividad"
                 name="nombre_actividad"
                 value={formData.nombre_actividad}
@@ -313,9 +317,7 @@ const Create_Actividad = () => {
                 value={formData.fecha_inicio}
                 onChange={handleChange}
               />
-              {errors.fecha_inicio && (
-                <div className="error-message">{errors.fecha_inicio}</div>
-              )}
+              {errors.fecha_inicio && <div className="error-message">{errors.fecha_inicio}</div>}
             </div>
 
             <div className="field-container">
@@ -327,9 +329,7 @@ const Create_Actividad = () => {
                 value={formData.fecha_fin}
                 onChange={handleChange}
               />
-              {errors.fecha_fin && (
-                <div className="error-message">{errors.fecha_fin}</div>
-              )}
+              {errors.fecha_fin && <div className="error-message">{errors.fecha_fin}</div>}
             </div>
 
             <div className="field-container">
@@ -340,9 +340,7 @@ const Create_Actividad = () => {
                 value={formData.lugar}
                 onChange={handleChange}
               />
-              {errors.lugar && (
-                <div className="error-message">{errors.lugar}</div>
-              )}
+              {errors.lugar && <div className="error-message">{errors.lugar}</div>}
             </div>
 
             <div className="field-container">
@@ -355,9 +353,7 @@ const Create_Actividad = () => {
                 onChange={handleChange}
                 min="0"
               />
-              {errors.creditos && (
-                <div className="error-message">{errors.creditos}</div>
-              )}
+              {errors.creditos && <div className="error-message">{errors.creditos}</div>}
             </div>
 
             {/* Año: Selección del Año */}
@@ -371,9 +367,7 @@ const Create_Actividad = () => {
                 onChange={handleChange}
                 className="año-input"
               />
-              {errors.año && (
-                <div className="error-message">{errors.año}</div>
-              )}
+              {errors.año && <div className="error-message">{errors.año}</div>}
             </div>
 
             {/* Semestre: Selección de Semestre (I o II) */}
@@ -387,12 +381,12 @@ const Create_Actividad = () => {
               >
                 <option value="">Seleccionar Periodo</option>
                 {semestres.map((sem) => (
-                  <option key={sem} value={sem}>{sem}</option>
+                  <option key={sem} value={sem}>
+                    {sem}
+                  </option>
                 ))}
               </select>
-              {errors.semestre && (
-                <div className="error-message">{errors.semestre}</div>
-              )}
+              {errors.semestre && <div className="error-message">{errors.semestre}</div>}
             </div>
           </div>
         </div>
@@ -401,21 +395,15 @@ const Create_Actividad = () => {
         <div className="selected-semestre">
           <p>
             <strong>Periodo seleccionado: </strong>
-            {formData.año && formData.semestre ? `${formData.año}-${formData.semestre}` : 'No seleccionado'}
+            {formData.año && formData.semestre
+              ? `${formData.año}-${formData.semestre}`
+              : 'No seleccionado'}
           </p>
         </div>
 
         <div className="action-buttons">
-          <Button
-            text="Cancelar"
-            styleType="white"
-            onClick={() => navigate('/actividad')}
-          />
-          <Button
-            text="Guardar Actividad"
-            styleType="black"
-            onClick={handleSubmit}
-          />
+          <Button text="Cancelar" styleType="white" onClick={() => navigate('/actividad')} />
+          <Button text="Guardar Actividad" styleType="black" onClick={handleSubmit} />
         </div>
       </div>
     </div>

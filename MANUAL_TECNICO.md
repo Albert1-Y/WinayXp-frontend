@@ -176,3 +176,4 @@ Para resolver problemas visuales:
 - Revisar console.log para errores
 
 ### 11.3 Problemas con la Base de Datos
+```

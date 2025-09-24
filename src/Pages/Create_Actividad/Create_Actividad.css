@@ -1,7 +1,7 @@
 .create-actividad-container {
   display: flex;
   min-height: 100vh;
-  background-color: #EF6646;
+  background-color: #ef6646;
   margin-left: 220px; /* Ancho del navbar expandido */
   width: calc(100vw - 220px); /* Ancho calculado en base al viewport */
   box-sizing: border-box;
@@ -36,7 +36,8 @@
 }
 
 /* === Detalles de la Actividad === */
-.info-container, .academic-container {
+.info-container,
+.academic-container {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -44,14 +45,16 @@
   margin-bottom: 32px;
 }
 
-.info-title, .academic-title {
+.info-title,
+.academic-title {
   font-size: 20px;
   font-weight: 600;
   color: #111827;
   margin-bottom: 8px;
 }
 
-.info-subtitle, .academic-subtitle {
+.info-subtitle,
+.academic-subtitle {
   font-size: 14px;
   color: #6b7280;
   margin-bottom: 16px;

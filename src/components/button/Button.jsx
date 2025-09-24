@@ -1,14 +1,14 @@
-import React from "react";
-import "./Button.css";
-import PropTypes from "prop-types";
+import React from 'react';
+import './Button.css';
+import PropTypes from 'prop-types';
 
 const Button = ({ text, styleType, onClick, disabled, icon }) => {
   // Función para generar las iniciales del texto
   const generateInitials = (text) => {
-    if (!text) return "";
+    if (!text) return '';
 
     // Dividir el texto por espacios
-    const words = text.split(" ");
+    const words = text.split(' ');
 
     // Si es una sola palabra, devolver la primera letra
     if (words.length === 1) {
@@ -16,17 +16,13 @@ const Button = ({ text, styleType, onClick, disabled, icon }) => {
     }
 
     // Si son múltiples palabras, devolver las iniciales
-    return words.map(word => word.charAt(0).toUpperCase()).join("");
+    return words.map((word) => word.charAt(0).toUpperCase()).join('');
   };
 
   const initials = generateInitials(text);
 
   return (
-    <button
-      className={`button ${styleType || ""}`}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button className={`button ${styleType || ''}`} onClick={onClick} disabled={disabled}>
       {icon && <span className="button-icon">{icon}</span>}
       <span className="button-text">{text}</span>
       <span className="button-initials">{initials}</span>
@@ -43,6 +39,3 @@ Button.propTypes = {
 };
 
 export default Button;
-
-
-

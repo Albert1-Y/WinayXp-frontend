@@ -2,7 +2,7 @@
 .create-estudiante-container {
   display: flex;
   min-height: 100vh;
-  background-color: #EF6646;
+  background-color: #ef6646;
   margin-left: 220px; /* Ancho del navbar expandido */
   width: calc(100vw - 220px); /* Ancho calculado en base al viewport */
   box-sizing: border-box;

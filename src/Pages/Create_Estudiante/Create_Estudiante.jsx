@@ -5,8 +5,8 @@ import TextField from '../../components/TextField/TextField';
 import Button from '../../components/button/Button';
 import { useNavigate } from 'react-router-dom';
 import './Create_Estudiante.css';
-import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
+import { AuthContext } from '../../context/AuthContext';
+import { useContext } from 'react';
 
 const Create_Estudiante = () => {
   const navigate = useNavigate();
@@ -18,10 +18,12 @@ const Create_Estudiante = () => {
       setNavbarCollapsed(!!collapsedNavbar);
     };
 
-
     const observer = new MutationObserver(handleNavbarChange);
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
-
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
 
     handleNavbarChange();
 
@@ -31,19 +33,19 @@ const Create_Estudiante = () => {
   }, []);
   const renderNavbar = () => {
     switch (rol) {
-        case "administrador":
-            return <Navbar/>;
-        case "estudiante":
-            return <NavbarE />;
-        case "tutor":
-            return <NavbarT />;
-        default:
-            alert("Tu sesión ha expirado");
-            localStorage.clear();
-            navigate("/");
-            return null;
+      case 'administrador':
+        return <Navbar />;
+      case 'estudiante':
+        return <NavbarE />;
+      case 'tutor':
+        return <NavbarT />;
+      default:
+        alert('Tu sesión ha expirado');
+        localStorage.clear();
+        navigate('/');
+        return null;
     }
-};
+  };
   const [formData, setFormData] = useState({
     dni: '',
     nombre_persona: '',
@@ -52,7 +54,7 @@ const Create_Estudiante = () => {
     carrera: '',
     semestre: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const [errors, setErrors] = useState({
@@ -63,14 +65,14 @@ const Create_Estudiante = () => {
     carrera: '',
     semestre: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Validación en tiempo real
@@ -145,15 +147,15 @@ const Create_Estudiante = () => {
         break;
     }
 
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: error
+      [name]: error,
     }));
   };
 
   const validateForm = () => {
     // Validar todos los campos antes de enviar
-    Object.keys(formData).forEach(key => {
+    Object.keys(formData).forEach((key) => {
       validateField(key, formData[key]);
     });
 
@@ -183,7 +185,7 @@ const Create_Estudiante = () => {
       rol: 'estudiante',
       carrera: formData.carrera || null,
       semestre: parseInt(formData.semestre, 10),
-      password: formData.password
+      password: formData.password,
     };
 
     console.log('JSON final listo para enviar:', estudianteData);
@@ -196,21 +198,21 @@ const Create_Estudiante = () => {
       credentials: 'include',
       body: JSON.stringify(estudianteData),
     })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
           alert('Estudiante creado exitosamente');
           navigate('/estudiante'); // Redirigir después del éxito
           return response.json();
         } else {
-          return response.json().then(data => {
+          return response.json().then((data) => {
             throw new Error(data.message || 'Error en la solicitud');
           });
         }
       })
-      .then(data => {
+      .then((data) => {
         console.log(data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error al enviar los datos del estudiante:', error);
         alert(`Error: ${error.message || 'Hubo un error al registrar al estudiante'}`);
       });
@@ -221,9 +223,7 @@ const Create_Estudiante = () => {
       {renderNavbar()}
       <div className="create-estudiante-content">
         <h1 className="create-estudiante-title">Crear Estudiante</h1>
-        <h3 className="create-estudiante-subtitle">
-          Añade un nuevo estudiante al sistema
-        </h3>
+        <h3 className="create-estudiante-subtitle">Añade un nuevo estudiante al sistema</h3>
 
         <div className="academic-container">
           <h2 className="info-title">Información Personal</h2>
@@ -246,7 +246,9 @@ const Create_Estudiante = () => {
                 value={formData.nombre_persona}
                 onChange={handleChange}
               />
-              {errors.nombre_persona && <div className="error-message">{errors.nombre_persona}</div>}
+              {errors.nombre_persona && (
+                <div className="error-message">{errors.nombre_persona}</div>
+              )}
             </div>
 
             <div className="input-group">
@@ -320,22 +322,16 @@ const Create_Estudiante = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
-              {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
+              {errors.confirmPassword && (
+                <div className="error-message">{errors.confirmPassword}</div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="action-buttons">
-          <Button
-            text="Cancelar"
-            styleType="white"
-            onClick={() => navigate('/estudiante')}
-          />
-          <Button
-            text="Guardar Estudiante"
-            styleType="black"
-            onClick={handleSubmit}
-          />
+          <Button text="Cancelar" styleType="white" onClick={() => navigate('/estudiante')} />
+          <Button text="Guardar Estudiante" styleType="black" onClick={handleSubmit} />
         </div>
       </div>
     </div>
