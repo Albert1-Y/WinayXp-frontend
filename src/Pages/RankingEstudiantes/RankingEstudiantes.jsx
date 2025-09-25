@@ -6,21 +6,37 @@ import '../Estudiante/Estudiante.css';
 const RankingEstudiantes = () => {
   const [rankingData, setRankingData] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
+  const [error, setError] = useState('');
   const columns = ['Pos', 'Nombre', 'Apellido', 'Carrera', 'Puntos'];
 
   useEffect(() => {
-    // Usar el nuevo endpoint TopEstudiantesCarrera
-    fetch(`${import.meta.env.VITE_API_URL}/api/estudiante/TopEstudinatesCarrera`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/estudiante/TopEstudiantesCarrera`, {
       method: 'GET',
       credentials: 'include',
     })
-      .then((response) => response.json())
+      .then(async (response) => {
+        const ct = response.headers.get('content-type') || '';
+        if (!response.ok) {
+          if (ct.includes('application/json')) {
+            const data = await response.json();
+            throw new Error(data?.message || `HTTP ${response.status}`);
+          } else {
+            const text = await response.text();
+            throw new Error(text || `HTTP ${response.status}`);
+          }
+        }
+        if (ct.includes('application/json')) {
+          return response.json();
+        }
+        return [];
+      })
       .then((data) => {
-        // Asumimos que los datos ya vienen ordenados del backend
-        setRankingData(data);
+        setRankingData(Array.isArray(data) ? data : []);
       })
       .catch((error) => {
         console.error('Error al obtener el ranking:', error);
+        setError('No se pudo cargar el ranking. Intenta más tarde.');
+        setRankingData([]);
       });
   }, []);
 
@@ -93,6 +109,11 @@ const RankingEstudiantes = () => {
         <div className="estudiantes-header">
           <h1 className="estudiantes-title">Ranking de Estudiantes</h1>
         </div>
+        {error && (
+          <div className="error-message" style={{ marginBottom: '1rem' }}>
+            {error}
+          </div>
+        )}
         <div
           className="estudiantes-table"
           style={{

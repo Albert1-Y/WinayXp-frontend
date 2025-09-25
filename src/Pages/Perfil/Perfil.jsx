@@ -47,28 +47,54 @@ const Perfil = () => {
           method: 'GET',
           credentials: 'include',
         }
-      ).catch(() => ({ json: () => Promise.resolve([]) }));
+      ).catch(() => ({ ok: false, headers: new Headers(), text: () => Promise.resolve('') }));
 
       Promise.all([cargarDatosEstudiante, cargarActividades])
         .then(async ([resDatos, resActividades]) => {
+          // Datos del estudiante
           if (!resDatos.ok) {
-            const err = await resDatos.json();
-            throw new Error(err?.msg || 'Error al obtener datos');
+            const ct = resDatos.headers.get('content-type') || '';
+            if (ct.includes('application/json')) {
+              const err = await resDatos.json();
+              throw new Error(err?.msg || 'Error al obtener datos');
+            } else {
+              const txt = await resDatos.text();
+              throw new Error(txt || 'Error al obtener datos');
+            }
           }
-          const [datosEstudiante, actividades] = await Promise.all([
-            resDatos.json(),
-            resActividades.ok ? resActividades.json() : [],
-          ]);
-          setDatos(datosEstudiante);
-          setActividadesRecientes(actividades);
-          if (datosEstudiante.nombre_imagen) {
-            setImagenPerfil(datosEstudiante.nombre_imagen);
+          const ctDatos = resDatos.headers.get('content-type') || '';
+          const datosEstudiante = ctDatos.includes('application/json')
+            ? await resDatos.json()
+            : null;
+
+          // Actividades asistidas
+          let actividades = [];
+          if (resActividades && resActividades.ok) {
+            const ctAct = resActividades.headers.get('content-type') || '';
+            if (ctAct.includes('application/json')) {
+              try {
+                actividades = await resActividades.json();
+              } catch (_) {
+                actividades = [];
+              }
+            }
           }
+
+          if (datosEstudiante) {
+            setDatos(datosEstudiante);
+            if (datosEstudiante.nombre_imagen) {
+              setImagenPerfil(datosEstudiante.nombre_imagen);
+            }
+          } else {
+            throw new Error('Respuesta inválida de datos');
+          }
+
+          setActividadesRecientes(Array.isArray(actividades) ? actividades : []);
           setLoading(false);
         })
         .catch((err) => {
           console.error(err);
-          setError(err.message);
+          setError('No se pudieron cargar tus datos. Intenta más tarde.');
           setLoading(false);
         });
     }
