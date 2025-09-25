@@ -10,7 +10,7 @@ const RankingEstudiantes = () => {
 
   useEffect(() => {
     // Usar el nuevo endpoint TopEstudiantesCarrera
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/estudiante/TopEstudinatesCarrera`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/estudiante/TopEstudinatesCarrera`, {
       method: 'GET',
       credentials: 'include',
     })

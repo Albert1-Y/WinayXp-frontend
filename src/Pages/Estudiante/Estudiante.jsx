@@ -82,7 +82,7 @@ const Estudiante = () => {
       id_persona: estudianteACobrar.id_persona,
       puntos: puntosNumerico,
     };
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/CobrarPuntos`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/CobrarPuntos`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const Estudiante = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/IntMostrarEstudiantes`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/IntMostrarEstudiantes`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -151,7 +151,7 @@ const Estudiante = () => {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/DatosEstudiante?dni=${searchTerm}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/DatosEstudiante?dni=${searchTerm}`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -167,13 +167,10 @@ const Estudiante = () => {
   const handleDelete = (id_persona) => {
     if (!window.confirm('¿Seguro que deseas eliminar este estudiante?')) return;
 
-    fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/EliminarEstudiante?id_persona=${id_persona}`,
-      {
-        method: 'DELETE',
-        credentials: 'include',
-      }
-    )
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/EliminarEstudiante?id_persona=${id_persona}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
       .then((response) => {
         if (response.ok) {
           setData((prev) => prev.filter((estudiante) => estudiante.id_persona !== id_persona));
@@ -285,7 +282,7 @@ const Estudiante = () => {
               onSubmit={(e) => {
                 e.preventDefault();
 
-                fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/ActulizarEstudiante`, {
+                fetch(`${import.meta.env.VITE_API_URL}/api/admin/ActulizarEstudiante`, {
                   method: 'PUT',
                   headers: {
                     'Content-Type': 'application/json',

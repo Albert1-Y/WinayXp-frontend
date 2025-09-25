@@ -248,7 +248,7 @@ const Create_Actividad = () => {
     console.log('Datos de actividad:', actividadData);
 
     // Realiza el POST para guardar la actividad
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/CrearActividad`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/CrearActividad`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

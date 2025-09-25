@@ -190,7 +190,7 @@ const Create_Estudiante = () => {
 
     console.log('JSON final listo para enviar:', estudianteData);
 
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/registerE`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/registerE`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

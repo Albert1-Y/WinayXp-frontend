@@ -74,7 +74,7 @@ const Asistencia = () => {
 
   useEffect(() => {
     fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/MostrarActividad?fecha_inicio=${fecha}&fecha_fin=${fecha}`,
+      `${import.meta.env.VITE_API_URL}/api/admin/MostrarActividad?fecha_inicio=${fecha}&fecha_fin=${fecha}`,
       {
         method: 'GET',
         credentials: 'include', // Incluye las cookies en la solicitud
@@ -105,7 +105,7 @@ const Asistencia = () => {
     console.log(`Buscar actividades entre ${fechaInicio} y ${fechaFin}`);
 
     fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/MostrarActividad?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`,
+      `${import.meta.env.VITE_API_URL}/api/admin/MostrarActividad?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`,
       {
         method: 'GET',
         credentials: 'include',
@@ -135,7 +135,7 @@ const Asistencia = () => {
     alert('¡Estás a punto de eliminar esta actividad!');
 
     if (window.confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
-      fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/EliminarActividad?id_actividad=${id}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/admin/EliminarActividad?id_actividad=${id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
@@ -153,7 +153,7 @@ const Asistencia = () => {
     }
   };
   const handleSaveActividad = () => {
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/ActualizarActividad`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/ActualizarActividad`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

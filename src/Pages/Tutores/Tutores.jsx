@@ -38,7 +38,7 @@ const Tutores = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/MostrarTutores`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/MostrarTutores`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -64,7 +64,7 @@ const Tutores = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este tutor?')) {
-      fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/DeleteTutores?id_persona=${id}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/admin/DeleteTutores?id_persona=${id}`, {
         method: 'DELETE',
         credentials: 'include',
       })

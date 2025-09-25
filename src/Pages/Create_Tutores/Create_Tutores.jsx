@@ -170,7 +170,7 @@ const CreateTutores = () => {
     };
 
     try {
-      fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/registerAT`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/admin/registerAT`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

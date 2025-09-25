@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import './Login.css';
 import Button from '../../components/button/Button';
@@ -8,11 +8,21 @@ import TextField from '../../components/TextField/TextField';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { rol, setRol } = useContext(AuthContext);
   const [rankingData, setRankingData] = useState([]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState(''); // Estado para el mensaje de error
+
+  useEffect(() => {
+    // Mostrar error si viene desde una ruta protegida
+    if (location.state && location.state.error) {
+      setErrorMessage(location.state.error);
+      // Limpiar el estado de navegación para que no reaparezca al refrescar
+      navigate('/', { replace: true, state: null });
+    }
+  }, [location.state, navigate]);
 
   useEffect(() => {
     if (rol === 'administrador' || rol === 'tutor' || rol === 'estudiante') {

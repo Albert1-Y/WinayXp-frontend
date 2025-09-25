@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Navbar.css';
 import Button from '../../components/button/Button';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 
 const Navbar = ({ onCollapsedChange }) => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
   const [collapsedDesktop, setCollapsedDesktop] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
   useEffect(() => {
@@ -14,17 +16,14 @@ const Navbar = ({ onCollapsedChange }) => {
   }, [collapsedDesktop, onCollapsedChange]);
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/cedhi/logout`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/logout`, {
         method: 'POST',
         credentials: 'include',
       });
-
-      localStorage.clear();
-      navigate('/');
     } catch (error) {
-      localStorage.clear();
       console.error('Error de red:', error);
-      navigate('/');
+    } finally {
+      logout();
     }
   };
 

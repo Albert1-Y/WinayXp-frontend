@@ -43,7 +43,7 @@ const Dashboard = () => {
   // Función para cargar semestres
   useEffect(() => {
     const obtenerSemestres = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/Semestres`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/Semestres`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -69,9 +69,9 @@ const Dashboard = () => {
       if (idSemestre === 'todos') {
         // Esto dependerá de cómo esté implementado tu backend
         // Si admite una petición sin parámetro para traer todas las actividades
-        url = `${import.meta.env.VITE_API_URL}/cedhi/admin/ActividadesPorSesmestre`;
+        url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSesmestre`;
       } else {
-        url = `${import.meta.env.VITE_API_URL}/cedhi/admin/ActividadesPorSesmestre?id_semestre=${idSemestre}`;
+        url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSesmestre?id_semestre=${idSemestre}`;
       }
 
       const response = await fetch(url, {
@@ -117,7 +117,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/cedhi/admin/AsistenciaActividad?id_actividad=${idActividad}`,
+        `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaActividad?id_actividad=${idActividad}`,
         {
           method: 'GET',
           credentials: 'include',
@@ -157,7 +157,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       // Usar el id del semestre seleccionado como parámetro de consulta
-      const url = `${import.meta.env.VITE_API_URL}/cedhi/admin/exportarExcelActividades?id_semestre=${semestreSeleccionado}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/admin/exportarExcelActividades?id_semestre=${semestreSeleccionado}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -210,7 +210,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       // Usar el id del semestre seleccionado como parámetro de consulta
-      const url = `${import.meta.env.VITE_API_URL}/cedhi/admin/exportarExcelEstudiantes?id_semestre=${semestreSeleccionado}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/admin/exportarExcelEstudiantes?id_semestre=${semestreSeleccionado}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -272,7 +272,7 @@ const Dashboard = () => {
   const handleDownloadPlantilla = async () => {
     try {
       setLoading(true);
-      const url = `${import.meta.env.VITE_API_URL}/cedhi/admin/descargar-plantilla`;
+      const url = `${import.meta.env.VITE_API_URL}/api/admin/descargar-plantilla`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -332,7 +332,7 @@ const Dashboard = () => {
       formData.append('file', file);
       formData.append('id_semestre', semestreSeleccionado);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/excel`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/excel`, {
         method: 'POST',
         credentials: 'include',
         body: formData,

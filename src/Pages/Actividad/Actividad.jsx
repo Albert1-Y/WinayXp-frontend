@@ -15,6 +15,15 @@ const Actividades = () => {
   const { rol } = useContext(AuthContext);
   const [navbarCollapsed, setNavbarCollapsed] = useState(false);
 
+  // Redirección basada en rol sólo en efectos (no durante render)
+  useEffect(() => {
+    if (!rol) {
+      alert('Tu sesión ha expirado');
+      localStorage.clear();
+      navigate('/', { replace: true });
+    }
+  }, [rol, navigate]);
+
   // Efecto para detectar el estado del navbar colapsado
   useEffect(() => {
     const handleNavbarChange = () => {
@@ -48,9 +57,6 @@ const Actividades = () => {
       case 'tutor':
         return <NavbarT />;
       default:
-        alert('Tu sesión ha expirado');
-        localStorage.clear();
-        navigate('/');
         return null;
     }
   };
@@ -70,7 +76,7 @@ const Actividades = () => {
 
     console.log('Enviando datos para actualizar:', actividadActualizada);
 
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/ActulizarActividad`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/ActulizarActividad`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -117,21 +123,30 @@ const Actividades = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    const controller = new AbortController();
     fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/MostrarActividad?fecha_inicio=2025-01-01&fecha_fin=2025-12-31`,
+      `${import.meta.env.VITE_API_URL}/api/admin/MostrarActividad?fecha_inicio=2025-01-01&fecha_fin=2025-12-31`,
       {
         method: 'GET',
         credentials: 'include', // Incluye las cookies en la solicitud
+        signal: controller.signal,
       }
     )
-      .then((response) => response.json())
+      .then(async (response) => {
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HTTP ${response.status}: ${text}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log('Datos iniciales:', data);
-        setData(data);
+        setData(Array.isArray(data) ? data : []);
       })
       .catch((error) => {
         console.error('Error al obtener actividades:', error);
       });
+    return () => controller.abort();
   }, []);
   const handleSearch = () => {
     if (!fechaInicio || !fechaFin) {
@@ -140,13 +155,19 @@ const Actividades = () => {
     }
     console.log(`Buscar actividades entre ${fechaInicio} y ${fechaFin}`);
     fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/MostrarActividad?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`,
+      `${import.meta.env.VITE_API_URL}/api/admin/MostrarActividad?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`,
       {
         method: 'GET',
         credentials: 'include',
       }
     )
-      .then((response) => response.json())
+      .then(async (response) => {
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HTTP ${response.status}: ${text}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           console.log('Datos filtrados:', data);
@@ -168,7 +189,7 @@ const Actividades = () => {
     alert('¡Estás a punto de eliminar esta actividad!');
 
     if (window.confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
-      fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/EliminarActividad?id_actividad=${id}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/admin/EliminarActividad?id_actividad=${id}`, {
         method: 'DELETE',
         credentials: 'include',
       })

@@ -57,7 +57,7 @@ const Tomar_asistencia = () => {
     if (!actividad?.id_actividad) return;
 
     fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/AsistenciaActividad?id_actividad=${actividad.id_actividad}`,
+      `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaActividad?id_actividad=${actividad.id_actividad}`,
       {
         method: 'GET',
         credentials: 'include',
@@ -103,13 +103,10 @@ const Tomar_asistencia = () => {
   const registrarAsistenciaPorDNI = (dni, estado = true) => {
     const dniRecortado = dni.length === 13 ? dni.slice(-8) : dni;
 
-    return fetch(
-      `${import.meta.env.VITE_API_URL}/cedhi/admin/DatosEstudiante?dni=${dniRecortado}`,
-      {
-        method: 'GET',
-        credentials: 'include',
-      }
-    )
+    return fetch(`${import.meta.env.VITE_API_URL}/api/admin/DatosEstudiante?dni=${dniRecortado}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
       .then(async (response) => {
         if (!response.ok) {
           const text = await response.text();
@@ -127,7 +124,7 @@ const Tomar_asistencia = () => {
           throw new Error('Estudiante inválido');
         }
 
-        const url = `${import.meta.env.VITE_API_URL}/cedhi/admin/AsistenciaEstudainte`;
+        const url = `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudainte`;
         const payload = {
           id_persona: data.id_persona,
           id_actividad: actividad.id_actividad,
@@ -204,7 +201,7 @@ const Tomar_asistencia = () => {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/cedhi/admin/AsistenciaEstudainte`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudainte`, {
       method: 'PUT',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

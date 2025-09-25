@@ -34,7 +34,7 @@ const Perfil = () => {
   useEffect(() => {
     if (rol === 'estudiante') {
       const cargarDatosEstudiante = fetch(
-        `${import.meta.env.VITE_API_URL}/cedhi/estudiante/InitEstudiante`,
+        `${import.meta.env.VITE_API_URL}/api/estudiante/InitEstudiante`,
         {
           method: 'GET',
           credentials: 'include',
@@ -42,7 +42,7 @@ const Perfil = () => {
       );
 
       const cargarActividades = fetch(
-        `${import.meta.env.VITE_API_URL}/cedhi/estudiante/getActividadesAsistidas`,
+        `${import.meta.env.VITE_API_URL}/api/estudiante/getActividadesAsistidas`,
         {
           method: 'GET',
           credentials: 'include',
