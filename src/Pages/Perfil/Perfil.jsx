@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import './Perfil.css';
 import NavbarE from '../Navbar/NavbarE';
@@ -82,9 +82,16 @@ const Perfil = () => {
 
           if (datosEstudiante) {
             setDatos(datosEstudiante);
-            if (datosEstudiante.nombre_imagen) {
-              setImagenPerfil(datosEstudiante.nombre_imagen);
-            }
+
+            const posibleAvatar = [
+              datosEstudiante.imagen_perfil,
+              datosEstudiante.url_foto,
+              datosEstudiante.foto_url,
+              datosEstudiante.imagen_persona,
+            ].find((src) => typeof src === 'string' && src.trim().length > 0);
+
+            setImagenPerfil(posibleAvatar || null);
+            setImagenError(false);
           } else {
             throw new Error('Respuesta inválida de datos');
           }
@@ -101,6 +108,43 @@ const Perfil = () => {
   }, [rol]);
 
   const handleImageError = () => setImagenError(true);
+
+  const nivelImage = datos?.nombre_imagen;
+  const avatarSrc = useMemo(() => {
+    const isAbsoluteUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    const normalizeBase = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
+
+    if (imagenPerfil && !imagenError) {
+      if (isAbsoluteUrl(imagenPerfil)) {
+        return imagenPerfil;
+      }
+
+      if (imagenPerfil.startsWith('/')) {
+        return normalizeBase ? `${normalizeBase}${imagenPerfil}` : imagenPerfil;
+      }
+
+      const sanitizedPath = imagenPerfil.startsWith('uploads/')
+        ? `/${imagenPerfil}`
+        : `/uploads/${imagenPerfil}`;
+
+      return normalizeBase ? `${normalizeBase}${sanitizedPath}` : sanitizedPath;
+    }
+
+    if (nivelImage) {
+      if (isAbsoluteUrl(nivelImage)) {
+        return nivelImage;
+      }
+
+      if (nivelImage.startsWith('/ImagenNiveles/')) {
+        return nivelImage;
+      }
+
+      return `/ImagenNiveles/${nivelImage}`;
+    }
+
+    return '/ImagenNiveles/semilla.png';
+  }, [imagenPerfil, imagenError, nivelImage]);
 
   const getNivelInfo = (puntaje) => {
     const puntajesPorNivel = 1000;
@@ -155,11 +199,7 @@ const Perfil = () => {
                   <div className="perfil-header">
                     <div className="perfil-avatar-container">
                       <img
-                        src={
-                          imagenPerfil && !imagenError
-                            ? `${import.meta.env.VITE_API_URL}/uploads/${imagenPerfil}`
-                            : datos.imagen_nivel || '/ImagenNiveles/semilla.png'
-                        }
+                        src={avatarSrc}
                         alt="Avatar"
                         className="perfil-avatar"
                         onError={handleImageError}

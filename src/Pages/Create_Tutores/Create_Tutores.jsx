@@ -183,11 +183,16 @@ const CreateTutores = () => {
             alert('Creado exitosamente');
             navigate('/tutores'); // Redirigir después del éxito
             return response.json();
-          } else {
-            return response.json().then((data) => {
-              throw new Error(data.message || 'Error en la solicitud');
-            });
           }
+
+          if (response.status === 409) {
+            // Caso específico: el correo ya existe en el sistema
+            throw new Error('Ese correo ya está registrado');
+          }
+
+          return response.json().then((data) => {
+            throw new Error(data.message || 'Error en la solicitud');
+          });
         })
         .then((data) => {
           console.log(data);

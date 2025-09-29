@@ -69,9 +69,9 @@ const Dashboard = () => {
       if (idSemestre === 'todos') {
         // Esto dependerá de cómo esté implementado tu backend
         // Si admite una petición sin parámetro para traer todas las actividades
-        url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSesmestre`;
+        url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSemestre`;
       } else {
-        url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSesmestre?id_semestre=${idSemestre}`;
+        url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSemestre?id_semestre=${idSemestre}`;
       }
 
       const response = await fetch(url, {
