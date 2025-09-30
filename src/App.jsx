@@ -98,7 +98,7 @@ function App() {
         <Route
           path="/tomar-asistencia"
           element={
-            <ProtectedRoute allow={['tutor']}>
+            <ProtectedRoute allow={['tutor', 'administrador']}>
               <Tomar_Asistencia />
             </ProtectedRoute>
           }

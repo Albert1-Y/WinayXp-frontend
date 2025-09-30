@@ -16,7 +16,7 @@ const Tomar_asistencia = () => {
   const [ultimoDniEscaneado, setUltimoDniEscaneado] = useState('');
   const [estudiantes, setEstudiantes] = useState([]);
   const [asistencias, setAsistencias] = useState({});
-  const [manualMode, setManualMode] = useState(false);
+  const [manualMode, setManualMode] = useState(true);
   const [dniManual, setDniManual] = useState('');
   const [scannerActive, setScannerActive] = useState(false);
   const [loadingCamera, setLoadingCamera] = useState(false);
@@ -124,7 +124,7 @@ const Tomar_asistencia = () => {
           throw new Error('Estudiante inválido');
         }
 
-        const url = `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudainte`;
+        const url = `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudiante`;
         const payload = {
           id_persona: data.id_persona,
           id_actividad: actividad.id_actividad,
@@ -201,7 +201,7 @@ const Tomar_asistencia = () => {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudainte`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudiante`, {
       method: 'PUT',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -443,7 +443,10 @@ const Tomar_asistencia = () => {
           </p>
 
           <div style={{ display: 'flex', gap: '1rem', margin: '1rem 0', alignItems: 'center' }}>
-            <Button text="Manual" onClick={() => setManualMode(!manualMode)} />
+            <Button
+              text={manualMode ? 'Ocultar modo manual' : 'Mostrar modo manual'}
+              onClick={() => setManualMode((prev) => !prev)}
+            />
             <Button
               text={scannerActive ? 'Detener Escáner' : 'Código de Barras'}
               onClick={scannerActive ? stopScanner : startScanner}
@@ -452,15 +455,20 @@ const Tomar_asistencia = () => {
           </div>
 
           {manualMode && (
-            <div
-              style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}
-            >
-              <TextField
-                placeholder="Ingresar DNI"
-                value={dniManual}
-                onChange={(e) => setDniManual(e.target.value)}
-              />
-              <Button text="Registrar" onClick={handleManualSubmit} />
+            <div style={{ marginBottom: '1rem' }}>
+              <p style={{ marginBottom: '0.5rem', color: '#4b5563' }}>
+                Ingresa el DNI del estudiante para registrar asistencia sin usar la cámara.
+              </p>
+              <div
+                style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}
+              >
+                <TextField
+                  placeholder="Ingresar DNI"
+                  value={dniManual}
+                  onChange={(e) => setDniManual(e.target.value)}
+                />
+                <Button text="Registrar" onClick={handleManualSubmit} />
+              </div>
             </div>
           )}
 
@@ -606,6 +614,9 @@ const Tomar_asistencia = () => {
             </div>
           )}
           <h3>Estudiantes Registrados</h3>
+          <p style={{ marginBottom: '0.5rem', color: '#4b5563' }}>
+            Marca o desmarca las casillas para actualizar la asistencia de cada estudiante.
+          </p>
           <div className="tabla-asistencia">
             <table style={{ width: '100%' }}>
               <thead>

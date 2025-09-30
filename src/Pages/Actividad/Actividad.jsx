@@ -66,6 +66,10 @@ const Actividades = () => {
     setShowEditForm(true);
   };
 
+  const handleTakeAttendance = (actividad) => {
+    navigate('/tomar-asistencia', { state: { actividad } });
+  };
+
   const handleSaveActividad = () => {
     // Aseguramos que todos los datos necesarios estén presentes
     const actividadActualizada = {
@@ -76,7 +80,7 @@ const Actividades = () => {
 
     console.log('Enviando datos para actualizar:', actividadActualizada);
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/admin/ActulizarActividad`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/ActualizarActividad`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -224,6 +228,16 @@ const Actividades = () => {
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCQKSXUQPazM3iiWHvTZs0zXzcgFzYXlJfKQ&s"
               alt="Editar"
+            />
+          </button>
+          <button className="action-button" onClick={() => handleTakeAttendance(row)}>
+            <img
+              src="/icons/attendance.svg"
+              alt="Tomar asistencia"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = 'https://cdn-icons-png.flaticon.com/512/1047/1047711.png';
+              }}
             />
           </button>
           <button className="action-button" onClick={() => handleDelete(row.id_actividad)}>
