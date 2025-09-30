@@ -145,54 +145,79 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-grid">
-        {/* Contenedor 1 */}
-        <div className="login-box">
-          <div className="logo-container">
-            <img src="/CEDHIlogo.png" alt="CEDHI Logo" className="login-logo" />
-          </div>
-          <h2>Iniciar Sesión</h2>
-          <form onSubmit={handleLogin}>
-            {' '}
-            {/* Usar onSubmit para evitar recargar la página */}
-            <div className="form-group">
-              <label htmlFor="email">Correo Electrónico</label>
-              <TextField
-                placeholder="ejemplo@correo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)} // Maneja el cambio del email
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Contraseña</label>
-              <TextField
-                type="password" // Cambiar tipo a "password"
-                placeholder="contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)} // Maneja el cambio de la contraseña
-              />
-            </div>
-            {errorMessage && <div className="error-message">{errorMessage}</div>}{' '}
-            {/* Muestra el mensaje de error si existe */}
-            <Button text="Iniciar Sesión" styleType="black" type="submit" />
-          </form>
-          <Button
-            text="Iniciar sesión con Google"
-            styleType="google"
-            type="button"
-            onClick={handleGoogleLogin}
-          />
-        </div>
+    <div className="login-page">
+      <div className="login-background" aria-hidden="true">
+        <div className="gradient-layer" />
+        <div className="stars stars--one" />
+        <div className="stars stars--two" />
+        <div className="stars stars--three" />
+      </div>
 
-        {/* Contenedor 2 */}
-        <div className="login-box">
-          <div className="logo-container">
-            <img src="/Wiñay.png" alt="Wiñay Logo" className="login-logo" />
+      <div className="login-content">
+        <header className="login-hero">
+          <img src="/Wiñay.png" alt="Logo Wiñay" className="hero-logo" />
+          <h1 className="hero-title">WIÑAY</h1>
+          <p className="hero-subtitle">CEDHI · Sistema de Crecimiento Académico</p>
+          <p className="hero-claim">
+            Inicia tu viaje hacia la excelencia académica.
+            <span> Evoluciona. Crece. Trasciende.</span>
+          </p>
+        </header>
+
+        <section className="login-panels">
+          <div className="panel card-form">
+            <h2>Accede a tu cuenta</h2>
+            <form onSubmit={handleLogin} className="login-form">
+              <div className="form-group">
+                <label htmlFor="email">Correo electrónico</label>
+                <TextField
+                  placeholder="ejemplo@correo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Contraseña</label>
+                <TextField
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+
+              {errorMessage && <div className="error-message">{errorMessage}</div>}
+
+              <Button text="Iniciar sesión" styleType="black" type="submit" />
+            </form>
+
+            <div className="divider">
+              <span>o continúa con</span>
+            </div>
+
+            <Button
+              text="Continuar con Google"
+              styleType="google"
+              type="button"
+              onClick={handleGoogleLogin}
+            />
           </div>
-          <h2>Ranking de Estudiantes</h2>
-          <Table columns={columns} data={rankingData.slice(0, 10)} customRender={customRender} />
-        </div>
+
+          <div className="panel card-ranking">
+            <div className="ranking-header">
+              <h2>Ranking de estudiantes</h2>
+              <p>Top 10 · Última actualización en tiempo real</p>
+            </div>
+
+            {rankingData.length > 0 ? (
+              <Table columns={columns} data={rankingData.slice(0, 10)} customRender={customRender} />
+            ) : (
+              <div className="ranking-empty">
+                <p>No se pudo cargar el ranking en este momento.</p>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -1,19 +1,26 @@
-/* Estructura global de la aplicación */
-.app-layout {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
+:root {
+  --student-primary: #f6c743;
+  --student-secondary: #8a4dff;
+  --student-surface: rgba(18, 12, 58, 0.65);
+  --student-border: rgba(255, 255, 255, 0.18);
+  --student-text: #f8f9ff;
+  --student-text-muted: rgba(238, 240, 255, 0.7);
+  --student-highlight: rgba(246, 199, 67, 0.35);
 }
 
 .perfil-container {
-  flex: 1;
-  background-color: #f5f7fb;
-  margin-left: 260px;
-  width: calc(100vw - 260px);
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  min-height: 100vh;
   position: relative;
+  min-height: 100vh;
+  width: calc(100vw - 260px);
+  margin-left: 260px;
+  padding: clamp(28px, 4vw, 48px) clamp(28px, 4vw, 52px);
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 20%, #2f0f75 0%, #18084d 45%, #07031a 100%);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  color: var(--student-text);
 }
 
 .perfil-container.navbar-collapsed {
@@ -21,529 +28,361 @@
   width: calc(100vw - 100px);
 }
 
+.perfil-container::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(
+    from 30deg,
+    rgba(246, 199, 67, 0.25),
+    rgba(138, 77, 255, 0.45),
+    rgba(255, 106, 158, 0.3),
+    rgba(95, 162, 255, 0.3)
+  );
+  filter: blur(140px);
+  animation: perfilGradient 26s linear infinite;
+  opacity: 0.8;
+  z-index: 0;
+}
+
+.perfil-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(1px 1px at 20px 20px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 120px 80px, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 220px 160px, rgba(255, 255, 255, 0.35), transparent);
+  opacity: 0.35;
+  animation: perfilStars 60s linear infinite;
+  z-index: 0;
+}
+
+@keyframes perfilGradient {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes perfilStars {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-200px, -200px, 0);
+  }
+}
+
 .perfil-content {
-  padding: 30px;
-  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  width: min(1100px, 100%);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: calc(100vh - 60px);
+  gap: clamp(18px, 2vw, 28px);
+  align-items: stretch;
 }
 
 .perfil-header-logo {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  max-width: 1200px;
-  margin-bottom: 20px;
-  gap: 16px;
+  gap: clamp(12px, 1.5vw, 18px);
 }
 
 .perfil-logo {
-  height: 60px;
-  object-fit: contain;
-}
-
-.error-logo {
-  margin-bottom: 20px;
+  height: clamp(50px, 6vw, 70px);
+  filter: drop-shadow(0 10px 25px rgba(246, 199, 67, 0.25));
 }
 
 .perfil-title {
-  color: #424f70;
-  font-size: 1.8rem;
-  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: 0.06em;
   font-weight: 700;
-}
-
-.perfil-error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 300px;
+  margin: 0;
+  color: var(--student-text);
 }
 
 .perfil-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  width: 100%;
-  max-width: 1200px;
-}
-
-@media (min-width: 992px) {
-  .perfil-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .perfil-info-card {
-    grid-column: span 2;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
 }
 
 .perfil-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  box-sizing: border-box;
-  transition: transform 0.2s ease-in-out;
-  overflow: hidden;
+  background: linear-gradient(155deg, rgba(18, 12, 58, 0.9), rgba(27, 18, 70, 0.7));
+  border-radius: 28px;
+  border: 1px solid var(--student-border);
+  padding: clamp(20px, 2.5vw, 32px);
+  box-shadow: 0 18px 40px rgba(5, 3, 25, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  color: var(--student-text);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.6vw, 18px);
 }
 
 .perfil-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 22px 46px rgba(5, 3, 25, 0.55);
 }
 
 .perfil-info-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f9fafe 100%);
-  border: 1px solid #e1e5f2;
-  padding: 30px;
+  grid-column: span 2;
+  gap: clamp(16px, 1.8vw, 24px);
 }
 
 .perfil-header {
   display: flex;
-  align-items: flex-start;
-  gap: 30px;
-  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: clamp(18px, 2vw, 32px);
 }
 
 .perfil-avatar-container {
   position: relative;
-  flex-shrink: 0;
 }
 
 .perfil-avatar {
-  width: 130px;
-  height: 130px;
+  width: clamp(110px, 16vw, 150px);
+  height: clamp(110px, 16vw, 150px);
   border-radius: 50%;
   object-fit: cover;
-  border: 5px solid #ffffff;
-  box-shadow:
-    0 0 0 2px #ef6646,
-    0 4px 14px rgba(239, 102, 70, 0.3);
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
 }
 
 .perfil-nivel-badge {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  background-color: #2563eb;
-  color: white;
-  border-radius: 12px;
-  padding: 4px 12px;
+  bottom: 6px;
+  right: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--student-primary), #ffd66b);
+  color: #1b0b4c;
   font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.4);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  box-shadow: 0 8px 18px rgba(246, 199, 67, 0.35);
 }
 
 .perfil-info-principal {
   flex: 1;
+  min-width: 250px;
 }
 
 .perfil-nombre {
-  font-size: 1.8rem;
+  margin: 0;
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
   font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 4px 0;
+  color: var(--student-text);
 }
 
 .perfil-carrera {
-  color: #4b5563;
-  font-size: 1.1rem;
-  margin: 0 0 16px 0;
+  margin: 4px 0 16px;
+  color: var(--student-text-muted);
+  font-size: 1.05rem;
 }
 
 .perfil-nivel-info {
-  background-color: #f3f4f6;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .nivel-actual {
-  display: inline-block;
   font-weight: 600;
-  color: #4b5563;
-  margin-bottom: 8px;
+  color: var(--student-text);
 }
 
 .barra-nivel-container {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 10px;
+  gap: 12px;
 }
 
 .nivel-barra {
   flex: 1;
-  background-color: #e5e7eb;
   height: 10px;
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .nivel-progreso {
   height: 100%;
-  border-radius: 5px;
-  transition: width 1s ease-in-out;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--student-primary), #8a4dff);
+  transition: width 0.6s ease;
 }
 
 .nivel-porcentaje {
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #4b5563;
-  width: 40px;
-  text-align: right;
-}
-
-.nivel-descripcion {
-  color: #6b7280;
-  font-size: 0.9rem;
-  margin: 8px 0 10px;
-}
-
-.nivel-siguiente {
-  color: #4b5563;
-  font-size: 0.9rem;
-  margin: 0;
+  color: var(--student-text);
 }
 
 .perfil-datos {
-  display: flex;
-  gap: 24px;
-  margin-top: 24px;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 18px;
+  color: var(--student-text-muted);
 }
 
-.datos-columna {
-  flex: 1;
-}
-
-.datos-columna p {
-  margin: 8px 0;
-  color: #4b5563;
-  font-size: 1rem;
+.perfil-datos p {
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 .datos-etiqueta {
+  color: var(--student-text);
   font-weight: 600;
-  color: #6b7280;
-  margin-right: 6px;
 }
 
-.estado-activo {
-  background-color: #dcfce7;
-  color: #059669;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: capitalize;
+.perfil-card .estado-activo {
+  color: var(--student-primary);
+  font-weight: 600;
 }
 
-/* Estadísticas */
 .estadisticas-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
-  grid-column: span 2;
 }
 
 .estadistica-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: 18px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-}
-
-.estadistica-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .estadistica-icono {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: white;
-}
-
-.estadistica-info {
-  flex: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  color: #1b0b4c;
+  font-weight: 600;
 }
 
 .estadistica-info h3 {
-  font-size: 1rem;
-  color: #6b7280;
-  margin: 0 0 4px 0;
-  font-weight: 500;
+  margin: 0;
+  color: var(--student-text-muted);
+  font-size: 0.85rem;
 }
 
 .estadistica-valor {
-  font-size: 1.5rem;
+  margin: 4px 0 0;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: #111827;
-  margin: 0;
+  color: var(--student-text);
 }
 
-/* Actividades recientes */
-.seccion-titulo {
-  color: #111827;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 16px 0;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f3f4f6;
-}
-
-.actividades-card {
+.actividades-card .perfil-actividades-table {
   width: 100%;
-  box-sizing: border-box;
-  margin-top: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-}
-
-.actividades-lista {
-  width: 100%;
-  overflow-x: auto; /* scroll horizontal */
-  margin-top: 15px;
-  padding: 0 8px;
-  box-sizing: border-box;
-}
-
-/* Tabla específica para el perfil - solución al problema de texto largo */
-.perfil-actividades-table {
-  width: max-content; /* 🔑 hace que la tabla tenga el ancho necesario */
-  min-width: 100%; /* asegura que no sea más chica que el contenedor */
   border-collapse: collapse;
-  font-size: 0.95rem;
-  table-layout: auto;
+  color: var(--student-text);
 }
+
 .perfil-actividades-table th,
 .perfil-actividades-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* Cambiamos white-space: nowrap por estas propiedades */
-  white-space: normal;
-  word-wrap: break-word;
-  word-break: auto;
-  hyphens: none;
 }
 
-/* Activamos la división con guiones para navegadores que lo soportan */
+.perfil-actividades-table thead tr {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--student-text);
+}
 
-.perfil-actividades-table th {
+.actividad-puntos {
+  color: var(--student-primary);
   font-weight: 600;
-  color: #4b5563;
-  background-color: #f9fafb;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-/* Ancho específico para las columnas */
-.perfil-actividades-table th:nth-child(1),
-.perfil-actividades-table td:nth-child(1) {
-  width: 45%;
-}
-
-.perfil-actividades-table th:nth-child(2),
-.perfil-actividades-table td:nth-child(2) {
-  width: 30%;
-}
-
-.perfil-actividades-table th:nth-child(3),
-.perfil-actividades-table td:nth-child(3) {
-  width: 25%;
-  text-align: center;
-}
-
-/* Para mostrar el texto completo al hacer hover */
-.perfil-actividades-table td:hover {
-  white-space: normal;
-  overflow: visible;
-  z-index: 10;
-  position: relative;
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.perfil-actividades-table tbody tr:hover {
-  background-color: #f7fafc;
-}
-
-.perfil-actividades-table .actividad-puntos {
-  background-color: #dcfce7;
-  color: #16a34a;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.perfil-actividad-item {
-  transition: background-color 0.2s;
 }
 
 .no-actividades {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  color: #6b7280;
+  padding: 16px;
+  text-align: center;
+  color: var(--student-text-muted);
 }
+
+.perfil-loading,
+.perfil-error-container {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--student-text);
+}
+
+.perfil-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--student-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .perfil-container {
+    margin-left: 200px;
+    width: calc(100vw - 200px);
+  }
+
+  .perfil-container.navbar-collapsed {
+    margin-left: 90px;
+    width: calc(100vw - 90px);
+  }
+}
+
 @media (max-width: 768px) {
-  .perfil-container {
-    margin-left: 0 !important;
-    width: 100vw !important;
-  }
-  .navbar-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 220px;
-    background-color: #424f70;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    z-index: 2000;
-    transition: transform 0.3s ease;
-    transform: translateX(-100%);
-  }
-
-  .navbar-container.open {
-    transform: translateX(0);
-  }
-
-  .navbar-container.hidden {
-    transform: translateX(-100%);
-  }
-
-  .perfil-container {
-    margin-left: 0 !important;
-    width: 100vw !important;
-    overflow-x: hidden;
-    position: relative;
-  }
-  .mobile-menu-toggle {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 3000; /* más alto que navbar */
-    background-color: #424f70;
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-  .perfil-content {
-    padding: 15px;
-  }
-
-  .perfil-header-logo {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .perfil-title {
-    font-size: 1.4rem;
+  .perfil-container,
+  .perfil-container.navbar-collapsed {
+    margin-left: 0;
+    width: 100vw;
+    padding: clamp(20px, 4vw, 32px) clamp(16px, 4vw, 24px);
   }
 
   .perfil-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px;
+    grid-template-columns: 1fr;
   }
 
   .perfil-info-card {
-    padding: 20px;
-  }
-
-  .perfil-header {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .perfil-avatar {
-    width: 100px;
-    height: 100px;
-  }
-
-  .perfil-nivel-badge {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-  }
-
-  .perfil-nombre {
-    font-size: 1.2rem;
-    text-align: center;
-  }
-
-  .perfil-carrera {
-    font-size: 1rem;
-    text-align: center;
-  }
-
-  .perfil-datos {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .estadisticas-container {
-    grid-template-columns: 1fr !important;
-  }
-
-  .actividades-lista {
-    overflow-x: auto;
-  }
-
-  .perfil-container {
-    margin-left: 0 !important;
-    width: 100vw !important;
+    grid-column: span 1;
   }
 }
-.nivel-actual-numero {
-  font-size: 1.1rem;
-  color: #1f2937;
-  font-weight: 700;
+
+@media (max-width: 480px) {
+  .perfil-card {
+    border-radius: 20px;
+    padding: 18px;
+  }
+
+  .estadistica-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

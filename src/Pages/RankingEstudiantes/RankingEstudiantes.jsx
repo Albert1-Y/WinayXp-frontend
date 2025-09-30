@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavbarE from '../Navbar/NavbarE';
 import Table from '../../components/Table/Table';
-import '../Estudiante/Estudiante.css';
+import './RankingEstudiantes.css';
 
 const RankingEstudiantes = () => {
   const [rankingData, setRankingData] = useState([]);
@@ -103,29 +103,29 @@ const RankingEstudiantes = () => {
   };
 
   return (
-    <div className={`estudiantes-container ${collapsed ? 'navbar-collapsed' : ''}`}>
-      <NavbarE />
-      <div className="estudiantes-content">
-        <div className="estudiantes-header">
-          <h1 className="estudiantes-title">Ranking de Estudiantes</h1>
+    <div className={`ranking-shell ${collapsed ? 'navbar-collapsed' : ''}`}>
+      <NavbarE onCollapsedChange={setCollapsed} />
+      <div className="ranking-content">
+        <div className="ranking-hero">
+          <h1>Ranking de Estudiantes</h1>
+          <p>Top nacional · actualizado en tiempo real según tus créditos Wiñay</p>
         </div>
-        {error && (
-          <div className="error-message" style={{ marginBottom: '1rem' }}>
-            {error}
+
+        {error && <div className="ranking-error">{error}</div>}
+
+        <div className="ranking-card">
+          <div>
+            <h2>Top 10</h2>
+            <p>Reconocemos a los estudiantes con mayor crecimiento académico en Wiñay XP.</p>
           </div>
-        )}
-        <div
-          className="estudiantes-table"
-          style={{
-            background: '#fff',
-            borderRadius: '12px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-            padding: '2rem',
-            marginTop: '1rem',
-            overflowX: 'auto',
-          }}
-        >
-          <Table columns={columns} data={rankingData} customRender={customRender} />
+
+          {rankingData.length > 0 ? (
+            <Table columns={columns} data={rankingData.slice(0, 10)} customRender={customRender} />
+          ) : (
+            <div className="ranking-empty">
+              No se pudo cargar el ranking en este momento. Intenta nuevamente más tarde.
+            </div>
+          )}
         </div>
       </div>
     </div>
