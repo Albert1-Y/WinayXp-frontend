@@ -346,6 +346,96 @@
   }
 }
 
+.nivel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 3, 22, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 24px;
+}
+
+.nivel-modal {
+  background: linear-gradient(150deg, rgba(27, 18, 70, 0.95), rgba(14, 10, 48, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: clamp(24px, 3vw, 32px);
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 24px 58px rgba(5, 3, 25, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: center;
+  color: var(--student-text);
+}
+
+.nivel-modal h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  letter-spacing: 0.05em;
+  color: var(--student-primary);
+}
+
+.nivel-modal-subtitle {
+  margin: -8px 0 8px;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-weight: 600;
+  color: var(--student-text);
+}
+
+.nivel-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.nivel-modal-body img {
+  width: clamp(120px, 26vw, 160px);
+  height: clamp(120px, 26vw, 160px);
+  object-fit: contain;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+.nivel-modal-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--student-text-muted);
+  font-size: 0.95rem;
+}
+
+.nivel-modal-button {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--student-primary), #ffd966);
+  color: #1b0b4c;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nivel-modal-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(246, 199, 67, 0.35);
+}
+
+.nivel-modal-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 @media (max-width: 1024px) {
   .perfil-container {
     margin-left: 200px;

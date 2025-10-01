@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import './Perfil.css';
 import NavbarE from '../Navbar/NavbarE';
@@ -12,6 +12,10 @@ const Perfil = () => {
   const [actividadesRecientes, setActividadesRecientes] = useState([]);
   const [imagenPerfil, setImagenPerfil] = useState(null);
   const [imagenError, setImagenError] = useState(false);
+  const [nivelesPendientes, setNivelesPendientes] = useState([]);
+  const [animIndex, setAnimIndex] = useState(0);
+  const [mostrandoAnimacion, setMostrandoAnimacion] = useState(false);
+  const [confirmandoNivel, setConfirmandoNivel] = useState(false);
 
   // Escuchar el cambio de colapso
   useEffect(() => {
@@ -92,6 +96,18 @@ const Perfil = () => {
 
             setImagenPerfil(posibleAvatar || null);
             setImagenError(false);
+            const pendientes = Array.isArray(datosEstudiante.niveles_pendientes)
+              ? datosEstudiante.niveles_pendientes
+              : [];
+
+            if (pendientes.length > 0) {
+              setNivelesPendientes(pendientes);
+              setAnimIndex(0);
+              setMostrandoAnimacion(true);
+            } else {
+              setNivelesPendientes([]);
+              setMostrandoAnimacion(false);
+            }
           } else {
             throw new Error('Respuesta inválida de datos');
           }
@@ -109,7 +125,12 @@ const Perfil = () => {
 
   const handleImageError = () => setImagenError(true);
 
-  const nivelImage = datos?.nombre_imagen;
+  const nivelActual = datos?.nivel;
+  const progreso = nivelActual?.progreso ?? 0;
+  const avatarNivel = nivelActual?.nombre_imagen
+    ? `/ImagenNiveles/${nivelActual.nombre_imagen}`
+    : '/ImagenNiveles/semilla.png';
+  const nivelPendienteActual = nivelesPendientes[animIndex] || null;
   const avatarSrc = useMemo(() => {
     const isAbsoluteUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
     const apiBase = import.meta.env.VITE_API_URL || '';
@@ -130,39 +151,56 @@ const Perfil = () => {
 
       return normalizeBase ? `${normalizeBase}${sanitizedPath}` : sanitizedPath;
     }
+    return avatarNivel;
+  }, [imagenPerfil, imagenError, avatarNivel]);
 
-    if (nivelImage) {
-      if (isAbsoluteUrl(nivelImage)) {
-        return nivelImage;
+  const confirmarNiveles = useCallback(async () => {
+    const ultimo = nivelesPendientes[nivelesPendientes.length - 1];
+    if (!ultimo) return;
+
+    try {
+      setConfirmandoNivel(true);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/estudiante/confirmarNivel`,
+        {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id_nivel: ultimo.id_nivel }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error('No se pudo confirmar el nivel');
       }
-
-      if (nivelImage.startsWith('/ImagenNiveles/')) {
-        return nivelImage;
-      }
-
-      return `/ImagenNiveles/${nivelImage}`;
+    } catch (error) {
+      console.error('Error confirmando nivel:', error);
+    } finally {
+      setConfirmandoNivel(false);
+      setDatos((prev) =>
+        prev
+          ? {
+              ...prev,
+              nivel: nivelesPendientes[nivelesPendientes.length - 1] || prev.nivel,
+              niveles_pendientes: [],
+            }
+          : prev
+      );
+      setNivelesPendientes([]);
     }
+  }, [nivelesPendientes]);
 
-    return '/ImagenNiveles/semilla.png';
-  }, [imagenPerfil, imagenError, nivelImage]);
-
-  const getNivelInfo = (puntaje) => {
-    const puntajesPorNivel = 1000;
-    const nivelNumero = Math.min(Math.floor(puntaje / puntajesPorNivel) + 1, 21);
-
-    // Si ya está en el nivel máximo, el progreso es 100%
-    const progresoEnNivel =
-      nivelNumero === 21 ? 100 : ((puntaje % puntajesPorNivel) / puntajesPorNivel) * 100;
-
-    return {
-      nivelNumero,
-      progresoEnNivel,
-    };
-  };
-
-  const getColor = (puntaje) => {
-    return '#10B981';
-  };
+  const avanzarAnimacion = useCallback(() => {
+    if (animIndex < nivelesPendientes.length - 1) {
+      setAnimIndex((idx) => idx + 1);
+    } else {
+      setMostrandoAnimacion(false);
+      confirmarNiveles();
+      setAnimIndex(0);
+    }
+  }, [animIndex, nivelesPendientes, confirmarNiveles]);
 
   const renderNavbar = () => {
     if (rol === 'estudiante') return <NavbarE onCollapsedChange={setCollapsed} />;
@@ -174,6 +212,43 @@ const Perfil = () => {
   return (
     <>
       {renderNavbar()}
+      {mostrandoAnimacion && nivelPendienteActual && (
+        <div className="nivel-overlay">
+          <div className="nivel-modal">
+            <h2>¡Has alcanzado un nuevo nivel!</h2>
+            <p className="nivel-modal-subtitle">{nivelPendienteActual.nombre_nivel}</p>
+            <div className="nivel-modal-body">
+              <img
+                src={
+                  nivelPendienteActual.nombre_imagen
+                    ? `/ImagenNiveles/${nivelPendienteActual.nombre_imagen}`
+                    : '/ImagenNiveles/semilla.png'
+                }
+                alt={nivelPendienteActual.nombre_nivel}
+              />
+              <div className="nivel-modal-text">
+                <p>
+                  Rango: {nivelPendienteActual.rango_inicio} – {nivelPendienteActual.rango_fin}
+                </p>
+                {nivelPendienteActual.descripcion && (
+                  <p>{nivelPendienteActual.descripcion}</p>
+                )}
+              </div>
+            </div>
+            <button
+              className="nivel-modal-button"
+              onClick={avanzarAnimacion}
+              disabled={confirmandoNivel}
+            >
+              {animIndex < nivelesPendientes.length - 1
+                ? 'Siguiente nivel'
+                : confirmandoNivel
+                  ? 'Confirmando...'
+                  : 'Entendido'}
+            </button>
+          </div>
+        </div>
+      )}
       <div className={`perfil-container ${collapsed ? 'navbar-collapsed' : ''}`}>
         <div className="perfil-content">
           {loading ? (
@@ -204,7 +279,9 @@ const Perfil = () => {
                         className="perfil-avatar"
                         onError={handleImageError}
                       />
-                      <div className="perfil-nivel-badge">{datos.nombre_nivel || 'Sin nivel'}</div>
+                      <div className="perfil-nivel-badge">
+                        {nivelActual?.nombre_nivel || 'Sin nivel'}
+                      </div>
                     </div>
                     <div className="perfil-info-principal">
                       <h1 className="perfil-nombre">
@@ -212,25 +289,28 @@ const Perfil = () => {
                       </h1>
                       <p className="perfil-carrera">{datos.nombre_carrera}</p>
                       <div className="perfil-nivel-info">
-                        <span className="nivel-actual">{datos.nombre_nivel || 'Sin nivel'}</span>
+                        <span className="nivel-actual">
+                          {nivelActual?.nombre_nivel || 'Sin nivel'}
+                        </span>
                         <div className="barra-nivel-container">
                           <div className="nivel-barra">
                             <div
                               className="nivel-progreso"
                               style={{
-                                width: `${getNivelInfo(datos.credito_total).progresoEnNivel}%`,
-                                backgroundColor: getColor(datos.credito_total),
+                                width: `${progreso}%`,
                               }}
                             ></div>
                           </div>
                           <div className="nivel-porcentaje">
-                            {getNivelInfo(datos.credito_total).progresoEnNivel}%
+                            {progreso}%
                           </div>
                         </div>
                         <p className="nivel-actual">
-                          Nivel actual: {getNivelInfo(datos.credito_total).nivelNumero}
+                          Nivel actual: {nivelActual?.id_nivel ?? '—'}
                         </p>
-                        <p className="nivel-descripcion">{datos.descripcion_nivel || ''}</p>
+                        <p className="nivel-descripcion">
+                          {nivelActual?.descripcion || ''}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -263,13 +343,13 @@ const Perfil = () => {
                       titulo: 'Puntos',
                       valor: datos.credito_total || 0,
                       icono: '⭐',
-                      color: '#F59E0B',
+                      color: 'rgba(246, 199, 67, 0.25)',
                     },
                     {
                       titulo: 'Puntos Disponibles',
                       valor: datos.cobro_credito || 0,
                       icono: '💰',
-                      color: '#10B981',
+                      color: 'rgba(16, 185, 129, 0.25)',
                     },
                   ].map((stat, i) => (
                     <div className="estadistica-card" key={i}>
@@ -301,7 +381,11 @@ const Perfil = () => {
                           {actividadesRecientes.slice(0, 4).map((a, i) => (
                             <tr key={i} className="perfil-actividad-item">
                               <td>{a.nombre_actividad || 'Sin nombre'}</td>
-                              <td>{new Date(a.fecha || Date.now()).toLocaleDateString()}</td>
+                              <td>
+                                {a.fecha_asistencia
+                                  ? new Date(a.fecha_asistencia).toLocaleString('es-PE')
+                                  : '—'}
+                              </td>
                               <td>
                                 {a.creditos && (
                                   <span className="actividad-puntos">+{a.creditos}</span>
