@@ -14,8 +14,10 @@ const Perfil = () => {
   const [imagenError, setImagenError] = useState(false);
   const [nivelesPendientes, setNivelesPendientes] = useState([]);
   const [animIndex, setAnimIndex] = useState(0);
-  const [mostrandoAnimacion, setMostrandoAnimacion] = useState(false);
+  const [mostrandoOverlay, setMostrandoOverlay] = useState(false);
+  const [overlayStage, setOverlayStage] = useState('video'); // 'video' | 'card'
   const [confirmandoNivel, setConfirmandoNivel] = useState(false);
+  const [videoDisponible, setVideoDisponible] = useState(true);
 
   // Escuchar el cambio de colapso
   useEffect(() => {
@@ -103,10 +105,11 @@ const Perfil = () => {
             if (pendientes.length > 0) {
               setNivelesPendientes(pendientes);
               setAnimIndex(0);
-              setMostrandoAnimacion(true);
+              setOverlayStage('video');
+              setMostrandoOverlay(true);
             } else {
               setNivelesPendientes([]);
-              setMostrandoAnimacion(false);
+              setMostrandoOverlay(false);
             }
           } else {
             throw new Error('Respuesta inválida de datos');
@@ -131,6 +134,20 @@ const Perfil = () => {
     ? `/ImagenNiveles/${nivelActual.nombre_imagen}`
     : '/ImagenNiveles/semilla.png';
   const nivelPendienteActual = nivelesPendientes[animIndex] || null;
+  const obtenerVideoNivel = (nivel) => {
+    if (!nivel?.nombre_imagen) return null;
+    const base = nivel.nombre_imagen.replace(/\.[^.]+$/, '');
+    if (!base) return null;
+    return `/VideosNiveles/${base}.mp4`;
+  };
+  const videoNivelActual = nivelPendienteActual
+    ? obtenerVideoNivel(nivelPendienteActual)
+    : null;
+
+  useEffect(() => {
+    setVideoDisponible(true);
+    setOverlayStage(videoNivelActual ? 'video' : 'card');
+  }, [videoNivelActual]);
   const avatarSrc = useMemo(() => {
     const isAbsoluteUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
     const apiBase = import.meta.env.VITE_API_URL || '';
@@ -193,14 +210,22 @@ const Perfil = () => {
   }, [nivelesPendientes]);
 
   const avanzarAnimacion = useCallback(() => {
+    if (overlayStage === 'video') {
+      setOverlayStage('card');
+      return;
+    }
+
     if (animIndex < nivelesPendientes.length - 1) {
       setAnimIndex((idx) => idx + 1);
+      setOverlayStage('video');
+      setVideoDisponible(true);
     } else {
-      setMostrandoAnimacion(false);
+      setMostrandoOverlay(false);
       confirmarNiveles();
       setAnimIndex(0);
+      setOverlayStage('video');
     }
-  }, [animIndex, nivelesPendientes, confirmarNiveles]);
+  }, [overlayStage, animIndex, nivelesPendientes, confirmarNiveles]);
 
   const renderNavbar = () => {
     if (rol === 'estudiante') return <NavbarE onCollapsedChange={setCollapsed} />;
@@ -212,41 +237,73 @@ const Perfil = () => {
   return (
     <>
       {renderNavbar()}
-      {mostrandoAnimacion && nivelPendienteActual && (
+      {mostrandoOverlay && nivelPendienteActual && (
         <div className="nivel-overlay">
-          <div className="nivel-modal">
-            <h2>¡Has alcanzado un nuevo nivel!</h2>
-            <p className="nivel-modal-subtitle">{nivelPendienteActual.nombre_nivel}</p>
-            <div className="nivel-modal-body">
-              <img
-                src={
-                  nivelPendienteActual.nombre_imagen
-                    ? `/ImagenNiveles/${nivelPendienteActual.nombre_imagen}`
-                    : '/ImagenNiveles/semilla.png'
-                }
-                alt={nivelPendienteActual.nombre_nivel}
+          {overlayStage === 'video' && videoNivelActual && videoDisponible ? (
+            <>
+              <video
+                className="nivel-video-background"
+                src={videoNivelActual}
+                autoPlay
+                playsInline
+                muted
+                loop
               />
-              <div className="nivel-modal-text">
-                <p>
-                  Rango: {nivelPendienteActual.rango_inicio} – {nivelPendienteActual.rango_fin}
-                </p>
-                {nivelPendienteActual.descripcion && (
-                  <p>{nivelPendienteActual.descripcion}</p>
-                )}
+              <div className="nivel-video-wrapper">
+                <video
+                  className="nivel-video-full"
+                  src={videoNivelActual}
+                  autoPlay
+                  playsInline
+                  muted
+                  onEnded={() => setOverlayStage('card')}
+                  onError={() => {
+                    setVideoDisponible(false);
+                    setOverlayStage('card');
+                  }}
+                >
+                  <track kind="captions" />
+                </video>
+                <button className="nivel-video-skip" onClick={() => setOverlayStage('card')}>
+                  Saltar animación
+                </button>
               </div>
+            </>
+          ) : (
+            <div className="nivel-modal">
+              <h2>¡Has alcanzado un nuevo nivel!</h2>
+              <p className="nivel-modal-subtitle">{nivelPendienteActual.nombre_nivel}</p>
+              <div className="nivel-modal-body">
+                <img
+                  src={
+                    nivelPendienteActual.nombre_imagen
+                      ? `/ImagenNiveles/${nivelPendienteActual.nombre_imagen}`
+                      : '/ImagenNiveles/semilla.png'
+                  }
+                  alt={nivelPendienteActual.nombre_nivel}
+                />
+                <div className="nivel-modal-text">
+                  <p>
+                    Rango: {nivelPendienteActual.rango_inicio} – {nivelPendienteActual.rango_fin}
+                  </p>
+                  {nivelPendienteActual.descripcion && (
+                    <p>{nivelPendienteActual.descripcion}</p>
+                  )}
+                </div>
+              </div>
+              <button
+                className="nivel-modal-button"
+                onClick={avanzarAnimacion}
+                disabled={confirmandoNivel}
+              >
+                {animIndex < nivelesPendientes.length - 1
+                  ? 'Siguiente nivel'
+                  : confirmandoNivel
+                    ? 'Confirmando...'
+                    : 'Entendido'}
+              </button>
             </div>
-            <button
-              className="nivel-modal-button"
-              onClick={avanzarAnimacion}
-              disabled={confirmandoNivel}
-            >
-              {animIndex < nivelesPendientes.length - 1
-                ? 'Siguiente nivel'
-                : confirmandoNivel
-                  ? 'Confirmando...'
-                  : 'Entendido'}
-            </button>
-          </div>
+          )}
         </div>
       )}
       <div className={`perfil-container ${collapsed ? 'navbar-collapsed' : ''}`}>
