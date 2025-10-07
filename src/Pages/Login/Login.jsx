@@ -156,13 +156,13 @@ const Login = () => {
       <div className="login-content">
         <header className="login-hero">
           <img src="/Wiñay.png" alt="Logo Wiñay" className="hero-logo" />
-          <h1 className="hero-title">WIÑAY</h1>
-          <p className="hero-subtitle">CEDHI · Sistema de Crecimiento Académico</p>
+          <p className="hero-subtitle">CEDHI · Sistema de gamificación</p>
           <p className="hero-claim">
             Inicia tu viaje hacia la excelencia académica.
             <span> Evoluciona. Crece. Trasciende.</span>
           </p>
         </header>
+
 
         <section className="login-panels">
           <div className="panel card-form">
