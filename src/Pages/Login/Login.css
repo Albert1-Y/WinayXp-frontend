@@ -185,7 +185,7 @@ body {
 }
 
 .hero-logo {
-  width: clamp(60px, 8vw, 100px);
+  width: clamp(140px, 15vw, 320px);
   height: auto;
   filter: drop-shadow(0 8px 20px rgba(246, 199, 67, 0.3)) 
           drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
