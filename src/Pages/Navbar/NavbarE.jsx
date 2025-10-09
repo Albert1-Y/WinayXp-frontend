@@ -4,31 +4,34 @@ import Button from '../../components/button/Button';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
+const MOBILE_BREAKPOINT = 768;
+
 const NavbarE = ({ onCollapsedChange }) => {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
-  const [collapsed, setCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsedDesktop, setCollapsedDesktop] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [openMobile, setOpenMobile] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 576;
+      const mobile = window.innerWidth <= MOBILE_BREAKPOINT;
       setIsMobile(mobile);
-      if (!mobile && mobileMenuOpen) {
-        setMobileMenuOpen(false);
+      if (!mobile) {
+        setOpenMobile(false);
       }
     };
 
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [mobileMenuOpen]);
+  }, []);
 
   useEffect(() => {
     if (onCollapsedChange) {
-      onCollapsedChange(collapsed);
+      onCollapsedChange(collapsedDesktop);
     }
-  }, [collapsed, onCollapsedChange]);
+  }, [collapsedDesktop, onCollapsedChange]);
 
   const handleLogout = async () => {
     try {
@@ -39,32 +42,38 @@ const NavbarE = ({ onCollapsedChange }) => {
     } catch (error) {
       console.error('Error de red:', error);
     } finally {
+      setOpenMobile(false);
       logout();
     }
   };
 
   const toggleMenu = () => {
     if (isMobile) {
-      setMobileMenuOpen(!mobileMenuOpen);
+      setOpenMobile((prev) => !prev);
     } else {
-      setCollapsed(!collapsed);
+      setCollapsedDesktop((prev) => !prev);
     }
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setOpenMobile(false);
   };
 
   return (
     <>
-      {/* Botón hamburguesa */}
+      {/* Boton hamburguesa */}
       <button
-        className={`mobile-menu-toggle ${(isMobile && mobileMenuOpen) || (!isMobile && collapsed) ? 'active' : ''}`}
+        className={`mobile-menu-toggle ${(isMobile && openMobile) || (!isMobile && collapsedDesktop) ? 'active' : ''}`}
         onClick={toggleMenu}
         aria-label={
           isMobile
-            ? mobileMenuOpen
-              ? 'Cerrar menú'
-              : 'Abrir menú'
-            : collapsed
-              ? 'Expandir menú'
-              : 'Colapsar menú'
+            ? openMobile
+              ? 'Cerrar menu'
+              : 'Abrir menu'
+            : collapsedDesktop
+              ? 'Expandir menu'
+              : 'Colapsar menu'
         }
       >
         <span></span>
@@ -75,22 +84,18 @@ const NavbarE = ({ onCollapsedChange }) => {
       {/* Navbar principal */}
       <div
         className={`navbar-container 
-                    ${collapsed ? 'collapsed' : ''} 
-                    ${isMobile ? (mobileMenuOpen ? 'open' : 'hidden') : ''}`}
-        onDoubleClick={() => !isMobile && setCollapsed(!collapsed)}
+                    ${collapsedDesktop ? 'collapsed' : ''} 
+                    ${isMobile ? (openMobile ? 'open' : 'hidden') : ''}`}
+        onDoubleClick={() => !isMobile && setCollapsedDesktop((prev) => !prev)}
       >
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
             <div className="navbar-header">
-              <img src="/Wiñay.png" alt="Wiñay XP Logo" className="navbar-logo" />
+              <img src="/Wi%C3%B1ay.png" alt="Winay XP Logo" className="navbar-logo" />
             </div>
             <div className="navbar-buttons">
-              <button className="btn white" onClick={() => navigate('/perfil')}>
-                <span>Perfil</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/ranking')}>
-                <span>Ranking de estudiantes</span>
-              </button>
+              <Button text="Perfil" styleType="white" onClick={() => handleNavigate('/perfil')} />
+              <Button text="Ranking de estudiantes" styleType="white" onClick={() => handleNavigate('/ranking')} />
             </div>
           </div>
 
@@ -107,13 +112,13 @@ const NavbarE = ({ onCollapsedChange }) => {
                 />
               </button>
 
-              {(!collapsed || mobileMenuOpen) && (
+              {(!collapsedDesktop || openMobile) && (
                 <div className="navbar-footer-text">
                   <button className="navbar-username" onClick={() => alert('Usuario')}>
                     Alumno
                   </button>
                   <button className="navbar-logout" onClick={handleLogout}>
-                    Cerrar Sesión
+                    Cerrar Sesion
                   </button>
                 </div>
               )}
@@ -126,3 +131,4 @@ const NavbarE = ({ onCollapsedChange }) => {
 };
 
 export default NavbarE;
+

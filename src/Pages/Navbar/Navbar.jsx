@@ -9,11 +9,25 @@ const Navbar = ({ onCollapsedChange }) => {
   const { logout } = useContext(AuthContext);
   const [collapsedDesktop, setCollapsedDesktop] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
+
   useEffect(() => {
     if (onCollapsedChange) {
       onCollapsedChange(collapsedDesktop);
     }
   }, [collapsedDesktop, onCollapsedChange]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setOpenMobile(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleLogout = async () => {
     try {
       await fetch(`${import.meta.env.VITE_API_URL}/api/logout`, {
@@ -23,25 +37,31 @@ const Navbar = ({ onCollapsedChange }) => {
     } catch (error) {
       console.error('Error de red:', error);
     } finally {
+      setOpenMobile(false);
       logout();
     }
   };
 
   const toggleDesktopCollapse = () => {
-    setCollapsedDesktop(!collapsedDesktop);
+    setCollapsedDesktop((prev) => !prev);
   };
 
   const toggleMobileMenu = () => {
-    setOpenMobile(!openMobile);
+    setOpenMobile((prev) => !prev);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setOpenMobile(false);
   };
 
   return (
     <>
-      {/* Botón hamburguesa solo visible en móviles */}
+      {/* Boton hamburguesa solo visible en moviles */}
       <button
         className={`mobile-menu-toggle ${openMobile ? 'active' : ''}`}
         onClick={toggleMobileMenu}
-        aria-label={openMobile ? 'Cerrar menú' : 'Abrir menú'}
+        aria-label={openMobile ? 'Cerrar menu' : 'Abrir menu'}
       >
         <span></span>
         <span></span>
@@ -58,35 +78,27 @@ const Navbar = ({ onCollapsedChange }) => {
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
             <div className="navbar-header">
-              <img src="/Wiñay.png" alt="Wiñay XP Logo" className="navbar-logo" />
+              <img src="/Wi%C3%B1ay.png" alt="Winay XP Logo" className="navbar-logo" />
               <h2></h2>
             </div>
 
             <div className="navbar-buttons">
-              <button className="btn white" onClick={() => navigate('/dashboard')}>
-                <span>Dashboard</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/tutores')}>
-                <span>Tutores</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/create_tutores')}>
-                <span>Crear tutores</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/estudiante')}>
-                <span>Estudiantes</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/create_estudiante')}>
-                <span>Crear estudiantes</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/actividad')}>
-                <span>Actividad</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/create_actividad')}>
-                <span>Crear actividad</span>
-              </button>
-              <button className="btn white" onClick={() => navigate('/asistencia')}>
-                <span>Tomar asistencia</span>
-              </button>
+              <Button text="Dashboard" styleType="white" onClick={() => handleNavigate('/dashboard')} />
+              <Button text="Tutores" styleType="white" onClick={() => handleNavigate('/tutores')} />
+              <Button text="Crear tutores" styleType="white" onClick={() => handleNavigate('/create_tutores')} />
+              <Button text="Estudiantes" styleType="white" onClick={() => handleNavigate('/estudiante')} />
+              <Button
+                text="Crear estudiantes"
+                styleType="white"
+                onClick={() => handleNavigate('/create_estudiante')}
+              />
+              <Button text="Actividad" styleType="white" onClick={() => handleNavigate('/actividad')} />
+              <Button
+                text="Crear actividad"
+                styleType="white"
+                onClick={() => handleNavigate('/create_actividad')}
+              />
+              <Button text="Tomar asistencia" styleType="white" onClick={() => handleNavigate('/asistencia')} />
             </div>
           </div>
 
@@ -111,7 +123,7 @@ const Navbar = ({ onCollapsedChange }) => {
                     Admin
                   </button>
                   <button className="navbar-logout" onClick={handleLogout}>
-                    Cerrar Sesión
+                    Cerrar Sesion
                   </button>
                 </div>
               )}
