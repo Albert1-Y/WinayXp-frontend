@@ -1,33 +1,38 @@
-.table-container {
+ .table-container {
   width: 100%;
   overflow-x: auto;
-  background: var(--table-container-bg, transparent);
-  border-radius: var(--table-radius, 0);
+  background: var(--surface-glass);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(16px) saturate(1.08);
 }
 
 .table {
   width: 100%;
   min-width: var(--table-min-width, 0);
   border-collapse: collapse;
-  font-size: var(--table-font-size, 16px);
+  font-size: var(--table-font-size, 0.94rem);
   text-align: left;
-  background: var(--table-bg, #ffffff);
-  color: var(--table-text, #1f2933);
+  background: rgba(15, 10, 48, 0.75);
+  color: var(--table-text, var(--text-main));
 }
 
 .table th,
 .table td {
-  padding: var(--table-cell-padding, 10px);
-  border-bottom: var(--table-border, 1px solid rgba(0, 0, 0, 0.08));
+  padding: var(--table-cell-padding, 14px 16px);
+  border-bottom: var(--table-border, 1px solid rgba(255, 255, 255, 0.1));
 }
 
 .table th {
   font-weight: 600;
-  text-transform: var(--table-head-transform, none);
-  background: var(--table-head-bg, #f9f9f9);
-  color: var(--table-head-text, inherit);
+  text-transform: var(--table-head-transform, uppercase);
+  letter-spacing: 0.08em;
+  background: var(--table-head-bg, rgba(138, 77, 255, 0.28));
+  color: var(--table-head-text, rgba(255, 255, 255, 0.92));
 }
 
 .table tr:hover {
-  background: var(--table-hover-bg, rgba(0, 0, 0, 0.06));
+  background: var(--table-hover-bg, rgba(138, 77, 255, 0.16));
 }
+

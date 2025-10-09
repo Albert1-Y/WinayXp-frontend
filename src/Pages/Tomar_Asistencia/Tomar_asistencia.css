@@ -1,166 +1,148 @@
 .asistencia-detalle-container {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   min-height: 100vh;
-  background-color: #fffefd;
   margin-left: 220px;
   width: calc(100vw - 220px);
+  padding: clamp(24px, 3vw, 40px);
   box-sizing: border-box;
-  position: relative;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  color: var(--text-main);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(246, 199, 67, 0.45) transparent;
+  -webkit-overflow-scrolling: touch;
+  isolation: isolate;
 }
 
-/* Estilo cuando el navbar está colapsado */
-.asistencia-detalle-container.navbar-collapsed {
-  margin-left: 80px; /* Ajustado para coincidir con el ancho del navbar colapsado (80px) */
-  width: calc(100vw - 80px);
+.asistencia-detalle-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200vmax;
+  height: 200vmax;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 55% at 30% 20%, rgba(246, 199, 67, 0.24), transparent 70%),
+    radial-gradient(50% 50% at 70% 65%, rgba(138, 77, 255, 0.3), transparent 72%),
+    radial-gradient(45% 45% at 20% 70%, rgba(94, 162, 255, 0.18), transparent 78%);
+  filter: blur(140px);
+  opacity: 0.58;
+  transform: translate(-48vmax, -60vmax);
+  z-index: -1;
 }
 
 .asistencia-detalle-content {
-  flex: 1;
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(150deg, rgba(18, 12, 58, 0.86), rgba(9, 6, 32, 0.88));
+  border: 1px solid var(--surface-border);
+  border-radius: 28px;
+  padding: clamp(22px, 2.6vw, 32px);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.2vw, 24px);
 }
-.create-tutores-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 4px;
-}
-.create-tutores-subtitle {
-  font-size: 16px;
-  color: #6b7280;
-  margin-bottom: 24px;
+
+.asistencia-detalle-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .info-container,
 .groups-container,
 .academic-container {
-  /* Añadido academic-container */
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  padding: 24px;
-  margin-bottom: 32px;
-  width: 100%; /* Asegura que ocupe todo el ancho disponible */
-  box-sizing: border-box;
+  background: rgba(11, 7, 34, 0.72);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: clamp(20px, 2.4vw, 30px);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.8vw, 20px);
 }
 
-.info-title,
-.groups-title,
-.academic-title {
-  /* Añadido academic-title */
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 8px;
-}
-
-.info-subtitle,
-.groups-subtitle,
-.academic-subtitle {
-  /* Añadido academic-subtitle */
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 16px;
-}
-
-/* Grid de inputs */
 .info-grid,
 .academic-grid {
-  /* Añadido academic-grid */
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: auto;
-  gap: 24px;
-  margin-top: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
 }
 
-/* Fuerza el ancho completo de cada campo dentro del grid */
-.info-grid > *,
-.academic-grid > * {
-  /* Añadido selector para academic-grid */
-  width: 100%;
-}
-
-.info-grid input,
-.info-grid .TextField,
-.info-grid .text-field,
-.academic-grid input,
-.academic-grid .TextField,
-.academic-grid .text-field {
-  /* Añadidos selectores para academic-grid */
-  width: 100%;
-  height: 48px;
-  padding: 12px 16px;
-  font-size: 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  box-sizing: border-box;
-}
-
-/* Grid de checkboxes */
 .groups-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
 }
 
 .group-checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #374151;
+  gap: 10px;
 }
 
-/* Botones en la parte inferior */
 .action-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.Button {
-  min-width: 120px;
+@media (max-width: 1024px) {
+  .asistencia-detalle-container {
+    margin-left: 180px;
+    width: calc(100vw - 180px);
+  }
+
+  .asistencia-detalle-container.navbar-collapsed {
+    margin-left: 80px;
+    width: calc(100vw - 80px);
+  }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .asistencia-detalle-container,
   .asistencia-detalle-container.navbar-collapsed {
     margin-left: 0 !important;
-    width: 100% !important;
-    flex-direction: column;
+    width: 100vw !important;
+    padding: 20px 16px 28px;
   }
 
-  .info-grid,
-  .academic-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .action-buttons button {
-    width: 100%;
+  .asistencia-detalle-content {
+    border-radius: 22px;
+    padding: 18px;
   }
 }
-@keyframes pulseBorder {
-  0% {
-    border-color: #1976d2;
-    box-shadow: 0 0 0px rgba(25, 118, 210, 0.5);
-  }
-  50% {
-    border-color: #42a5f5;
-    box-shadow: 0 0 12px rgba(25, 118, 210, 0.3);
-  }
-  100% {
-    border-color: #1976d2;
-    box-shadow: 0 0 0px rgba(25, 118, 210, 0.5);
-  }
+
+.tabla-asistencia {
+  border-radius: 22px;
+  background: rgba(11, 7, 34, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
 }
+
+.tabla-asistencia table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.tabla-asistencia th,
+.tabla-asistencia td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.tabla-asistencia th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  background: rgba(138, 77, 255, 0.28);
+}
+
