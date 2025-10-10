@@ -76,7 +76,7 @@
 }
 
 .actividades-search {
-  flex: 1 1 200px;
+  /*flex: 1 1 200px;*/
   display: flex;
   gap: 12px;
 }
