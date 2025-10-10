@@ -248,6 +248,8 @@ const Perfil = () => {
                 playsInline
                 muted
                 loop
+                aria-hidden="true"
+                tabIndex={-1}
               />
               <div className="nivel-video-wrapper">
                 <video
