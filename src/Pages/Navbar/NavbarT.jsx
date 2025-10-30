@@ -4,31 +4,33 @@ import Button from '../../components/button/Button';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
+const MOBILE_BREAKPOINT = 576;
+
 const NavbarT = ({ onCollapsedChange }) => {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
-  const [collapsed, setCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsedDesktop, setCollapsedDesktop] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= MOBILE_BREAKPOINT);
+  const [openMobile, setOpenMobile] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 576;
+      const mobile = window.innerWidth <= MOBILE_BREAKPOINT;
       setIsMobile(mobile);
-      if (!mobile && mobileMenuOpen) {
-        setMobileMenuOpen(false);
+      if (!mobile) {
+        setOpenMobile(false);
       }
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [mobileMenuOpen]);
+  }, []);
 
   useEffect(() => {
     if (onCollapsedChange) {
-      onCollapsedChange(collapsed);
+      onCollapsedChange(collapsedDesktop);
     }
-  }, [collapsed, onCollapsedChange]);
+  }, [collapsedDesktop, onCollapsedChange]);
 
   const handleLogout = async () => {
     try {
@@ -39,68 +41,83 @@ const NavbarT = ({ onCollapsedChange }) => {
     } catch (error) {
       console.error('Error de red:', error);
     } finally {
+      setOpenMobile(false);
       logout();
     }
   };
 
   const toggleMenu = () => {
     if (isMobile) {
-      setMobileMenuOpen(!mobileMenuOpen);
+      setOpenMobile((prev) => !prev);
     } else {
-      setCollapsed(!collapsed);
+      setCollapsedDesktop((prev) => !prev);
     }
   };
 
+  const handleNavigate = (path) => {
+    navigate(path);
+    setOpenMobile(false);
+  };
+
+  const toggleButton = (
+    <button
+      className={`mobile-menu-toggle ${(isMobile && openMobile) || (!isMobile && collapsedDesktop) ? 'active' : ''}`}
+      onClick={toggleMenu}
+      aria-label={
+        isMobile
+          ? openMobile
+            ? 'Cerrar menu'
+            : 'Abrir menu'
+          : collapsedDesktop
+            ? 'Expandir menu'
+            : 'Colapsar menu'
+      }
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  );
+
   return (
     <>
-      {/* Botón hamburguesa */}
-      <button
-        className={`mobile-menu-toggle ${(isMobile && mobileMenuOpen) || (!isMobile && collapsed) ? 'active' : ''}`}
-        onClick={toggleMenu}
-        aria-label={
-          isMobile
-            ? mobileMenuOpen
-              ? 'Cerrar menú'
-              : 'Abrir menú'
-            : collapsed
-              ? 'Expandir menú'
-              : 'Colapsar menú'
-        }
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      {isMobile ? (
+        <div className="navbar-mobile-header">
+          {toggleButton}
+          <span className="navbar-mobile-title">Wiñay XP</span>
+        </div>
+      ) : (
+        toggleButton
+      )}
 
-      {/* Navbar principal */}
       <div
         className={`navbar-container 
-                    ${collapsed ? 'collapsed' : ''} 
-                    ${isMobile ? (mobileMenuOpen ? 'open' : 'hidden') : ''}`}
-        onDoubleClick={() => !isMobile && setCollapsed(!collapsed)}
+                    ${collapsedDesktop ? 'collapsed' : ''} 
+                    ${isMobile ? (openMobile ? 'open' : 'hidden') : ''}`}
+        onDoubleClick={() => !isMobile && setCollapsedDesktop((prev) => !prev)}
       >
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
             <div className="navbar-header">
-              <img src="/Wiñay.png" alt="Wiñay XP Logo" className="navbar-logo" />
+              <img src="/Wi%C3%B1ay.png" alt="Wiñay XP Logo" className="navbar-logo" />
             </div>
             <div className="navbar-buttons">
-              <button className="btn white" onClick={() => navigate('/dashboard')}>
+              <button className="btn white" onClick={() => handleNavigate('/dashboard')}>
                 <span>Dashboard</span>
               </button>
-              <button className="btn white" onClick={() => navigate('/estudiante')}>
+              <button className="btn white" onClick={() => handleNavigate('/estudiante')}>
                 <span>Estudiantes</span>
               </button>
-              <button className="btn white" onClick={() => navigate('/create_estudiante')}>
+              <button className="btn white" onClick={() => handleNavigate('/create_estudiante')}>
                 <span>Crear estudiantes</span>
               </button>
-              <button className="btn white" onClick={() => navigate('/actividad')}>
+              <button className="btn white" onClick={() => handleNavigate('/actividad')}>
                 <span>Actividad</span>
               </button>
-              <button className="btn white" onClick={() => navigate('/create_actividad')}>
+              <button className="btn white" onClick={() => handleNavigate('/create_actividad')}>
                 <span>Crear actividad</span>
               </button>
-              <button className="btn white" onClick={() => navigate('/asistencia')}>
+              <button className="btn white" onClick={() => handleNavigate('/asistencia')}>
                 <span>Tomar asistencia</span>
               </button>
             </div>
@@ -111,7 +128,7 @@ const NavbarT = ({ onCollapsedChange }) => {
               <img src="/CEDHIlogo.png" alt="CEDHI Logo" className="cedhi-logo" />
             </div>
 
-            <div className="navbar-user-container">
+            <div className="navbar-user-card">
               <button className="navbar-photo" onClick={() => alert('Perfil')}>
                 <img
                   src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
@@ -119,13 +136,11 @@ const NavbarT = ({ onCollapsedChange }) => {
                 />
               </button>
 
-              {(!collapsed || mobileMenuOpen) && (
-                <div className="navbar-footer-text">
-                  <button className="navbar-username" onClick={() => alert('Usuario')}>
-                    Tutor
-                  </button>
+              {(!collapsedDesktop || openMobile) && (
+                <div className="navbar-user-meta">
+                  <span className="navbar-user-role">Tutor</span>
                   <button className="navbar-logout" onClick={handleLogout}>
-                    Cerrar Sesión
+                    Cerrar Sesion
                   </button>
                 </div>
               )}
@@ -138,3 +153,4 @@ const NavbarT = ({ onCollapsedChange }) => {
 };
 
 export default NavbarT;
+

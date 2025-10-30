@@ -55,31 +55,56 @@ const NavbarE = ({ onCollapsedChange }) => {
     }
   };
 
+  const syncNavbarWidth = () => {
+    const navbarElement = document.querySelector('.navbar-container');
+    if (!navbarElement) {
+      return;
+    }
+    const root = document.documentElement;
+    const width = navbarElement.getBoundingClientRect().width || 0;
+    root.style.setProperty('--navbar-current-width', `${width}px`);
+    window.dispatchEvent(new Event('resize'));
+  };
+
   const handleNavigate = (path) => {
     navigate(path);
     setOpenMobile(false);
+    if (path === '/perfil') {
+      requestAnimationFrame(syncNavbarWidth);
+      setTimeout(syncNavbarWidth, 150);
+    }
   };
+
+  const toggleButton = (
+    <button
+      className={`mobile-menu-toggle ${(isMobile && openMobile) || (!isMobile && collapsedDesktop) ? 'active' : ''}`}
+      onClick={toggleMenu}
+      aria-label={
+        isMobile
+          ? openMobile
+            ? 'Cerrar menu'
+            : 'Abrir menu'
+          : collapsedDesktop
+            ? 'Expandir menu'
+            : 'Colapsar menu'
+      }
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  );
 
   return (
     <>
-      {/* Boton hamburguesa */}
-      <button
-        className={`mobile-menu-toggle ${(isMobile && openMobile) || (!isMobile && collapsedDesktop) ? 'active' : ''}`}
-        onClick={toggleMenu}
-        aria-label={
-          isMobile
-            ? openMobile
-              ? 'Cerrar menu'
-              : 'Abrir menu'
-            : collapsedDesktop
-              ? 'Expandir menu'
-              : 'Colapsar menu'
-        }
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      {isMobile ? (
+        <div className="navbar-mobile-header">
+          {toggleButton}
+          <span className="navbar-mobile-title">Wiñay XP</span>
+        </div>
+      ) : (
+        toggleButton
+      )}
 
       {/* Navbar principal */}
       <div
@@ -104,7 +129,7 @@ const NavbarE = ({ onCollapsedChange }) => {
               <img src="/CEDHIlogo.png" alt="CEDHI Logo" className="cedhi-logo" />
             </div>
 
-            <div className="navbar-user-container">
+            <div className="navbar-user-card">
               <button className="navbar-photo" onClick={() => alert('Perfil')}>
                 <img
                   src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
@@ -113,10 +138,8 @@ const NavbarE = ({ onCollapsedChange }) => {
               </button>
 
               {(!collapsedDesktop || openMobile) && (
-                <div className="navbar-footer-text">
-                  <button className="navbar-username" onClick={() => alert('Usuario')}>
-                    Alumno
-                  </button>
+                <div className="navbar-user-meta">
+                  <span className="navbar-user-role">Alumno</span>
                   <button className="navbar-logout" onClick={handleLogout}>
                     Cerrar Sesion
                   </button>
@@ -131,4 +154,7 @@ const NavbarE = ({ onCollapsedChange }) => {
 };
 
 export default NavbarE;
+
+
+
 

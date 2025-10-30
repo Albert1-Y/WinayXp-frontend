@@ -459,19 +459,30 @@ button[type="submit"],
   transform: none;
 }
 
-/* Secondary button (Google button) */
-.card-form button.secondary,
-.card-form .button.secondary {
+/* Botón Google */
+.card-form .button.google {
   background: rgba(255, 255, 255, 0.1);
-  color: var(--text-main);
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 
-.card-form button.secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: var(--text-main);
+.card-form .button.google:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.card-form .button.google .button-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .card-form .error-message {

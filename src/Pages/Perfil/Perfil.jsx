@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import './Perfil.css';
 import NavbarE from '../Navbar/NavbarE';
@@ -19,21 +26,53 @@ const Perfil = () => {
   const [confirmandoNivel, setConfirmandoNivel] = useState(false);
   const [videoDisponible, setVideoDisponible] = useState(true);
 
-  // Escuchar el cambio de colapso
-  useEffect(() => {
-    const handleNavbarToggle = (e) => {
-      if (e.detail?.collapsed !== undefined) {
-        setCollapsed(e.detail.collapsed);
-      }
-    };
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const navbarElement = document.querySelector('.navbar-container');
 
-    window.addEventListener('navbarToggle', handleNavbarToggle);
-    const navbar = document.querySelector('.navbar-container');
-    if (navbar) {
-      setCollapsed(navbar.classList.contains('collapsed'));
+    if (!navbarElement) {
+      root.style.setProperty('--navbar-current-width', '220px');
+      setCollapsed(false);
+      return () => {
+        root.style.removeProperty('--navbar-current-width');
+      };
     }
 
-    return () => window.removeEventListener('navbarToggle', handleNavbarToggle);
+    const updateLayoutFromNavbar = () => {
+      const width = navbarElement.getBoundingClientRect().width || 0;
+      root.style.setProperty('--navbar-current-width', `${width}px`);
+      setCollapsed(navbarElement.classList.contains('collapsed'));
+    };
+
+    updateLayoutFromNavbar();
+
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateLayoutFromNavbar();
+      });
+      resizeObserver.observe(navbarElement);
+    } else {
+      window.addEventListener('resize', updateLayoutFromNavbar);
+    }
+
+    let mutationObserver = null;
+    if (typeof MutationObserver !== 'undefined') {
+      mutationObserver = new MutationObserver(updateLayoutFromNavbar);
+      mutationObserver.observe(navbarElement, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    return () => {
+      root.style.removeProperty('--navbar-current-width');
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener('resize', updateLayoutFromNavbar);
+      }
+      if (mutationObserver) {
+        mutationObserver.disconnect();
+      }
+    };
   }, []);
 
   // Cargar datos del estudiante
@@ -324,7 +363,7 @@ const Perfil = () => {
           ) : (
             <>
               <div className="perfil-header-logo">
-                <img src="/Wiñay.png" alt="Wiñay XP Logo" className="perfil-logo" />
+                {/*g src="/Wiñay.png" alt="Wiñay XP Logo" className="perfil-logo" />*/}
                 <h1 className="perfil-title">Panel de Estudiante</h1>
               </div>
 

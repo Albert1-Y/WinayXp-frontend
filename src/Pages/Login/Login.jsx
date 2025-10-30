@@ -226,6 +226,7 @@ const Login = () => {
             <Button
               text="Continuar con Google"
               styleType="google"
+              icon={<img src="/icons/google.svg" alt="Google" />}
               type="button"
               onClick={handleGoogleLogin}
             />

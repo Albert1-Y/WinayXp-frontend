@@ -8,6 +8,7 @@ const Navbar = ({ onCollapsedChange }) => {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
   const [collapsedDesktop, setCollapsedDesktop] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [openMobile, setOpenMobile] = useState(false);
 
   useEffect(() => {
@@ -18,7 +19,9 @@ const Navbar = ({ onCollapsedChange }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 768) {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
         setOpenMobile(false);
       }
     };
@@ -42,12 +45,12 @@ const Navbar = ({ onCollapsedChange }) => {
     }
   };
 
-  const toggleDesktopCollapse = () => {
-    setCollapsedDesktop((prev) => !prev);
-  };
-
-  const toggleMobileMenu = () => {
-    setOpenMobile((prev) => !prev);
+  const toggleMenu = () => {
+    if (isMobile) {
+      setOpenMobile((prev) => !prev);
+    } else {
+      setCollapsedDesktop((prev) => !prev);
+    }
   };
 
   const handleNavigate = (path) => {
@@ -55,25 +58,43 @@ const Navbar = ({ onCollapsedChange }) => {
     setOpenMobile(false);
   };
 
+  const toggleButton = (
+    <button
+      className={`mobile-menu-toggle ${(isMobile && openMobile) || (!isMobile && collapsedDesktop) ? 'active' : ''}`}
+      onClick={toggleMenu}
+      aria-label={
+        isMobile
+          ? openMobile
+            ? 'Cerrar menu'
+            : 'Abrir menu'
+          : collapsedDesktop
+            ? 'Expandir menu'
+            : 'Colapsar menu'
+      }
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  );
+
   return (
     <>
-      {/* Boton hamburguesa solo visible en moviles */}
-      <button
-        className={`mobile-menu-toggle ${openMobile ? 'active' : ''}`}
-        onClick={toggleMobileMenu}
-        aria-label={openMobile ? 'Cerrar menu' : 'Abrir menu'}
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      {isMobile ? (
+        <div className="navbar-mobile-header">
+          {toggleButton}
+          <span className="navbar-mobile-title">Wiñay XP</span>
+        </div>
+      ) : (
+        toggleButton
+      )}
 
       {/* Navbar responsive */}
       <div
         className={`navbar-container 
                     ${collapsedDesktop ? 'collapsed' : ''} 
-                    ${openMobile ? 'open' : 'hidden'}`}
-        onDoubleClick={toggleDesktopCollapse}
+                    ${isMobile ? (openMobile ? 'open' : 'hidden') : ''}`}
+        onDoubleClick={() => !isMobile && setCollapsedDesktop((prev) => !prev)}
       >
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
@@ -92,7 +113,7 @@ const Navbar = ({ onCollapsedChange }) => {
                 styleType="white"
                 onClick={() => handleNavigate('/create_estudiante')}
               />
-              <Button text="Actividad" styleType="white" onClick={() => handleNavigate('/actividad')} />
+              <Button text="Actividades" styleType="white" onClick={() => handleNavigate('/actividad')} />
               <Button
                 text="Crear actividad"
                 styleType="white"
@@ -109,7 +130,7 @@ const Navbar = ({ onCollapsedChange }) => {
             </div>
 
             {/* Foto de perfil + logout */}
-            <div className="navbar-user-container">
+            <div className="navbar-user-card">
               <button className="navbar-photo" onClick={() => alert('Perfil')}>
                 <img
                   src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
@@ -117,11 +138,9 @@ const Navbar = ({ onCollapsedChange }) => {
                 />
               </button>
 
-              {!collapsedDesktop && (
-                <div className="navbar-footer-text">
-                  <button className="navbar-username" onClick={() => alert('Usuario')}>
-                    Admin
-                  </button>
+              {(!collapsedDesktop || openMobile) && (
+                <div className="navbar-user-meta">
+                  <span className="navbar-user-role">Admin</span>
                   <button className="navbar-logout" onClick={handleLogout}>
                     Cerrar Sesion
                   </button>

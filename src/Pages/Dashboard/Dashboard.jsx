@@ -130,8 +130,15 @@ const Dashboard = () => {
 
       const data = await response.json();
 
-      // Transformar los datos de asistentes al formato esperado
-      const asistentes = data.map((asistente) => ({
+      const listaOriginal = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.asistentes)
+          ? data.asistentes
+          : Array.isArray(data?.participantes)
+            ? data.participantes
+            : [];
+
+      const asistentes = listaOriginal.map((asistente) => ({
         dni: asistente.dni || 'Sin DNI',
         nombre: `${asistente.nombre_persona || 'Sin nombre'} ${asistente.apellido || ''}`.trim(),
         carrera: asistente.carrera || 'No especificada',
@@ -139,17 +146,42 @@ const Dashboard = () => {
         fecha_asistencia: asistente.fecha_asistencia || null,
       }));
 
+      const participantesCount =
+        listaOriginal.length > 0
+          ? listaOriginal.length
+          : Number(
+              data?.total ?? data?.cantidad ?? data?.asistencia_total ?? data?.participantes_total ?? 0
+            ) || 0;
+
       setAsistentesPorActividad(asistentes);
 
-      // Actualizar la actividad seleccionada con sus participantes
-      setActividadSeleccionada({
-        ...actividadSeleccionada,
-        participantes: asistentes,
+      setActividadesPorSemestre((prevActividades) => {
+        const actualizadas = prevActividades.map((actividad) =>
+          actividad.id === idActividad
+            ? {
+                ...actividad,
+                asistencia_total: participantesCount,
+                participantes: asistentes,
+              }
+            : actividad
+        );
+
+        actualizarEstadisticas(actualizadas);
+        return actualizadas;
       });
 
-      setLoading(false);
+      setActividadSeleccionada((prevSeleccionada) =>
+        prevSeleccionada && prevSeleccionada.id === idActividad
+          ? {
+              ...prevSeleccionada,
+              participantes: asistentes,
+              asistencia_total: participantesCount,
+            }
+          : prevSeleccionada
+      );
     } catch (error) {
       console.error(`Error al cargar asistentes de la actividad ${idActividad}:`, error);
+    } finally {
       setLoading(false);
     }
   };
@@ -483,14 +515,23 @@ const Dashboard = () => {
     );
   };
 
-  const generarSectoresCirculares = () => {
-    const estadisticas = calcularEstadisticasActividades();
-    if (estadisticas.length === 0) return null;
+  const generarSectoresCirculares = (estadisticas) => {
+    if (!estadisticas || estadisticas.length === 0) {
+      return 'rgba(255, 255, 255, 0.1) 0deg 360deg';
+    }
 
-    const totalParticipantes = calcularTotalParticipantes();
+    const totalParticipantes = estadisticas.reduce(
+      (total, actividad) => total + actividad.cantidadParticipantes,
+      0
+    );
+
+    if (totalParticipantes === 0) {
+      return 'rgba(255, 255, 255, 0.1) 0deg 360deg';
+    }
+
     let anguloAcumulado = 0;
-
     let conicGradient = '';
+
     estadisticas.forEach((act, index) => {
       const porcentaje = (act.cantidadParticipantes / totalParticipantes) * 100;
       const anguloInicio = anguloAcumulado;
@@ -536,6 +577,13 @@ const Dashboard = () => {
   const getIncrementoColor = (incremento) =>
     incremento >= 0 ? 'dashboard-incremento-positivo' : 'dashboard-incremento-negativo';
 
+  const totalParticipantes = calcularTotalParticipantes();
+  const estadisticasActividades = calcularEstadisticasActividades();
+  const actividadesConParticipantes = estadisticasActividades.filter(
+    (actividad) => actividad.cantidadParticipantes > 0
+  );
+  const hayParticipantes = totalParticipantes > 0 && actividadesConParticipantes.length > 0;
+
   if (rol === 'estudiante') {
     return (
       <div className="dashboard-container">
@@ -543,11 +591,12 @@ const Dashboard = () => {
         <Perfil />
       </div>
     );
-  } else {
-    return (
-      <div className="dashboard-container">
-        {renderNavbar()}
-        <div className={`dashboard-content ${collapsed ? 'navbar-collapsed' : ''}`}>
+  }
+
+  return (
+    <div className="dashboard-container">
+      {renderNavbar()}
+      <div className={`dashboard-content ${collapsed ? 'navbar-collapsed' : ''}`}>
           <div className="dashboard-header">
             <h1 className="dashboard-title">Wiñay XP</h1>
             <div className="dashboard-fecha">
@@ -743,7 +792,7 @@ const Dashboard = () => {
                     <div className="dashboard-card-header">
                       <h3>Distribución de Participantes</h3>
                       <span className="actividad-detalles">
-                        {calcularTotalParticipantes()} estudiantes en total
+                        {totalParticipantes} estudiantes en total
                       </span>
                     </div>
                     <div className="dashboard-card-body">
@@ -754,6 +803,13 @@ const Dashboard = () => {
                             <p>No hay actividades para mostrar en este semestre</p>
                           </div>
                         </div>
+                      ) : !hayParticipantes ? (
+                        <div className="no-actividad-seleccionada">
+                          <div className="mensaje-seleccion">
+                            <span className="icono-seleccion">�Y"S</span>
+                            <p>No hay participantes registrados en las actividades seleccionadas</p>
+                          </div>
+                        </div>
                       ) : (
                         <div className="grafico-container-centrado">
                           {/* Gráfico circular mejorado */}
@@ -761,13 +817,13 @@ const Dashboard = () => {
                             <div
                               className="grafico-circular"
                               style={{
-                                background: `conic-gradient(${generarSectoresCirculares()})`,
+                                background: `conic-gradient(${generarSectoresCirculares(
+                                  actividadesConParticipantes
+                                )})`,
                               }}
                             >
                               <div className="circulo-centro">
-                                <span className="circulo-total">
-                                  {calcularTotalParticipantes()}
-                                </span>
+                                <span className="circulo-total">{totalParticipantes}</span>
                                 <span className="circulo-label">Total</span>
                               </div>
                             </div>
@@ -775,7 +831,7 @@ const Dashboard = () => {
 
                           {/* Mini leyenda simplificada */}
                           <div className="grafico-mini-leyenda">
-                            {calcularEstadisticasActividades().map((actividad, index) => (
+                            {actividadesConParticipantes.map((actividad) => (
                               <div className="mini-leyenda-item" key={actividad.id}>
                                 <span
                                   className="mini-leyenda-color"
@@ -796,8 +852,7 @@ const Dashboard = () => {
         </div>
       </div>
     );
-  }
-};
+  };
 
 // Función para descargar actividades en Excel
 

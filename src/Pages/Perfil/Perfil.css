@@ -7,13 +7,14 @@
   --student-text-muted: rgba(238, 240, 255, 0.72);
   --student-gap: clamp(8px, 1.2vw, 16px);
   --student-margin: clamp(10px, 1.5vw, 20px);
+  --navbar-current-width: 220px;
 }
 
 .perfil-container {
   position: relative;
   min-height: 100vh;
-  margin-left: 200px;
-  width: calc(100% - 200px);
+  margin-left: var(--navbar-current-width, 220px);
+  width: calc(100vw - var(--navbar-current-width, 220px));
   padding: var(--student-margin);
   box-sizing: border-box;
   background: radial-gradient(circle at 50% 18%, #32146b 0%, #1c0c48 35%, #0a0424 65%, #05020f 100%);
@@ -27,8 +28,8 @@
   content: '';
   position: fixed;
   top: 0;
-  left: 200px;
-  width: calc(100% - 200px);
+  left: var(--navbar-current-width, 220px);
+  width: calc(100vw - var(--navbar-current-width, 220px));
   height: 100vh;
   pointer-events: none;
   background:
@@ -51,13 +52,13 @@
 }
 
 .perfil-container.navbar-collapsed {
-  margin-left: 80px;
-  width: calc(100% - 80px);
+  margin-left: var(--navbar-current-width, 220px);
+  width: calc(100vw - var(--navbar-current-width, 220px));
 }
 
 .perfil-container.navbar-collapsed::before {
-  left: 80px;
-  width: calc(100% - 80px);
+  left: var(--navbar-current-width, 220px);
+  width: calc(100vw - var(--navbar-current-width, 220px));
 }
 
 .perfil-content {
@@ -593,23 +594,23 @@ html {
 /* Breakpoints */
 @media (max-width: 1024px) {
   .perfil-container {
-    margin-left: 180px;
-    width: calc(100% - 180px);
+    margin-left: var(--navbar-current-width, 220px);
+    width: calc(100vw - var(--navbar-current-width, 220px));
   }
 
   .perfil-container::before {
-    left: 180px;
-    width: calc(100% - 180px);
+    left: var(--navbar-current-width, 220px);
+    width: calc(100vw - var(--navbar-current-width, 220px));
   }
 
   .perfil-container.navbar-collapsed {
-    margin-left: 80px;
-    width: calc(100% - 80px);
+    margin-left: var(--navbar-current-width, 220px);
+    width: calc(100vw - var(--navbar-current-width, 220px));
   }
 
   .perfil-container.navbar-collapsed::before {
-    left: 80px;
-    width: calc(100% - 80px);
+    left: var(--navbar-current-width, 220px);
+    width: calc(100vw - var(--navbar-current-width, 220px));
   }
 
   .perfil-grid {

@@ -119,9 +119,13 @@
   gap: var(--dashboard-gap);
 }
 
+.dashboard-secondary-row > :first-child {
+  grid-column: 1 / -1; /* Ocupa todas las columnas */
+}
+
 .dashboard-secondary-row {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 3fr 1fr;
   gap: var(--dashboard-gap);
   align-items: start;
 }
@@ -196,6 +200,7 @@
   border: 1px solid var(--input-border);
   background: var(--input-bg);
   color: var(--text-main);
+  background-color: rgba(18, 12, 58, 0.72);
 }
 
 .dashboard-select:focus {
