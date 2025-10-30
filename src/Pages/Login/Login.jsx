@@ -42,7 +42,24 @@ const Login = () => {
     fetch(`${import.meta.env.VITE_API_URL}/api/login`)
       .then((response) => response.json())
       .then((data) => {
-        const sortedData = data.sort((a, b) => b.credito_total - a.credito_total);
+        const normalized = (Array.isArray(data) ? data : []).map((item) => {
+          const semesterValue =
+            item.semestre ??
+            item.semestre_actual ??
+            item.semestre_estudiante ??
+            item.estudiante?.semestre ??
+            item.detalle?.semestre ??
+            item.semestre_nombre ??
+            item.semester ??
+            null;
+          return {
+            ...item,
+            semestre_display: semesterValue,
+          };
+        });
+        const sortedData = [...normalized].sort(
+          (a, b) => (b.credito_total ?? 0) - (a.credito_total ?? 0),
+        );
         setRankingData(sortedData);
       })
       .catch((error) => {
@@ -55,7 +72,7 @@ const Login = () => {
   }, [rankingData]);
 
   // Columnas para la tabla, actualizadas para mostrar solo las que necesitamos
-  const columns = ['Pos', 'Nombre', 'Apellido', 'Carrera', 'Puntos CEDHI'];
+  const columns = ['Pos', 'Nombre', 'Apellido', 'Carrera', 'Semestre', 'Puntos CEDHI'];
 
   // Custom render para las filas
   const customRender = (column, row, index) => {
@@ -68,6 +85,17 @@ const Login = () => {
         return row.apellido;
       case 'Carrera':
         return row.carrera;
+      case 'Semestre': {
+        const value = row.semestre_display ?? row.semestre;
+        if (!value && value !== 0) {
+          return 'N/A';
+        }
+        const numericValue = Number(value);
+        if (!Number.isNaN(numericValue) && `${numericValue}` === `${value}`) {
+          return `${numericValue}° semestre`;
+        }
+        return value;
+      }
       case 'Puntos CEDHI':
         return row.credito_total;
       default:

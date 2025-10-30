@@ -7,7 +7,7 @@ const RankingEstudiantes = () => {
   const [rankingData, setRankingData] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
   const [error, setError] = useState('');
-  const columns = ['Pos', 'Nombre', 'Apellido', 'Carrera', 'Puntos'];
+  const columns = ['Pos', 'Nombre', 'Apellido', 'Carrera', 'Semestre', 'Puntos'];
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/estudiante/TopEstudiantesCarrera`, {
@@ -31,7 +31,22 @@ const RankingEstudiantes = () => {
         return [];
       })
       .then((data) => {
-        setRankingData(Array.isArray(data) ? data : []);
+        const normalized = (Array.isArray(data) ? data : []).map((item) => {
+          const semesterValue =
+            item.semestre ??
+            item.semestre_actual ??
+            item.semestre_estudiante ??
+            item.estudiante?.semestre ??
+            item.detalle?.semestre ??
+            item.semestre_nombre ??
+            item.semester ??
+            null;
+          return {
+            ...item,
+            semestre_display: semesterValue,
+          };
+        });
+        setRankingData(normalized);
       })
       .catch((error) => {
         console.error('Error al obtener el ranking:', error);
@@ -81,6 +96,17 @@ const RankingEstudiantes = () => {
         return row.apellido;
       case 'Carrera':
         return row.nombre_carrera || row.carrera;
+      case 'Semestre': {
+        const value = row.semestre_display ?? row.semestre;
+        if (!value && value !== 0) {
+          return 'N/A';
+        }
+        const numericValue = Number(value);
+        if (!Number.isNaN(numericValue) && `${numericValue}` === `${value}`) {
+          return `${numericValue}° semestre`;
+        }
+        return value;
+      }
       case 'Puntos':
         return (
           <span
