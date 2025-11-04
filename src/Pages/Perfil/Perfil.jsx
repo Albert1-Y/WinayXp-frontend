@@ -351,19 +351,19 @@ const Perfil = () => {
         <div className="perfil-content">
           {loading ? (
             <div className="perfil-loading">
-              <img src="/Winay.png" alt="Wiñay XP Logo" className="perfil-logo" />
+              <img src="/Winay.png" alt="Winay XP Logo" className="perfil-logo" />
               <div className="perfil-spinner"></div>
               <p>Cargando tu perfil...</p>
             </div>
           ) : error ? (
             <div className="perfil-error-container">
-              <img src="/Winay.png" alt="Wiñay XP Logo" className="perfil-logo error-logo" />
+              <img src="/Winay.png" alt="Winay XP Logo" className="perfil-logo error-logo" />
               <div className="perfil-error">{error}</div>
             </div>
           ) : (
             <>
               <div className="perfil-header-logo">
-                {/*g src="/Wiñay.png" alt="Wix|ñay XP Logo" className="perfil-logo" />*/}
+                {/*g src="/Winay.png" alt="Wix|ñay XP Logo" className="perfil-logo" />*/}
                 <h1 className="perfil-title">Panel de Estudiante</h1>
               </div>
 
