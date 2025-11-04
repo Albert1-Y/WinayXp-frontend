@@ -211,9 +211,11 @@
 
 .tabla-con-scroll {
   max-height: 360px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: auto;
   border-radius: 18px;
   box-shadow: inset 0 0 12px rgba(5, 3, 25, 0.35);
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 1200px) {
@@ -379,4 +381,3 @@
 .dashboard-download-btn:hover {
   background: rgba(255, 255, 255, 0.14);
 }
-

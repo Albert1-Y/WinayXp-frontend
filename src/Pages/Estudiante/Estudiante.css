@@ -129,7 +129,8 @@
   background: rgba(11, 7, 34, 0.75);
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: auto;
   box-shadow: var(--shadow-soft);
 }
 

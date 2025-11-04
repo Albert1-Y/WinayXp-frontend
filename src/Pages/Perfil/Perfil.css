@@ -271,6 +271,14 @@
   gap: var(--student-gap);
 }
 
+.actividades-lista {
+  max-height: 320px;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 18px;
+  box-shadow: inset 0 0 12px rgba(5, 3, 25, 0.25);
+}
+
 .actividades-card h2 {
   margin: 0;
   font-size: clamp(1.2rem, 2vw, 1.5rem);

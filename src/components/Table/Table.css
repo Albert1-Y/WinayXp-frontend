@@ -1,6 +1,7 @@
- .table-container {
+.table-container {
   width: 100%;
   overflow-x: auto;
+  overflow-y: auto;
   background: var(--surface-glass);
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
