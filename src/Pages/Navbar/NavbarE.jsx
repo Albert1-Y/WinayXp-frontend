@@ -66,6 +66,14 @@ const NavbarE = ({ onCollapsedChange }) => {
     window.dispatchEvent(new Event('resize'));
   };
 
+  useEffect(() => {
+    syncNavbarWidth();
+  }, []);
+
+  useEffect(() => {
+    syncNavbarWidth();
+  }, [collapsedDesktop, isMobile, openMobile]);
+
   const handleNavigate = (path) => {
     navigate(path);
     setOpenMobile(false);
@@ -116,7 +124,7 @@ const NavbarE = ({ onCollapsedChange }) => {
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
             <div className="navbar-header">
-              <img src="/Wi%C3%B1ay.png" alt="Winay XP Logo" className="navbar-logo" />
+              <img src="/Winay.png" alt="Winay XP Logo" className="navbar-logo" />
             </div>
             <div className="navbar-buttons">
               <Button text="Perfil" styleType="white" onClick={() => handleNavigate('/perfil')} />
@@ -154,7 +162,6 @@ const NavbarE = ({ onCollapsedChange }) => {
 };
 
 export default NavbarE;
-
 
 
 

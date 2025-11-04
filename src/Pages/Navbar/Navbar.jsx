@@ -99,7 +99,7 @@ const Navbar = ({ onCollapsedChange }) => {
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
             <div className="navbar-header">
-              <img src="/Wi%C3%B1ay.png" alt="Winay XP Logo" className="navbar-logo" />
+              <img src="/Winay.png" alt="Winay XP Logo" className="navbar-logo" />
               <h2></h2>
             </div>
 

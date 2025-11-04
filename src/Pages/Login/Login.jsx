@@ -183,7 +183,7 @@ const Login = () => {
 
       <div className="login-content">
         <header className="login-hero">
-          <img src="/Wiñay.png" alt="Logo Wiñay" className="hero-logo" />
+          <img src="/Winay.png" alt="Logo Wiñay" className="hero-logo" />
           <p className="hero-subtitle">CEDHI · Sistema de gamificación</p>
           <p className="hero-claim">
             Inicia tu viaje hacia la excelencia académica.

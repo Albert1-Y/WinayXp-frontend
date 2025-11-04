@@ -52,7 +52,8 @@ body {
   background: radial-gradient(circle at 50% 20%, #3a1070 0%, #1f0b4d 35%, #0f0630 70%, #05020f 100%);
   background-attachment: fixed;
   background-size: cover;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 .login-background {

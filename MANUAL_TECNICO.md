@@ -30,7 +30,7 @@ Frontend/
 ├── public/                # Archivos estáticos y recursos públicos
 │   ├── CEDHIlogo.png      # Logo de la organización
 │   ├── Listados.png       # Recursos gráficos
-│   ├── Wiñay.png          # Recursos gráficos
+│   ├── Winay.png          # Recursos gráficos
 │   └── ImagenNiveles/     # Imágenes para el sistema de niveles
 ├── src/
 │   ├── assets/            # Recursos gráficos y multimedia

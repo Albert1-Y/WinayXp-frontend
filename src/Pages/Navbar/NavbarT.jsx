@@ -99,7 +99,7 @@ const NavbarT = ({ onCollapsedChange }) => {
         <div className="navbar-inner-scroll">
           <div className="navbar-main">
             <div className="navbar-header">
-              <img src="/Wi%C3%B1ay.png" alt="Wiñay XP Logo" className="navbar-logo" />
+              <img src="/Winay.png" alt="Wiñay XP Logo" className="navbar-logo" />
             </div>
             <div className="navbar-buttons">
               <button className="btn white" onClick={() => handleNavigate('/dashboard')}>

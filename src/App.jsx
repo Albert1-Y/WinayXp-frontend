@@ -50,7 +50,7 @@ function App() {
         <Route
           path="/create_estudiante"
           element={
-            <ProtectedRoute allow={['administrador']}>
+            <ProtectedRoute allow={['administrador', 'tutor']}>
               <Create_Estudiante />
             </ProtectedRoute>
           }
@@ -66,7 +66,7 @@ function App() {
         <Route
           path="/create_actividad"
           element={
-            <ProtectedRoute allow={['administrador']}>
+            <ProtectedRoute allow={['administrador', 'tutor']}>
               <Create_Actividad />
             </ProtectedRoute>
           }
@@ -74,7 +74,7 @@ function App() {
         <Route
           path="/actividad"
           element={
-            <ProtectedRoute allow={['administrador']}>
+            <ProtectedRoute allow={['administrador', 'tutor']}>
               <Actividad />
             </ProtectedRoute>
           }
