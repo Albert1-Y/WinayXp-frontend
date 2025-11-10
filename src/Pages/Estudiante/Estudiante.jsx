@@ -705,105 +705,126 @@ const Estudiante = () => {
             </form>
           </div>
         )}
-        {showCobrarForm && estudianteACobrar && (
-          <div className="cobrar-puntos-container">
-            <h2>Cobrar Puntos</h2>
-            <div className="cobrar-info">
-              <p>
-                Estudiante:{" "}
-                <strong>
-                  {estudianteACobrar.nombre_persona}{" "}
-                  {estudianteACobrar.apellido}
-                </strong>
-              </p>
-              <p>
-                Puntos disponibles:{" "}
-                <strong>{estudianteACobrar.cobro_credito}</strong>
-              </p>
-              <p>
-                Crédito total:{" "}
-                <strong>{estudianteACobrar.credito_total ?? 0}</strong>
-              </p>
-            </div>
-
-            <div className="cobrar-form">
-              <TextField
-                type="number"
-                placeholder="Puntos a cobrar"
-                value={puntosACobrar}
-                onChange={(e) => setPuntosACobrar(e.target.value)}
-                min="1"
-                max={estudianteACobrar.cobro_credito}
-              />
-              <TextField
-                type="text"
-                placeholder="Motivo del cobro"
-                value={motivoCobro}
-                onChange={(e) => setMotivoCobro(e.target.value)}
-                minLength={5}
-              />
-              {cobroError && <p className="error-message">{cobroError}</p>}
-              {cobroSuccess && (
-                <div className="success-message">
-                  <p>{cobroSuccess}</p>
-                  <div className="success-actions">
-                    <span>
-                      Saldo actualizado: {estudianteACobrar.credito_total ?? 0}{" "}
-                      créditos totales / {estudianteACobrar.cobro_credito ?? 0}{" "}
-                      disponibles
-                    </span>
-                    <Button
-                      text={
-                        ultimoMovimientoId ? "Ver movimiento" : "Ver historial"
-                      }
-                      styleType="white"
-                      onClick={navegarHistorial}
-                    />
+        <div className="creditos-stack">
+          {showCobrarForm && estudianteACobrar && (
+            <article className="cobrar-card">
+              <header className="cobrar-header">
+                <div>
+                  <p className="cobrar-pretitle">Acción rápida</p>
+                  <h2>Cobrar puntos</h2>
+                </div>
+                <div className="cobrar-saldos">
+                  <div>
+                    <span>Crédito total</span>
+                    <strong>{estudianteACobrar.credito_total ?? 0}</strong>
+                  </div>
+                  <div>
+                    <span>Puntos disponibles</span>
+                    <strong>{estudianteACobrar.cobro_credito}</strong>
                   </div>
                 </div>
-              )}
+              </header>
+              <div className="cobrar-info">
+                <p>
+                  Estudiante:{" "}
+                  <strong>
+                    {estudianteACobrar.nombre_persona} {estudianteACobrar.apellido}
+                  </strong>
+                </p>
+              </div>
 
-              <div className="cobrar-buttons">
-                <Button
-                  text={cobroLoading ? "Procesando..." : "Confirmar Cobro"}
-                  styleType="black"
-                  onClick={procesarCobroPuntos}
-                  disabled={cobroLoading || !puntosValidos || !motivoValido}
+              <div className="cobrar-form">
+                <label>
+                  Puntos a cobrar
+                  <TextField
+                    type="number"
+                    placeholder="Puntos a cobrar"
+                    value={puntosACobrar}
+                    onChange={(e) => setPuntosACobrar(e.target.value)}
+                    min="1"
+                    max={estudianteACobrar.cobro_credito}
+                  />
+                </label>
+                <label>
+                  Motivo del cobro
+                  <TextField
+                    type="text"
+                    placeholder="Motivo del cobro"
+                    value={motivoCobro}
+                    onChange={(e) => setMotivoCobro(e.target.value)}
+                    minLength={5}
+                  />
+                </label>
+                {cobroError && <p className="error-message">{cobroError}</p>}
+                {cobroSuccess && (
+                  <div className="success-message">
+                    <p>{cobroSuccess}</p>
+                    <div className="success-actions">
+                      <span>
+                        Saldo actualizado: {estudianteACobrar.credito_total ?? 0}{" "}
+                        créditos totales / {estudianteACobrar.cobro_credito ?? 0}{" "}
+                        disponibles
+                      </span>
+                      <Button
+                        text={
+                          ultimoMovimientoId ? "Ver movimiento" : "Ver historial"
+                        }
+                        styleType="white"
+                        onClick={navegarHistorial}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="cobrar-buttons">
+                  <Button
+                    text={cobroLoading ? "Procesando..." : "Confirmar Cobro"}
+                    styleType="black"
+                    onClick={procesarCobroPuntos}
+                    disabled={cobroLoading || !puntosValidos || !motivoValido}
+                  />
+                  <Button
+                    text="Cancelar"
+                    styleType="danger"
+                    onClick={cerrarFormularioCobro}
+                  />
+                </div>
+              </div>
+            </article>
+          )}
+
+          <section className="historial-card">
+            <header className="historial-card-header">
+              <div>
+                <p className="historial-pretitle">Movimientos</p>
+                <h2>Historial de créditos</h2>
+                <p>Revisa asistencias, bonificaciones y cobros con su autor y motivo.</p>
+              </div>
+            </header>
+            {historialDni ? (
+              <div className="historial-grid">
+                <HistorialTabla
+                  title="Créditos obtenidos"
+                  state={asistenciaHist}
+                  emptyLabel="Sin asistencias registradas."
                 />
-                <Button
-                  text="Cancelar"
-                  styleType="danger"
-                  onClick={cerrarFormularioCobro}
+                <HistorialTabla
+                  title="Bonos"
+                  state={bonusHist}
+                  emptyLabel="Sin bonificaciones registradas."
+                />
+                <HistorialTabla
+                  title="Cobros"
+                  state={cobroHist}
+                  emptyLabel="Sin cobros registrados."
                 />
               </div>
-            </div>
-          </div>
-        )}
-        <div className="historial-creditos-container">
-          <h2>Historial de Créditos</h2>
-          {historialDni ? (
-            <div className="historial-grid">
-              <HistorialTabla
-                title="Créditos obtenidos"
-                state={asistenciaHist}
-                emptyLabel="Sin asistencias registradas."
-              />
-              <HistorialTabla
-                title="Bonos"
-                state={bonusHist}
-                emptyLabel="Sin bonificaciones registradas."
-              />
-              <HistorialTabla
-                title="Cobros"
-                state={cobroHist}
-                emptyLabel="Sin cobros registrados."
-              />
-            </div>
-          ) : (
-            <p className="historial-placeholder">
-              Selecciona un estudiante para ver su historial de créditos.
-            </p>
-          )}
+            ) : (
+              <p className="historial-placeholder">
+                Selecciona un estudiante para ver su historial de créditos.
+              </p>
+            )}
+          </section>
         </div>
         {/* Tabla */}
         <div className="estudiantes-table">
