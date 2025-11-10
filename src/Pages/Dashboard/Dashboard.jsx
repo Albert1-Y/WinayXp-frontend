@@ -628,7 +628,7 @@ const Dashboard = () => {
               className="dashboard-tab dashboard-download-btn"
               onClick={() => handleDownloadAlumnos()}
             >
-              Descargar Alumnos
+              Descargar Estudiantes
             </button>
             <button
               className="dashboard-tab dashboard-download-btn"

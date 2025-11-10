@@ -7,6 +7,86 @@ import TextField from '../../components/TextField/TextField';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './Estudiante.css';
+import useHistorialSection from '../../hooks/useHistorialSection';
+
+const formatFechaMovimiento = (valor) => {
+  if (!valor) return '-';
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return valor;
+  return fecha.toLocaleString('es-PE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+const HistorialTabla = ({ title, state, emptyLabel }) => (
+  <div className="historial-table">
+    <div className="historial-table-header">
+      <h3>{title}</h3>
+      {state.canLoadMore && (
+        <Button
+          text="Ver más"
+          styleType="white"
+          onClick={state.loadMore}
+          disabled={state.loading}
+        />
+      )}
+    </div>
+    {state.error && <p className="historial-error">{state.error}</p>}
+    <div className="historial-table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Actividad / Motivo</th>
+            <th>Créditos</th>
+            <th>Autor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {state.loading && (
+            <tr>
+              <td colSpan="4" className="loading-row">
+                Cargando movimientos...
+              </td>
+            </tr>
+          )}
+          {!state.loading && state.data.length === 0 && (
+            <tr>
+              <td colSpan="4" className="empty-row">
+                {emptyLabel}
+              </td>
+            </tr>
+          )}
+          {!state.loading &&
+            state.data.map((mov) => {
+              const key = mov.id_movimiento ?? `${mov.created_at}-${mov.motivo ?? 'mov'}`;
+              const creditos = Number(mov.creditos ?? 0);
+              return (
+                <tr key={key}>
+                  <td>{formatFechaMovimiento(mov.created_at)}</td>
+                  <td>{mov.nombre_actividad || mov.motivo || '-'}</td>
+                  <td>
+                    <span
+                      className={`historial-credito ${
+                        creditos >= 0 ? 'positivo' : 'negativo'
+                      }`}
+                    >
+                      {creditos > 0 ? `+${creditos}` : creditos}
+                    </span>
+                  </td>
+                  <td>{mov.autor || '-'}</td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
 
 const Estudiante = () => {
   const { rol } = useContext(AuthContext);
@@ -15,7 +95,16 @@ const Estudiante = () => {
   const [navbarCollapsed, setNavbarCollapsed] = useState(false);
   const [showCobrarForm, setShowCobrarForm] = useState(false);
   const [puntosACobrar, setPuntosACobrar] = useState(1);
+  const [motivoCobro, setMotivoCobro] = useState('');
+  const [cobroLoading, setCobroLoading] = useState(false);
+  const [cobroError, setCobroError] = useState('');
+  const [cobroSuccess, setCobroSuccess] = useState('');
+  const [ultimoMovimientoId, setUltimoMovimientoId] = useState(null);
   const [estudianteACobrar, setEstudianteACobrar] = useState(null);
+  const historialDni = selectedStudent?.dni || estudianteACobrar?.dni || null;
+  const asistenciaHist = useHistorialSection(historialDni, 'asistencia');
+  const bonusHist = useHistorialSection(historialDni, 'bonus');
+  const cobroHist = useHistorialSection(historialDni, 'cobro');
 
   useEffect(() => {
     const handleNavbarChange = () => {
@@ -53,58 +142,156 @@ const Estudiante = () => {
     // Guardar el estudiante seleccionado y mostrar el formulario
     setEstudianteACobrar(estudiante);
     setPuntosACobrar(1); // Valor inicial
+    setMotivoCobro('');
+    setCobroError('');
+    setCobroSuccess('');
+    setUltimoMovimientoId(null);
     setShowCobrarForm(true);
   };
-  const procesarCobroPuntos = () => {
-    // Validaciones básicas
+  const syncSaldoLocal = (id_persona, saldoParcial = {}) => {
+    const mapper = (est) => {
+      if (est.id_persona !== id_persona) return est;
+      const creditoTotal =
+        saldoParcial.credito_total ?? est.credito_total ?? 0;
+      const cobroCredito =
+        saldoParcial.cobro_credito ?? est.cobro_credito ?? 0;
+      return {
+        ...est,
+        credito_total: Number(creditoTotal),
+        cobro_credito: Number(cobroCredito),
+      };
+    };
+
+    setData((prev) => prev.map(mapper));
+    setFilteredData((prev) => prev.map(mapper));
+  };
+
+  const cerrarFormularioCobro = () => {
+    setShowCobrarForm(false);
+    setEstudianteACobrar(null);
+    setPuntosACobrar(1);
+    setMotivoCobro('');
+    setCobroError('');
+    setCobroSuccess('');
+    setUltimoMovimientoId(null);
+  };
+
+  const procesarCobroPuntos = async () => {
+    setCobroError('');
+    setCobroSuccess('');
+    setUltimoMovimientoId(null);
+
     if (!estudianteACobrar) {
-      alert('No se ha seleccionado un estudiante');
+      setCobroError('Selecciona un estudiante para cobrar puntos.');
       return;
     }
 
-    const puntosNumerico = parseInt(puntosACobrar);
-    if (estudianteACobrar.cobro_credito === 0 || estudianteACobrar.cobro_credito === '0') {
-      alert('El estudiante no tiene puntos disponibles para cobrar');
-      return;
-    }
-    if (isNaN(puntosNumerico) || puntosNumerico <= 0) {
-      alert('Debes ingresar un valor válido mayor a 0');
+    const puntosNumerico = parseInt(puntosACobrar, 10);
+    const motivo = motivoCobro.trim();
+    const saldoDisponible = Number(estudianteACobrar.cobro_credito ?? 0);
+
+    if (!Number.isFinite(puntosNumerico) || puntosNumerico <= 0) {
+      setCobroError('Debes ingresar un valor válido mayor a 0.');
       return;
     }
 
-    if (puntosNumerico > estudianteACobrar.cobro_credito) {
-      alert(`El estudiante solo tiene ${estudianteACobrar.cobro_credito} puntos disponibles`);
+    if (saldoDisponible <= 0) {
+      setCobroError('El estudiante no tiene puntos disponibles para cobrar.');
       return;
     }
 
-    // Preparar datos para enviar
+    if (puntosNumerico > saldoDisponible) {
+      setCobroError(`El estudiante solo tiene ${saldoDisponible} puntos disponibles.`);
+      return;
+    }
+
+    if (motivo.length < 5) {
+      setCobroError('El motivo debe tener al menos 5 caracteres.');
+      return;
+    }
+
     const datosACobrar = {
       id_persona: estudianteACobrar.id_persona,
       puntos: puntosNumerico,
+      motivo,
     };
-    fetch(`${import.meta.env.VITE_API_URL}/api/admin/CobrarPuntos`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(datosACobrar),
-    })
-      .then((res) => {
-        if (res.ok) {
-          alert('Puntos cobrados correctamente.');
-          setShowCobrarForm(false);
-          setEstudianteACobrar(null);
-          setPuntosACobrar(1);
-          window.location.reload();
-        } else {
-          alert('Error al cobrar puntos.');
-        }
-      })
-      .catch((err) => {
-        console.error('Error en el cobro:', err);
-        alert('Error al cobrar puntos.');
+
+    setCobroLoading(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/CobrarPuntos`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(datosACobrar),
       });
+
+      const text = await response.text();
+      let payload = {};
+      try {
+        payload = text ? JSON.parse(text) : {};
+      } catch (error) {
+        console.warn('Respuesta no válida JSON en CobrarPuntos:', error);
+      }
+
+      if (response.status === 200) {
+        const saldo = payload?.saldo ?? {};
+        syncSaldoLocal(estudianteACobrar.id_persona, saldo);
+        setEstudianteACobrar((prev) =>
+          prev
+            ? {
+                ...prev,
+                credito_total: Number(saldo.credito_total ?? prev.credito_total ?? 0),
+                cobro_credito: Number(saldo.cobro_credito ?? prev.cobro_credito ?? 0),
+              }
+            : prev
+        );
+
+        setCobroSuccess(payload?.msg || 'Puntos cobrados correctamente.');
+        setUltimoMovimientoId(payload?.movimiento ?? null);
+        setPuntosACobrar(1);
+        setMotivoCobro('');
+        return;
+      }
+
+      if (response.status === 400) {
+        if (payload?.error?.code === 'SALDO_INSUFICIENTE') {
+          setCobroError(payload?.msg || 'El saldo del estudiante es insuficiente.');
+        } else {
+          setCobroError(payload?.msg || 'Verifica los datos enviados.');
+        }
+        return;
+      }
+
+      if (response.status === 403) {
+        setCobroError('No tienes permisos para realizar cobros.');
+        return;
+      }
+
+      if (response.status === 404) {
+        setCobroError('El estudiante no existe o está inactivo.');
+        return;
+      }
+
+      setCobroError(payload?.msg || 'Ocurrió un error al cobrar los puntos.');
+    } catch (error) {
+      console.error('Error en el cobro:', error);
+      setCobroError('No se pudo procesar el cobro. Intenta nuevamente.');
+    } finally {
+      setCobroLoading(false);
+    }
+  };
+  const navegarHistorial = () => {
+    if (!estudianteACobrar) return;
+    const params = new URLSearchParams({
+      id_estudiante: estudianteACobrar.id_persona,
+    });
+    if (ultimoMovimientoId) {
+      params.set('movimiento', ultimoMovimientoId);
+    }
+    navigate(`/creditos?${params.toString()}`);
   };
   const renderNavbar = () => {
     switch (rol) {
@@ -243,6 +430,10 @@ const Estudiante = () => {
         return null;
     }
   };
+
+  const puntosNumero = Number(puntosACobrar);
+  const puntosValidos = Number.isFinite(puntosNumero) && puntosNumero > 0;
+  const motivoValido = motivoCobro.trim().length >= 5;
 
   return (
     <div className={`estudiantes-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
@@ -443,6 +634,9 @@ const Estudiante = () => {
               <p>
                 Puntos disponibles: <strong>{estudianteACobrar.cobro_credito}</strong>
               </p>
+              <p>
+                Crédito total: <strong>{estudianteACobrar.credito_total ?? 0}</strong>
+              </p>
             </div>
 
             <div className="cobrar-form">
@@ -454,18 +648,73 @@ const Estudiante = () => {
                 min="1"
                 max={estudianteACobrar.cobro_credito}
               />
+              <TextField
+                type="text"
+                placeholder="Motivo del cobro"
+                value={motivoCobro}
+                onChange={(e) => setMotivoCobro(e.target.value)}
+                minLength={5}
+              />
+              {cobroError && <p className="error-message">{cobroError}</p>}
+              {cobroSuccess && (
+                <div className="success-message">
+                  <p>{cobroSuccess}</p>
+                  <div className="success-actions">
+                    <span>
+                      Saldo actualizado: {estudianteACobrar.credito_total ?? 0} créditos totales /{' '}
+                      {estudianteACobrar.cobro_credito ?? 0} disponibles
+                    </span>
+                    <Button
+                      text={ultimoMovimientoId ? 'Ver movimiento' : 'Ver historial'}
+                      styleType="white"
+                      onClick={navegarHistorial}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="cobrar-buttons">
-                <Button text="Confirmar Cobro" styleType="black" onClick={procesarCobroPuntos} />
+                <Button
+                  text={cobroLoading ? 'Procesando...' : 'Confirmar Cobro'}
+                  styleType="black"
+                  onClick={procesarCobroPuntos}
+                  disabled={cobroLoading || !puntosValidos || !motivoValido}
+                />
                 <Button
                   text="Cancelar"
                   styleType="danger"
-                  onClick={() => setShowCobrarForm(false)}
+                  onClick={cerrarFormularioCobro}
                 />
               </div>
             </div>
           </div>
         )}
+        <div className="historial-creditos-container">
+          <h2>Historial de Créditos</h2>
+          {historialDni ? (
+            <div className="historial-grid">
+              <HistorialTabla
+                title="Créditos obtenidos"
+                state={asistenciaHist}
+                emptyLabel="Sin asistencias registradas."
+              />
+              <HistorialTabla
+                title="Bonos"
+                state={bonusHist}
+                emptyLabel="Sin bonificaciones registradas."
+              />
+              <HistorialTabla
+                title="Cobros"
+                state={cobroHist}
+                emptyLabel="Sin cobros registrados."
+              />
+            </div>
+          ) : (
+            <p className="historial-placeholder">
+              Selecciona un estudiante para ver su historial de créditos.
+            </p>
+          )}
+        </div>
         {/* Tabla */}
         <div className="estudiantes-table">
           <table style={{ width: '100%' }}>

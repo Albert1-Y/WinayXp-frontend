@@ -2,7 +2,7 @@ import React from 'react';
 import './Button.css';
 import PropTypes from 'prop-types';
 
-const Button = ({ text, styleType, onClick, disabled, icon }) => {
+const Button = ({ text, styleType, onClick, disabled, icon, type = 'button' }) => {
   // Función para generar las iniciales del texto
   const generateInitials = (text) => {
     if (!text) return '';
@@ -22,7 +22,12 @@ const Button = ({ text, styleType, onClick, disabled, icon }) => {
   const initials = generateInitials(text);
 
   return (
-    <button className={`button ${styleType || ''}`} onClick={onClick} disabled={disabled}>
+    <button
+      className={`button ${styleType || ''}`}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+    >
       {icon && <span className="button-icon">{icon}</span>}
       <span className="button-text">{text}</span>
       <span className="button-initials">{initials}</span>
@@ -36,6 +41,7 @@ Button.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   icon: PropTypes.node,
+  type: PropTypes.oneOf(['button', 'submit', 'reset']),
 };
 
 export default Button;

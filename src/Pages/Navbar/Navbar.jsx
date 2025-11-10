@@ -120,6 +120,7 @@ const Navbar = ({ onCollapsedChange }) => {
                 onClick={() => handleNavigate('/create_actividad')}
               />
               <Button text="Tomar asistencia" styleType="white" onClick={() => handleNavigate('/asistencia')} />
+              <Button text="Créditos" styleType="white" onClick={() => handleNavigate('/creditos')} />
             </div>
           </div>
 

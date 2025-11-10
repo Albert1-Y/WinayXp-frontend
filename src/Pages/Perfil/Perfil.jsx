@@ -9,6 +9,18 @@ import React, {
 import { AuthContext } from '../../context/AuthContext';
 import './Perfil.css';
 import NavbarE from '../Navbar/NavbarE';
+const formatFechaMovimiento = (valor) => {
+  if (!valor) return '-';
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return valor;
+  return fecha.toLocaleString('es-PE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
 
 const Perfil = () => {
   const { rol } = useContext(AuthContext);
@@ -25,6 +37,7 @@ const Perfil = () => {
   const [overlayStage, setOverlayStage] = useState('video'); // 'video' | 'card'
   const [confirmandoNivel, setConfirmandoNivel] = useState(false);
   const [videoDisponible, setVideoDisponible] = useState(true);
+  const estudianteDni = datos?.dni || '';
 
   useLayoutEffect(() => {
     const root = document.documentElement;
@@ -86,13 +99,11 @@ const Perfil = () => {
         }
       );
 
-      const cargarActividades = fetch(
-        `${import.meta.env.VITE_API_URL}/api/estudiante/getActividadesAsistidas`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      ).catch(() => ({ ok: false, headers: new Headers(), text: () => Promise.resolve('') }));
+      const actividadesUrl = `${import.meta.env.VITE_API_URL}/api/estudiante/getActividadesAsistidas?limit=50`;
+      const cargarActividades = fetch(actividadesUrl, {
+        method: 'GET',
+        credentials: 'include',
+      }).catch(() => ({ ok: false, headers: new Headers(), text: () => Promise.resolve('') }));
 
       Promise.all([cargarDatosEstudiante, cargarActividades])
         .then(async ([resDatos, resActividades]) => {
@@ -123,6 +134,12 @@ const Perfil = () => {
                 actividades = [];
               }
             }
+          } else if (resActividades && !resActividades.ok) {
+            console.warn(
+              'Historial estudiante no disponible:',
+              resActividades.status,
+              await resActividades.text(),
+            );
           }
 
           if (datosEstudiante) {
@@ -462,41 +479,55 @@ const Perfil = () => {
                   ))}
                 </div>
 
-                {/* Actividades */}
+                {/* Historial */}
                 <div className="perfil-card actividades-card">
-                  <h2 className="seccion-titulo">Actividades en las que participaste</h2>
+                  <h2 className="seccion-titulo">Historial de Créditos</h2>
                   {actividadesRecientes.length > 0 ? (
                     <div className="actividades-lista">
                       <table className="perfil-actividades-table">
                         <thead>
                           <tr>
-                            <th>Nombre</th>
                             <th>Fecha</th>
-                            <th>Puntos</th>
+                            <th>Tipo</th>
+                            <th>Actividad / Motivo</th>
+                            <th>Créditos</th>
+                            <th>Autor</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {actividadesRecientes.slice(0, 4).map((a, i) => (
-                            <tr key={i} className="perfil-actividad-item">
-                              <td>{a.nombre_actividad || 'Sin nombre'}</td>
-                              <td>
-                                {a.fecha_asistencia
-                                  ? new Date(a.fecha_asistencia).toLocaleString('es-PE')
-                                  : '—'}
-                              </td>
-                              <td>
-                                {a.creditos && (
-                                  <span className="actividad-puntos">+{a.creditos}</span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
+                          {actividadesRecientes.map((mov) => {
+                            const creditos = Number(mov.creditos ?? 0);
+                            return (
+                              <tr key={mov.id_movimiento ?? `${mov.fecha_asistencia}-${mov.motivo}`}>
+                                <td>{formatFechaMovimiento(mov.fecha_asistencia)}</td>
+                                <td className={`tipo-badge tipo-${mov.tipo_movimiento || 'otro'}`}>
+                                  {mov.tipo_movimiento || '—'}
+                                </td>
+                                <td>{mov.nombre_actividad || mov.motivo || '—'}</td>
+                                <td>
+                                  <span
+                                    className={`perfil-historial-credito ${
+                                      creditos >= 0 ? 'positivo' : 'negativo'
+                                    }`}
+                                  >
+                                    {creditos > 0 ? `+${creditos}` : creditos}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div className="autor-col">
+                                    <span>{mov.autor || 'Sistema'}</span>
+                                    <small>{mov.rol_autor || ''}</small>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
                   ) : (
                     <div className="no-actividades">
-                      <p>No has participado en actividades recientemente</p>
+                      <p>No se encontraron movimientos recientes.</p>
                     </div>
                   )}
                 </div>

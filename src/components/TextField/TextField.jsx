@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './TextField.css';
 
-const TextField = ({ name, value, onChange, type = 'text', placeholder }) => {
+const TextField = ({ name, value, onChange, type = 'text', placeholder, ...rest }) => {
   return (
     <input
       className="textfield"
@@ -10,6 +10,7 @@ const TextField = ({ name, value, onChange, type = 'text', placeholder }) => {
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      {...rest}
     />
   );
 };

@@ -14,6 +14,23 @@ const Actividades = () => {
   const [showEditForm, setShowEditForm] = useState(false); // Mostrar el formulario de edición
   const { rol } = useContext(AuthContext);
   const [navbarCollapsed, setNavbarCollapsed] = useState(false);
+  const [showBonusForm, setShowBonusForm] = useState(false);
+  const [bonusActividad, setBonusActividad] = useState(null);
+  const [studentsOptions, setStudentsOptions] = useState([]);
+  const [studentsLoading, setStudentsLoading] = useState(false);
+  const [bonusForm, setBonusForm] = useState({ id_persona: '', puntos: 1, motivo: '' });
+  const [bonusLoading, setBonusLoading] = useState(false);
+  const [bonusFeedback, setBonusFeedback] = useState({ error: '', success: '' });
+  const [bonusMovimientoId, setBonusMovimientoId] = useState(null);
+  const [bonusStudentSearch, setBonusStudentSearch] = useState('');
+  const filteredStudents = studentsOptions.filter((option) => {
+    if (!bonusStudentSearch.trim()) return true;
+    const term = bonusStudentSearch.toLowerCase();
+    return (
+      option.label.toLowerCase().includes(term) ||
+      option.dni?.toLowerCase().includes(term)
+    );
+  });
 
   // Redirección basada en rol sólo en efectos (no durante render)
   useEffect(() => {
@@ -59,6 +76,23 @@ const Actividades = () => {
       default:
         return null;
     }
+  };
+  const handleBonusClick = (actividad) => {
+    setBonusActividad(actividad);
+    setShowBonusForm(true);
+    setBonusForm({ id_persona: '', puntos: 1, motivo: '' });
+    setBonusFeedback({ error: '', success: '' });
+    setBonusMovimientoId(null);
+    setBonusStudentSearch('');
+  };
+
+  const closeBonusForm = () => {
+    setShowBonusForm(false);
+    setBonusActividad(null);
+    setBonusForm({ id_persona: '', puntos: 1, motivo: '' });
+    setBonusFeedback({ error: '', success: '' });
+    setBonusMovimientoId(null);
+    setBonusStudentSearch('');
   };
   const handleEditClick = (actividad) => {
     // Guardar una copia completa de la actividad para editar
@@ -152,6 +186,151 @@ const Actividades = () => {
       });
     return () => controller.abort();
   }, []);
+  useEffect(() => {
+    if (rol !== 'administrador' && rol !== 'tutor') return;
+    const controller = new AbortController();
+    setStudentsLoading(true);
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/IntMostrarEstudiantes`, {
+      method: 'GET',
+      credentials: 'include',
+      signal: controller.signal,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const mapped = data.map((est) => ({
+            value: est.id_persona,
+            label: `${est.nombre_persona ?? ''} ${est.apellido ?? ''}`.trim(),
+            dni: est.dni?.toString() ?? '',
+          }));
+          setStudentsOptions(mapped);
+        }
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') return;
+        console.error('Error al obtener estudiantes para bonus:', error);
+      })
+      .finally(() => setStudentsLoading(false));
+
+    return () => controller.abort();
+  }, [rol]);
+
+  const handleBonusSubmit = async (event) => {
+    event.preventDefault();
+    setBonusFeedback({ error: '', success: '' });
+    setBonusMovimientoId(null);
+
+    if (!bonusActividad) {
+      setBonusFeedback({ error: 'Selecciona una actividad válida.', success: '' });
+      return;
+    }
+
+    if (!bonusForm.id_persona) {
+      setBonusFeedback({ error: 'Debes elegir un estudiante.', success: '' });
+      return;
+    }
+
+    const puntos = Number(bonusForm.puntos);
+    if (!Number.isFinite(puntos) || puntos <= 0) {
+      setBonusFeedback({ error: 'Ingresa un número de puntos mayor a 0.', success: '' });
+      return;
+    }
+
+    const motivo = bonusForm.motivo.trim();
+    if (motivo.length < 5) {
+      setBonusFeedback({ error: 'El motivo debe tener al menos 5 caracteres.', success: '' });
+      return;
+    }
+
+    const payload = {
+      id_persona: Number(bonusForm.id_persona),
+      puntos,
+      motivo,
+      id_actividad: bonusActividad.id_actividad,
+    };
+
+    setBonusLoading(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/BonificarPuntos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      const text = await response.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (error) {
+        console.warn('Respuesta no JSON en BonificarPuntos:', error);
+      }
+
+      if (response.status === 200 || data?.ok) {
+        setBonusFeedback({
+          error: '',
+          success: data?.msg || 'Bonificación registrada correctamente.',
+        });
+        setBonusMovimientoId(data?.movimiento ?? null);
+        setBonusForm((prev) => ({
+          ...prev,
+          puntos: 1,
+          motivo: '',
+        }));
+        return;
+      }
+
+      if (response.status === 400) {
+        setBonusFeedback({
+          error: data?.msg || 'Revisa los datos enviados.',
+          success: '',
+        });
+        return;
+      }
+
+      if (response.status === 403) {
+        setBonusFeedback({
+          error: 'No tienes permisos para otorgar bonificaciones.',
+          success: '',
+        });
+        return;
+      }
+
+      if (response.status === 404) {
+        setBonusFeedback({
+          error: 'El estudiante o la actividad no existe.',
+          success: '',
+        });
+        return;
+      }
+
+      setBonusFeedback({
+        error: data?.msg || 'No se pudo registrar la bonificación.',
+        success: '',
+      });
+    } catch (error) {
+      console.error('Error al bonificar puntos:', error);
+      setBonusFeedback({
+        error: 'Ocurrió un error inesperado al bonificar.',
+        success: '',
+      });
+    } finally {
+      setBonusLoading(false);
+    }
+  };
+
+  const verHistorialBonos = () => {
+    if (!bonusForm.id_persona) return;
+    const params = new URLSearchParams({
+      id_estudiante: bonusForm.id_persona,
+    });
+    if (bonusMovimientoId) {
+      params.set('movimiento', bonusMovimientoId);
+    }
+    navigate(`/creditos?${params.toString()}`);
+  };
   const handleSearch = () => {
     if (!fechaInicio || !fechaFin) {
       alert('Debes ingresar ambas fechas para buscar actividades.');
@@ -238,6 +417,13 @@ const Actividades = () => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = 'https://cdn-icons-png.flaticon.com/512/1047/1047711.png';
               }}
+            />
+          </button>
+          <button className="action-button" onClick={() => handleBonusClick(row)}>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+              alt="Otorgar bonus"
+              title="Otorgar bonus"
             />
           </button>
           <button className="action-button" onClick={() => handleDelete(row.id_actividad)}>
@@ -363,6 +549,99 @@ const Actividades = () => {
               <Button text="Guardar Cambios" styleType="black" onClick={handleSaveActividad} />
               <Button text="Cancelar" styleType="danger" onClick={() => setShowEditForm(false)} />
             </div>
+          </div>
+        )}
+        {showBonusForm && bonusActividad && (
+          <div className="bonus-container">
+            <div className="bonus-header">
+              <div>
+                <h2>Otorgar bonus</h2>
+                <p>
+                  Actividad seleccionada: <strong>{bonusActividad.nombre_actividad}</strong>
+                </p>
+              </div>
+              <Button text="Cerrar" styleType="white" onClick={closeBonusForm} />
+            </div>
+            <form className="bonus-form" onSubmit={handleBonusSubmit}>
+              <div className="input-field">
+                <label htmlFor="bonus-estudiante-search">Buscar estudiante</label>
+                <TextField
+                  id="bonus-estudiante-search"
+                  placeholder="Escribe nombre o DNI"
+                  value={bonusStudentSearch}
+                  onChange={(e) => setBonusStudentSearch(e.target.value)}
+                  disabled={studentsLoading}
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="bonus-estudiante">Estudiante</label>
+                <select
+                  id="bonus-estudiante"
+                  value={bonusForm.id_persona}
+                  onChange={(e) =>
+                    setBonusForm((prev) => ({ ...prev, id_persona: e.target.value }))
+                  }
+                  disabled={studentsLoading || filteredStudents.length === 0}
+                >
+                  <option value="">Selecciona un estudiante</option>
+                  {filteredStudents.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label} — DNI: {option.dni || 'N/A'}
+                    </option>
+                  ))}
+                </select>
+                {!studentsLoading && filteredStudents.length === 0 && (
+                  <small className="bonus-hint">No hay coincidencias con la búsqueda.</small>
+                )}
+              </div>
+              <div className="input-field">
+                <label htmlFor="bonus-puntos">Puntos</label>
+                <TextField
+                  id="bonus-puntos"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={bonusForm.puntos}
+                  onChange={(e) =>
+                    setBonusForm((prev) => ({ ...prev, puntos: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="bonus-motivo">Motivo</label>
+                <TextField
+                  id="bonus-motivo"
+                  type="text"
+                  placeholder="Describe el motivo (mín. 5 caracteres)"
+                  value={bonusForm.motivo}
+                  minLength={5}
+                  onChange={(e) =>
+                    setBonusForm((prev) => ({ ...prev, motivo: e.target.value }))
+                  }
+                />
+              </div>
+              {bonusFeedback.error && <div className="bonus-feedback error">{bonusFeedback.error}</div>}
+              {bonusFeedback.success && (
+                <div className="bonus-feedback success">
+                  <p>{bonusFeedback.success}</p>
+                  <Button
+                    text="Ver historial"
+                    styleType="white"
+                    onClick={verHistorialBonos}
+                    disabled={!bonusForm.id_persona}
+                  />
+                </div>
+              )}
+              <div className="bonus-actions">
+                <Button
+                  text={bonusLoading ? 'Registrando...' : 'Registrar bonus'}
+                  styleType="black"
+                  disabled={bonusLoading}
+                  type="submit"
+                />
+                <Button text="Cancelar" styleType="danger" onClick={closeBonusForm} />
+              </div>
+            </form>
           </div>
         )}
         <div className="actividades-table">

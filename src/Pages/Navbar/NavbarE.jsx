@@ -147,7 +147,7 @@ const NavbarE = ({ onCollapsedChange }) => {
 
               {(!collapsedDesktop || openMobile) && (
                 <div className="navbar-user-meta">
-                  <span className="navbar-user-role">Alumno</span>
+                  <span className="navbar-user-role">Estudiante</span>
                   <button className="navbar-logout" onClick={handleLogout}>
                     Cerrar Sesion
                   </button>

@@ -204,6 +204,132 @@
   gap: clamp(14px, 1.8vw, 20px);
 }
 
+.cobrar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cobrar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cobrar-puntos-container .error-message {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fecaca;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #a7f3d0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.92rem;
+}
+
+.success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.historial-creditos-container {
+  background: rgba(7, 5, 28, 0.85);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: clamp(18px, 2.2vw, 26px);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.historial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.historial-table {
+  background: rgba(9, 6, 32, 0.9);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historial-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.historial-table-wrapper {
+  overflow-x: auto;
+}
+
+.historial-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.historial-table th,
+.historial-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.92rem;
+}
+
+.historial-table th {
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.historial-credito {
+  font-weight: 600;
+}
+
+.historial-credito.positivo {
+  color: #6ee7b7;
+}
+
+.historial-credito.negativo {
+  color: #fecaca;
+}
+
+.historial-placeholder {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.historial-error {
+  color: #fecaca;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.historial-table .loading-row td,
+.historial-table .empty-row td {
+  text-align: center;
+  padding: 12px;
+  color: var(--text-muted);
+}
+
 @media (max-width: 1024px) {
   .estudiantes-container {
     margin-left: 180px;

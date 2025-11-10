@@ -120,6 +120,9 @@ const NavbarT = ({ onCollapsedChange }) => {
               <button className="btn white" onClick={() => handleNavigate('/asistencia')}>
                 <span>Tomar asistencia</span>
               </button>
+              <button className="btn white" onClick={() => handleNavigate('/creditos')}>
+                <span>Créditos</span>
+              </button>
             </div>
           </div>
 
@@ -153,4 +156,3 @@ const NavbarT = ({ onCollapsedChange }) => {
 };
 
 export default NavbarT;
-

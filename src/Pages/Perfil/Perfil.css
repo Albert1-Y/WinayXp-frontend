@@ -323,6 +323,50 @@
   font-size: clamp(0.9rem, 1.5vw, 1rem);
 }
 
+.perfil-historial-credito {
+  font-weight: 600;
+}
+
+.perfil-historial-credito.positivo {
+  color: #6ee7b7;
+}
+
+.perfil-historial-credito.negativo {
+  color: #fecaca;
+}
+
+.tipo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: capitalize;
+  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tipo-asistencia {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.18);
+}
+
+.tipo-bonus {
+  color: #bfdbfe;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.tipo-cobro {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.autor-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 /* Modal nivel - overlay base */
 .nivel-overlay {
   position: fixed;

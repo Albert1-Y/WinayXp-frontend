@@ -1,0 +1,265 @@
+.creditos-container {
+  position: relative;
+  min-height: 100vh;
+  margin-left: 220px;
+  width: calc(100vw - 220px);
+  padding: clamp(24px, 3vw, 40px);
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+.creditos-container.navbar-collapsed {
+  margin-left: 80px;
+  width: calc(100vw - 80px);
+}
+
+.creditos-content {
+  background: rgba(11, 7, 34, 0.92);
+  border-radius: 28px;
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.creditos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+.creditos-header h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+}
+
+.creditos-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.creditos-panel {
+  background: rgba(17, 12, 52, 0.85);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.creditos-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-field label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.filter-field select,
+.filter-field input {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  background: rgba(6, 3, 24, 0.85);
+  color: var(--text-main);
+}
+
+.filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.movement-hint {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-size: 0.92rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.historial-table-wrapper {
+  overflow-x: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.historial-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 880px;
+}
+
+.historial-table-wrapper th,
+.historial-table-wrapper td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.historial-table-wrapper th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.loading-row,
+.empty-row {
+  text-align: center;
+  padding: 24px 0;
+  color: var(--text-muted);
+}
+
+.highlight-row {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.estudiante-col,
+.autor-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.estudiante-col .nombre {
+  font-weight: 600;
+}
+
+.tipo-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  text-transform: capitalize;
+}
+
+.tipo-asistencia {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+
+.tipo-bonus {
+  background: rgba(59, 130, 246, 0.2);
+  color: #bfdbfe;
+}
+
+.tipo-cobro {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+}
+
+.tipo-ajuste {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+}
+
+.creditos {
+  font-weight: 600;
+}
+
+.creditos.positivo {
+  color: #6ee7b7;
+}
+
+.creditos.negativo {
+  color: #fecaca;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.creditos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.import-form input[type='file'] {
+  color: var(--text-main);
+}
+
+.import-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.import-resumen,
+.import-errores {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.import-errores table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.import-errores th,
+.import-errores td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.error-banner {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 18px;
+  padding: 10px 14px;
+  color: #fecaca;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 1024px) {
+  .creditos-container {
+    margin-left: 180px;
+    width: calc(100vw - 180px);
+  }
+}
+
+@media (max-width: 768px) {
+  .creditos-container,
+  .creditos-container.navbar-collapsed {
+    margin-left: 0 !important;
+    width: 100vw !important;
+    padding: 20px 16px 28px;
+  }
+
+  .creditos-content {
+    border-radius: 22px;
+    padding: 18px;
+  }
+}

@@ -15,6 +15,7 @@ import Ranking from './Pages/RankingEstudiantes/RankingEstudiantes.jsx';
 import AuthHandler from './components/AuthHandler/AuthHandler';
 import AuthResult from './Pages/AuthResult/AuthResult';
 import ProtectedRoute from './components/ProtectedRoute';
+import Creditos from './Pages/Creditos/Creditos';
 
 function App() {
   return (
@@ -100,6 +101,14 @@ function App() {
           element={
             <ProtectedRoute allow={['tutor', 'administrador']}>
               <Tomar_Asistencia />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/creditos"
+          element={
+            <ProtectedRoute allow={['administrador', 'tutor']}>
+              <Creditos />
             </ProtectedRoute>
           }
         />
