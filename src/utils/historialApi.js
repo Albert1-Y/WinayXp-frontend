@@ -2,8 +2,8 @@ const buildQueryParams = (filters = {}) => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value === undefined || value === null) return;
-    const stringValue = typeof value === 'string' ? value.trim() : value;
-    if (stringValue === '' || Number.isNaN(stringValue)) return;
+    const stringValue = typeof value === "string" ? value.trim() : value;
+    if (stringValue === "" || Number.isNaN(stringValue)) return;
     params.append(key, stringValue);
   });
   return params.toString();
@@ -12,12 +12,12 @@ const buildQueryParams = (filters = {}) => {
 export const fetchHistorialMovimientos = async (filters = {}, options = {}) => {
   const query = buildQueryParams(filters);
   const url = `${import.meta.env.VITE_API_URL}/api/admin/HistorialMovimientos${
-    query ? `?${query}` : ''
+    query ? `?${query}` : ""
   }`;
 
   const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
+    method: "GET",
+    credentials: "include",
     signal: options.signal,
   });
 

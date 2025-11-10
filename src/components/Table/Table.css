@@ -36,4 +36,3 @@
 .table tr:hover {
   background: var(--table-hover-bg, rgba(138, 77, 255, 0.16));
 }
-

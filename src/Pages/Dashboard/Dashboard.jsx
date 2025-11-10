@@ -1,17 +1,17 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import Navbar from '../Navbar/Navbar';
-import NavbarE from '../Navbar/NavbarE';
-import NavbarT from '../Navbar/NavbarT';
-import './Dashboard.css';
-import Perfil from '../Perfil/Perfil.jsx';
+import React, { useState, useContext, useEffect } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import Navbar from "../Navbar/Navbar";
+import NavbarE from "../Navbar/NavbarE";
+import NavbarT from "../Navbar/NavbarT";
+import "./Dashboard.css";
+import Perfil from "../Perfil/Perfil.jsx";
 
 const Dashboard = () => {
   const { rol } = useContext(AuthContext);
   const [collapsed, setCollapsed] = useState(false);
   const [semestresCargados, setSemestresCargados] = useState(false);
 
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState("general");
   const [loading, setLoading] = useState(false);
   const [semestreSeleccionado, setSemestreSeleccionado] = useState(0);
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
@@ -33,20 +33,23 @@ const Dashboard = () => {
 
   // Datos de participantes por carrera
   const participantesPorCarrera = [
-    { nombre: 'Ingeniería', cantidad: 28 },
-    { nombre: 'Medicina', cantidad: 15 },
-    { nombre: 'Derecho', cantidad: 12 },
-    { nombre: 'Economía', cantidad: 8 },
-    { nombre: 'Psicología', cantidad: 10 },
+    { nombre: "Ingeniería", cantidad: 28 },
+    { nombre: "Medicina", cantidad: 15 },
+    { nombre: "Derecho", cantidad: 12 },
+    { nombre: "Economía", cantidad: 8 },
+    { nombre: "Psicología", cantidad: 10 },
   ];
 
   // Función para cargar semestres
   useEffect(() => {
     const obtenerSemestres = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/Semestres`, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/Semestres`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
       const data = await response.json();
       setSemestres(data);
 
@@ -66,7 +69,7 @@ const Dashboard = () => {
       setLoading(true);
       let url;
 
-      if (idSemestre === 'todos') {
+      if (idSemestre === "todos") {
         // Esto dependerá de cómo esté implementado tu backend
         // Si admite una petición sin parámetro para traer todas las actividades
         url = `${import.meta.env.VITE_API_URL}/api/admin/ActividadesPorSemestre`;
@@ -75,12 +78,14 @@ const Dashboard = () => {
       }
 
       const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error(`Error al cargar actividades del semestre ${idSemestre}`);
+        throw new Error(
+          `Error al cargar actividades del semestre ${idSemestre}`,
+        );
       }
 
       const data = await response.json();
@@ -88,12 +93,12 @@ const Dashboard = () => {
       // Transformar los datos al formato que espera tu componente
       const actividades = data.map((act) => ({
         id: act.id_actividad,
-        tipo: 'Taller', // Esto podría venir del backend
+        tipo: "Taller", // Esto podría venir del backend
         nombre: act.nombre_actividad,
         fecha: new Date(act.fecha_inicio).toLocaleDateString(),
-        estado: 'Completada',
-        autor: 'Sistema',
-        semestre: idSemestre === 'todos' ? 'Varios' : idSemestre,
+        estado: "Completada",
+        autor: "Sistema",
+        semestre: idSemestre === "todos" ? "Varios" : idSemestre,
         participantes: [], // Se llenará cuando se seleccione una actividad
         asistencia_total: Number(act.asistencia_total),
       }));
@@ -105,7 +110,10 @@ const Dashboard = () => {
 
       setLoading(false);
     } catch (error) {
-      console.error(`Error al cargar actividades del semestre ${idSemestre}:`, error);
+      console.error(
+        `Error al cargar actividades del semestre ${idSemestre}:`,
+        error,
+      );
       setLoading(false);
     }
   };
@@ -119,13 +127,15 @@ const Dashboard = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaActividad?id_actividad=${idActividad}`,
         {
-          method: 'GET',
-          credentials: 'include',
-        }
+          method: "GET",
+          credentials: "include",
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`Error al cargar asistentes de la actividad ${idActividad}`);
+        throw new Error(
+          `Error al cargar asistentes de la actividad ${idActividad}`,
+        );
       }
 
       const data = await response.json();
@@ -139,10 +149,11 @@ const Dashboard = () => {
             : [];
 
       const asistentes = listaOriginal.map((asistente) => ({
-        dni: asistente.dni || 'Sin DNI',
-        nombre: `${asistente.nombre_persona || 'Sin nombre'} ${asistente.apellido || ''}`.trim(),
-        carrera: asistente.carrera || 'No especificada',
-        semestre: asistente.semestre || 'N/A',
+        dni: asistente.dni || "Sin DNI",
+        nombre:
+          `${asistente.nombre_persona || "Sin nombre"} ${asistente.apellido || ""}`.trim(),
+        carrera: asistente.carrera || "No especificada",
+        semestre: asistente.semestre || "N/A",
         fecha_asistencia: asistente.fecha_asistencia || null,
       }));
 
@@ -150,7 +161,11 @@ const Dashboard = () => {
         listaOriginal.length > 0
           ? listaOriginal.length
           : Number(
-              data?.total ?? data?.cantidad ?? data?.asistencia_total ?? data?.participantes_total ?? 0
+              data?.total ??
+                data?.cantidad ??
+                data?.asistencia_total ??
+                data?.participantes_total ??
+                0,
             ) || 0;
 
       setAsistentesPorActividad(asistentes);
@@ -163,7 +178,7 @@ const Dashboard = () => {
                 asistencia_total: participantesCount,
                 participantes: asistentes,
               }
-            : actividad
+            : actividad,
         );
 
         actualizarEstadisticas(actualizadas);
@@ -177,10 +192,13 @@ const Dashboard = () => {
               participantes: asistentes,
               asistencia_total: participantesCount,
             }
-          : prevSeleccionada
+          : prevSeleccionada,
       );
     } catch (error) {
-      console.error(`Error al cargar asistentes de la actividad ${idActividad}:`, error);
+      console.error(
+        `Error al cargar asistentes de la actividad ${idActividad}:`,
+        error,
+      );
     } finally {
       setLoading(false);
     }
@@ -192,12 +210,12 @@ const Dashboard = () => {
       const url = `${import.meta.env.VITE_API_URL}/api/admin/exportarExcelActividades?id_semestre=${semestreSeleccionado}`;
 
       const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error('Error al descargar el archivo Excel de actividades');
+        throw new Error("Error al descargar el archivo Excel de actividades");
       }
 
       // Obtener el blob de la respuesta
@@ -207,22 +225,22 @@ const Dashboard = () => {
       const fileURL = window.URL.createObjectURL(blob);
 
       // Crear un enlace temporal para la descarga
-      const fileLink = document.createElement('a');
+      const fileLink = document.createElement("a");
       fileLink.href = fileURL;
 
       // Obtener el nombre de archivo de los headers o usar uno predeterminado
-      const contentDisposition = response.headers.get('content-disposition');
-      let filename = 'actividades.xlsx';
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = "actividades.xlsx";
 
       if (contentDisposition) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(contentDisposition);
         if (matches != null && matches[1]) {
-          filename = matches[1].replace(/['"]/g, '');
+          filename = matches[1].replace(/['"]/g, "");
         }
       }
 
-      fileLink.setAttribute('download', filename);
+      fileLink.setAttribute("download", filename);
       document.body.appendChild(fileLink);
       fileLink.click();
       document.body.removeChild(fileLink);
@@ -231,8 +249,8 @@ const Dashboard = () => {
       window.URL.revokeObjectURL(fileURL);
       setLoading(false);
     } catch (error) {
-      console.error('Error al descargar actividades:', error);
-      alert('Error al descargar el archivo Excel de actividades');
+      console.error("Error al descargar actividades:", error);
+      alert("Error al descargar el archivo Excel de actividades");
       setLoading(false);
     }
   };
@@ -245,15 +263,15 @@ const Dashboard = () => {
       const url = `${import.meta.env.VITE_API_URL}/api/admin/exportarExcelEstudiantes?id_semestre=${semestreSeleccionado}`;
 
       const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Error al descargar el archivo Excel de estudiantes');
+        throw new Error("Error al descargar el archivo Excel de estudiantes");
       }
 
       // Obtener el blob de la respuesta
@@ -263,22 +281,22 @@ const Dashboard = () => {
       const fileURL = window.URL.createObjectURL(blob);
 
       // Crear un enlace temporal para la descarga
-      const fileLink = document.createElement('a');
+      const fileLink = document.createElement("a");
       fileLink.href = fileURL;
 
       // Obtener el nombre de archivo de los headers
-      const contentDisposition = response.headers.get('content-disposition');
-      let filename = 'estudiantes.xlsx';
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = "estudiantes.xlsx";
 
       if (contentDisposition) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(contentDisposition);
         if (matches != null && matches[1]) {
-          filename = matches[1].replace(/['"]/g, '');
+          filename = matches[1].replace(/['"]/g, "");
         }
       }
 
-      fileLink.setAttribute('download', filename);
+      fileLink.setAttribute("download", filename);
       document.body.appendChild(fileLink);
       fileLink.click();
       document.body.removeChild(fileLink);
@@ -287,8 +305,8 @@ const Dashboard = () => {
       window.URL.revokeObjectURL(fileURL);
       setLoading(false);
     } catch (error) {
-      console.error('Error al descargar estudiantes:', error);
-      alert('Error al descargar el archivo Excel de estudiantes');
+      console.error("Error al descargar estudiantes:", error);
+      alert("Error al descargar el archivo Excel de estudiantes");
       setLoading(false);
     }
   };
@@ -307,12 +325,12 @@ const Dashboard = () => {
       const url = `${import.meta.env.VITE_API_URL}/api/admin/descargar-plantilla`;
 
       const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error('Error al descargar la plantilla Excel');
+        throw new Error("Error al descargar la plantilla Excel");
       }
 
       // Obtener el blob de la respuesta
@@ -322,22 +340,22 @@ const Dashboard = () => {
       const fileURL = window.URL.createObjectURL(blob);
 
       // Crear un enlace temporal para la descarga
-      const fileLink = document.createElement('a');
+      const fileLink = document.createElement("a");
       fileLink.href = fileURL;
 
       // Obtener el nombre de archivo de los headers o usar uno predeterminado
-      const contentDisposition = response.headers.get('content-disposition');
-      let filename = 'plantilla_actividades.xlsx';
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = "plantilla_actividades.xlsx";
 
       if (contentDisposition) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(contentDisposition);
         if (matches != null && matches[1]) {
-          filename = matches[1].replace(/['"]/g, '');
+          filename = matches[1].replace(/['"]/g, "");
         }
       }
 
-      fileLink.setAttribute('download', filename);
+      fileLink.setAttribute("download", filename);
       document.body.appendChild(fileLink);
       fileLink.click();
       document.body.removeChild(fileLink);
@@ -346,8 +364,8 @@ const Dashboard = () => {
       window.URL.revokeObjectURL(fileURL);
       setLoading(false);
     } catch (error) {
-      console.error('Error al descargar la plantilla:', error);
-      alert('Error al descargar la plantilla Excel');
+      console.error("Error al descargar la plantilla:", error);
+      alert("Error al descargar la plantilla Excel");
       setLoading(false);
     }
   };
@@ -361,30 +379,33 @@ const Dashboard = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('id_semestre', semestreSeleccionado);
+      formData.append("file", file);
+      formData.append("id_semestre", semestreSeleccionado);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/excel`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/excel`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        },
+      );
 
       if (!response.ok) {
-        throw new Error('Error al subir el archivo Excel');
+        throw new Error("Error al subir el archivo Excel");
       }
 
       const data = await response.json();
-      alert(data.mensaje || 'Archivo Excel procesado correctamente');
+      alert(data.mensaje || "Archivo Excel procesado correctamente");
 
       // Recargar datos después de la importación exitosa
       cargarActividadesPorSemestre(semestreSeleccionado);
     } catch (error) {
-      console.error('Error al subir Excel:', error);
-      alert('Error al procesar el archivo Excel');
+      console.error("Error al subir Excel:", error);
+      alert("Error al procesar el archivo Excel");
     } finally {
       setLoading(false);
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -396,19 +417,23 @@ const Dashboard = () => {
 
     // Calcular actividades completadas y pendientes
     const fechaActual = new Date();
-    const completadas = actividades.filter((act) => new Date(act.fecha) < fechaActual).length;
+    const completadas = actividades.filter(
+      (act) => new Date(act.fecha) < fechaActual,
+    ).length;
     const pendientes = actividades.length - completadas;
 
     // Calcular total de estudiantes (suma de asistentes en todas las actividades)
     const totalEstudiantes = actividades.reduce(
       (total, act) => total + (parseInt(act.asistencia_total) || 0),
-      0
+      0,
     );
 
     // Calcular porcentaje de asistencia (total de asistentes / capacidad esperada)
     const capacidadTotal = actividades.length * 30;
     const porcentajeAsistencia =
-      capacidadTotal > 0 ? Math.round((totalEstudiantes / capacidadTotal) * 100) : 0;
+      capacidadTotal > 0
+        ? Math.round((totalEstudiantes / capacidadTotal) * 100)
+        : 0;
 
     setEstadisticas({
       estudiantes: { total: totalEstudiantes, incremento: 5 }, // El incremento podría ser dinámico
@@ -469,34 +494,38 @@ const Dashboard = () => {
 
   const getCarreraColor = (carreraNombre) => {
     const coloresCarrera = {
-      Ingeniería: 'hsl(200, 70%, 60%)',
-      Medicina: 'hsl(350, 70%, 60%)',
-      Derecho: 'hsl(120, 70%, 60%)',
-      Economía: 'hsl(40, 70%, 60%)',
-      Psicología: 'hsl(280, 70%, 60%)',
+      Ingeniería: "hsl(200, 70%, 60%)",
+      Medicina: "hsl(350, 70%, 60%)",
+      Derecho: "hsl(120, 70%, 60%)",
+      Economía: "hsl(40, 70%, 60%)",
+      Psicología: "hsl(280, 70%, 60%)",
     };
 
-    return coloresCarrera[carreraNombre] || `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+    return (
+      coloresCarrera[carreraNombre] ||
+      `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`
+    );
   };
 
   const getActividadColor = (index) => {
     const coloresPastel = [
-      '#FF6384', // Rosa
-      '#36A2EB', // Azul
-      '#FFCE56', // Amarillo
-      '#4BC0C0', // Verde azulado
-      '#9966FF', // Púrpura
-      '#FF9F40', // Naranja
-      '#8AC54A', // Verde lima
-      '#EA526F', // Rosa oscuro
-      '#00A6B4', // Azul verdoso
-      '#6D78AD', // Azul grisáceo
+      "#FF6384", // Rosa
+      "#36A2EB", // Azul
+      "#FFCE56", // Amarillo
+      "#4BC0C0", // Verde azulado
+      "#9966FF", // Púrpura
+      "#FF9F40", // Naranja
+      "#8AC54A", // Verde lima
+      "#EA526F", // Rosa oscuro
+      "#00A6B4", // Azul verdoso
+      "#6D78AD", // Azul grisáceo
     ];
     return coloresPastel[index % coloresPastel.length];
   };
 
   const calcularEstadisticasActividades = () => {
-    if (!actividadesPorSemestre || actividadesPorSemestre.length === 0) return [];
+    if (!actividadesPorSemestre || actividadesPorSemestre.length === 0)
+      return [];
 
     return actividadesPorSemestre.map((actividad, index) => ({
       id: actividad.id,
@@ -511,26 +540,26 @@ const Dashboard = () => {
   const calcularTotalParticipantes = () => {
     return actividadesPorSemestre.reduce(
       (total, actividad) => total + actividad.asistencia_total,
-      0
+      0,
     );
   };
 
   const generarSectoresCirculares = (estadisticas) => {
     if (!estadisticas || estadisticas.length === 0) {
-      return 'rgba(255, 255, 255, 0.1) 0deg 360deg';
+      return "rgba(255, 255, 255, 0.1) 0deg 360deg";
     }
 
     const totalParticipantes = estadisticas.reduce(
       (total, actividad) => total + actividad.cantidadParticipantes,
-      0
+      0,
     );
 
     if (totalParticipantes === 0) {
-      return 'rgba(255, 255, 255, 0.1) 0deg 360deg';
+      return "rgba(255, 255, 255, 0.1) 0deg 360deg";
     }
 
     let anguloAcumulado = 0;
-    let conicGradient = '';
+    let conicGradient = "";
 
     estadisticas.forEach((act, index) => {
       const porcentaje = (act.cantidadParticipantes / totalParticipantes) * 100;
@@ -548,43 +577,46 @@ const Dashboard = () => {
   };
 
   const renderNavbar = () => {
-    console.log('rpoool');
+    console.log("rpoool");
     console.log(rol);
     switch (rol) {
-      case 'administrador':
+      case "administrador":
         return <Navbar onCollapsedChange={setCollapsed} />;
-      case 'estudiante':
+      case "estudiante":
         return <NavbarE />;
-      case 'tutor':
+      case "tutor":
         return <NavbarT />;
       default:
-        alert('Tu sesión ha expirado');
+        alert("Tu sesión ha expirado");
         localStorage.clear();
-        navigate('/');
+        navigate("/");
         return null;
     }
   };
 
   const icons = {
-    estudiantes: '👨‍🎓',
-    tutores: '👨‍🏫',
-    asistencia: '📋',
-    actividad: '📝',
-    completadas: '✅',
-    pendientes: '⏳',
+    estudiantes: "👨‍🎓",
+    tutores: "👨‍🏫",
+    asistencia: "📋",
+    actividad: "📝",
+    completadas: "✅",
+    pendientes: "⏳",
   };
 
   const getIncrementoColor = (incremento) =>
-    incremento >= 0 ? 'dashboard-incremento-positivo' : 'dashboard-incremento-negativo';
+    incremento >= 0
+      ? "dashboard-incremento-positivo"
+      : "dashboard-incremento-negativo";
 
   const totalParticipantes = calcularTotalParticipantes();
   const estadisticasActividades = calcularEstadisticasActividades();
   const actividadesConParticipantes = estadisticasActividades.filter(
-    (actividad) => actividad.cantidadParticipantes > 0
+    (actividad) => actividad.cantidadParticipantes > 0,
   );
-  const hayParticipantes = totalParticipantes > 0 && actividadesConParticipantes.length > 0;
+  const hayParticipantes =
+    totalParticipantes > 0 && actividadesConParticipantes.length > 0;
 
-  if (rol === 'estudiante') {
+  if (rol === "estudiante") {
     return (
       <div className="dashboard-container">
         {renderNavbar()}
@@ -596,263 +628,288 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       {renderNavbar()}
-      <div className={`dashboard-content ${collapsed ? 'navbar-collapsed' : ''}`}>
-          <div className="dashboard-header">
-            <h1 className="dashboard-title">Wiñay XP</h1>
-            <div className="dashboard-fecha">
-              <p>
-                {new Date().toLocaleDateString('es-ES', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
+      <div
+        className={`dashboard-content ${collapsed ? "navbar-collapsed" : ""}`}
+      >
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Wiñay XP</h1>
+          <div className="dashboard-fecha">
+            <p>
+              {new Date().toLocaleDateString("es-ES", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+
+        <div className="dashboard-tabs">
+          <button
+            className={`dashboard-tab ${activeTab === "general" ? "active" : ""}`}
+            onClick={() => setActiveTab("general")}
+          >
+            General
+          </button>
+          <button
+            className="dashboard-tab dashboard-download-btn"
+            onClick={() => handleDownloadActividades()}
+          >
+            Descargar Actividades
+          </button>
+          <button
+            className="dashboard-tab dashboard-download-btn"
+            onClick={() => handleDownloadAlumnos()}
+          >
+            Descargar Estudiantes
+          </button>
+          <button
+            className="dashboard-tab dashboard-download-btn"
+            onClick={() => handleUploadExcel()}
+          >
+            Subir Plantilla Excel
+          </button>
+          <button
+            className="dashboard-tab dashboard-download-btn"
+            onClick={() => handleDownloadPlantilla()}
+          >
+            Descargar Plantilla Excel
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+            accept=".xlsx,.xls"
+          />
+        </div>
+
+        <div className="dashboard-main">
+          {loading ? (
+            <div className="dashboard-loading">
+              <div className="dashboard-spinner"></div>
+              <p>Cargando datos...</p>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="dashboard-secondary-row">
+                <div className="dashboard-actividades-recientes">
+                  <div className="dashboard-card-header">
+                    <h3>Actividades Recientes</h3>
+                    <div className="dashboard-filters">
+                      <label htmlFor="filtroSemestre">Periodo:</label>
+                      <select
+                        id="filtroSemestre"
+                        value={semestreSeleccionado}
+                        onChange={handleChangeSemestre}
+                        className="dashboard-select"
+                      >
+                        {semestres.map((semestre) => (
+                          <option
+                            key={semestre.id_semestre}
+                            value={semestre.id_semestre}
+                          >
+                            {semestre.semestre === "todos"
+                              ? "Todos"
+                              : `Periodo ${semestre.semestre}`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="dashboard-card-body">
+                    <div className="tabla-con-scroll">
+                      {actividadesPorSemestre.length > 0 ? (
+                        <table className="actividades-table">
+                          <thead>
+                            <tr>
+                              <th>Tipo</th>
+                              <th>Nombre</th>
+                              <th>Fecha</th>
+                              <th>Autor</th>
+                              <th>Participantes</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {actividadesPorSemestre.map((actividad) => (
+                              <tr
+                                key={actividad.id}
+                                className={
+                                  actividadSeleccionada?.id === actividad.id
+                                    ? "actividad-seleccionada"
+                                    : ""
+                                }
+                                onClick={() => handleSelectActividad(actividad)}
+                              >
+                                <td>
+                                  <span
+                                    className={`tipo-badge tipo-${actividad.tipo.toLowerCase()}`}
+                                  >
+                                    {actividad.tipo}
+                                  </span>
+                                </td>
+                                <td>{actividad.nombre}</td>
+                                <td>{actividad.fecha}</td>
 
-          <div className="dashboard-tabs">
-            <button
-              className={`dashboard-tab ${activeTab === 'general' ? 'active' : ''}`}
-              onClick={() => setActiveTab('general')}
-            >
-              General
-            </button>
-            <button
-              className="dashboard-tab dashboard-download-btn"
-              onClick={() => handleDownloadActividades()}
-            >
-              Descargar Actividades
-            </button>
-            <button
-              className="dashboard-tab dashboard-download-btn"
-              onClick={() => handleDownloadAlumnos()}
-            >
-              Descargar Estudiantes
-            </button>
-            <button
-              className="dashboard-tab dashboard-download-btn"
-              onClick={() => handleUploadExcel()}
-            >
-              Subir Plantilla Excel
-            </button>
-            <button
-              className="dashboard-tab dashboard-download-btn"
-              onClick={() => handleDownloadPlantilla()}
-            >
-              Descargar Plantilla Excel
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-              accept=".xlsx,.xls"
-            />
-          </div>
+                                <td>{actividad.autor}</td>
+                                <td>{actividad.asistencia_total}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div className="no-actividades">
+                          <p>
+                            No hay actividades para el semestre seleccionado
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-          <div className="dashboard-main">
-            {loading ? (
-              <div className="dashboard-loading">
-                <div className="dashboard-spinner"></div>
-                <p>Cargando datos...</p>
-              </div>
-            ) : (
-              <>
-                <div className="dashboard-secondary-row">
+                <div className="dashboard-columna-izquierda">
+                  {/* Actividades recientes */}
+                  <div className="dashboard-actividades-recientes">
+                    {/* contenido de Actividades */}
+                  </div>
+
+                  {/* Estudiantes asistentes */}
                   <div className="dashboard-actividades-recientes">
                     <div className="dashboard-card-header">
-                      <h3>Actividades Recientes</h3>
-                      <div className="dashboard-filters">
-                        <label htmlFor="filtroSemestre">Periodo:</label>
-                        <select
-                          id="filtroSemestre"
-                          value={semestreSeleccionado}
-                          onChange={handleChangeSemestre}
-                          className="dashboard-select"
-                        >
-                          {semestres.map((semestre) => (
-                            <option key={semestre.id_semestre} value={semestre.id_semestre}>
-                              {semestre.semestre === 'todos'
-                                ? 'Todos'
-                                : `Periodo ${semestre.semestre}`}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <h3>Estudiantes Asistentes</h3>
+                      {actividadSeleccionada && (
+                        <p style={{ marginTop: "0.25rem", color: "#555" }}>
+                          Actividad:{" "}
+                          <strong>{actividadSeleccionada.nombre}</strong>
+                        </p>
+                      )}
                     </div>
                     <div className="dashboard-card-body">
-                      <div className="tabla-con-scroll">
-                        {actividadesPorSemestre.length > 0 ? (
+                      {actividadSeleccionada &&
+                      asistentesPorActividad.length > 0 ? (
+                        <div className="tabla-con-scroll">
                           <table className="actividades-table">
                             <thead>
                               <tr>
-                                <th>Tipo</th>
                                 <th>Nombre</th>
-                                <th>Fecha</th>
-                                <th>Autor</th>
-                                <th>Participantes</th>
+                                <th>DNI</th>
+                                <th>Carrera</th>
+                                <th>semestre</th>
+                                <th>Fecha de Asistencia</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {actividadesPorSemestre.map((actividad) => (
-                                <tr
-                                  key={actividad.id}
-                                  className={
-                                    actividadSeleccionada?.id === actividad.id
-                                      ? 'actividad-seleccionada'
-                                      : ''
-                                  }
-                                  onClick={() => handleSelectActividad(actividad)}
-                                >
-                                  <td>
-                                    <span
-                                      className={`tipo-badge tipo-${actividad.tipo.toLowerCase()}`}
-                                    >
-                                      {actividad.tipo}
-                                    </span>
-                                  </td>
-                                  <td>{actividad.nombre}</td>
-                                  <td>{actividad.fecha}</td>
-
-                                  <td>{actividad.autor}</td>
-                                  <td>{actividad.asistencia_total}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        ) : (
-                          <div className="no-actividades">
-                            <p>No hay actividades para el semestre seleccionado</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="dashboard-columna-izquierda">
-                    {/* Actividades recientes */}
-                    <div className="dashboard-actividades-recientes">
-                      {/* contenido de Actividades */}
-                    </div>
-
-                    {/* Estudiantes asistentes */}
-                    <div className="dashboard-actividades-recientes">
-                      <div className="dashboard-card-header">
-                        <h3>Estudiantes Asistentes</h3>
-                        {actividadSeleccionada && (
-                          <p style={{ marginTop: '0.25rem', color: '#555' }}>
-                            Actividad: <strong>{actividadSeleccionada.nombre}</strong>
-                          </p>
-                        )}
-                      </div>
-                      <div className="dashboard-card-body">
-                        {actividadSeleccionada && asistentesPorActividad.length > 0 ? (
-                          <div className="tabla-con-scroll">
-                            <table className="actividades-table">
-                              <thead>
-                                <tr>
-                                  <th>Nombre</th>
-                                  <th>DNI</th>
-                                  <th>Carrera</th>
-                                  <th>semestre</th>
-                                  <th>Fecha de Asistencia</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {asistentesPorActividad.map((asistente, index) => (
+                              {asistentesPorActividad.map(
+                                (asistente, index) => (
                                   <tr key={index}>
                                     <td>{asistente.nombre}</td>
                                     <td>{asistente.dni}</td>
                                     <td>{asistente.carrera}</td>
                                     <td>{asistente.semestre}</td>
                                     <td>
-                                      {new Date(asistente.fecha_asistencia).toLocaleString('es-PE')}
+                                      {new Date(
+                                        asistente.fecha_asistencia,
+                                      ).toLocaleString("es-PE")}
                                     </td>
                                   </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : (
-                          <div className="no-actividades">
-                            <p>
-                              {actividadSeleccionada
-                                ? 'No hay asistentes registrados para esta actividad.'
-                                : 'Selecciona una actividad para ver los asistentes.'}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Gráfico circular simplificado de participantes por actividad */}
-                  <div className="dashboard-grafico-container">
-                    <div className="dashboard-card-header">
-                      <h3>Distribución de Participantes</h3>
-                      <span className="actividad-detalles">
-                        {totalParticipantes} estudiantes en total
-                      </span>
-                    </div>
-                    <div className="dashboard-card-body">
-                      {actividadesPorSemestre.length === 0 ? (
-                        <div className="no-actividad-seleccionada">
-                          <div className="mensaje-seleccion">
-                            <span className="icono-seleccion">📊</span>
-                            <p>No hay actividades para mostrar en este semestre</p>
-                          </div>
-                        </div>
-                      ) : !hayParticipantes ? (
-                        <div className="no-actividad-seleccionada">
-                          <div className="mensaje-seleccion">
-                            <span className="icono-seleccion">�Y"S</span>
-                            <p>No hay participantes registrados en las actividades seleccionadas</p>
-                          </div>
+                                ),
+                              )}
+                            </tbody>
+                          </table>
                         </div>
                       ) : (
-                        <div className="grafico-container-centrado">
-                          {/* Gráfico circular mejorado */}
-                          <div className="grafico-circular-container">
-                            <div
-                              className="grafico-circular"
-                              style={{
-                                background: `conic-gradient(${generarSectoresCirculares(
-                                  actividadesConParticipantes
-                                )})`,
-                              }}
-                            >
-                              <div className="circulo-centro">
-                                <span className="circulo-total">{totalParticipantes}</span>
-                                <span className="circulo-label">Total</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Mini leyenda simplificada */}
-                          <div className="grafico-mini-leyenda">
-                            {actividadesConParticipantes.map((actividad) => (
-                              <div className="mini-leyenda-item" key={actividad.id}>
-                                <span
-                                  className="mini-leyenda-color"
-                                  style={{ backgroundColor: actividad.color }}
-                                ></span>
-                                <span className="mini-leyenda-nombre">{actividad.nombre}</span>
-                              </div>
-                            ))}
-                          </div>
+                        <div className="no-actividades">
+                          <p>
+                            {actividadSeleccionada
+                              ? "No hay asistentes registrados para esta actividad."
+                              : "Selecciona una actividad para ver los asistentes."}
+                          </p>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              </>
-            )}
-          </div>
+
+                {/* Gráfico circular simplificado de participantes por actividad */}
+                <div className="dashboard-grafico-container">
+                  <div className="dashboard-card-header">
+                    <h3>Distribución de Participantes</h3>
+                    <span className="actividad-detalles">
+                      {totalParticipantes} estudiantes en total
+                    </span>
+                  </div>
+                  <div className="dashboard-card-body">
+                    {actividadesPorSemestre.length === 0 ? (
+                      <div className="no-actividad-seleccionada">
+                        <div className="mensaje-seleccion">
+                          <span className="icono-seleccion">📊</span>
+                          <p>
+                            No hay actividades para mostrar en este semestre
+                          </p>
+                        </div>
+                      </div>
+                    ) : !hayParticipantes ? (
+                      <div className="no-actividad-seleccionada">
+                        <div className="mensaje-seleccion">
+                          <span className="icono-seleccion">�Y"S</span>
+                          <p>
+                            No hay participantes registrados en las actividades
+                            seleccionadas
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grafico-container-centrado">
+                        {/* Gráfico circular mejorado */}
+                        <div className="grafico-circular-container">
+                          <div
+                            className="grafico-circular"
+                            style={{
+                              background: `conic-gradient(${generarSectoresCirculares(
+                                actividadesConParticipantes,
+                              )})`,
+                            }}
+                          >
+                            <div className="circulo-centro">
+                              <span className="circulo-total">
+                                {totalParticipantes}
+                              </span>
+                              <span className="circulo-label">Total</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Mini leyenda simplificada */}
+                        <div className="grafico-mini-leyenda">
+                          {actividadesConParticipantes.map((actividad) => (
+                            <div
+                              className="mini-leyenda-item"
+                              key={actividad.id}
+                            >
+                              <span
+                                className="mini-leyenda-color"
+                                style={{ backgroundColor: actividad.color }}
+                              ></span>
+                              <span className="mini-leyenda-nombre">
+                                {actividad.nombre}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 // Función para descargar actividades en Excel
 

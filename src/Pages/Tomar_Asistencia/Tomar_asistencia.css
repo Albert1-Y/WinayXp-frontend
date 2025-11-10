@@ -5,7 +5,9 @@
   width: calc(100vw - 220px);
   padding: clamp(24px, 3vw, 40px);
   box-sizing: border-box;
-  transition: margin-left 0.3s ease, width 0.3s ease;
+  transition:
+    margin-left 0.3s ease,
+    width 0.3s ease;
   color: var(--text-main);
   overflow-x: hidden;
   overflow-y: auto;
@@ -16,7 +18,7 @@
 }
 
 .asistencia-detalle-container::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
@@ -24,9 +26,21 @@
   height: 200vmax;
   pointer-events: none;
   background:
-    radial-gradient(55% 55% at 30% 20%, rgba(246, 199, 67, 0.24), transparent 70%),
-    radial-gradient(50% 50% at 70% 65%, rgba(138, 77, 255, 0.3), transparent 72%),
-    radial-gradient(45% 45% at 20% 70%, rgba(94, 162, 255, 0.18), transparent 78%);
+    radial-gradient(
+      55% 55% at 30% 20%,
+      rgba(246, 199, 67, 0.24),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 50% at 70% 65%,
+      rgba(138, 77, 255, 0.3),
+      transparent 72%
+    ),
+    radial-gradient(
+      45% 45% at 20% 70%,
+      rgba(94, 162, 255, 0.18),
+      transparent 78%
+    );
   filter: blur(140px);
   opacity: 0.58;
   transform: translate(-48vmax, -60vmax);
@@ -36,7 +50,11 @@
 .asistencia-detalle-content {
   position: relative;
   z-index: 1;
-  background: linear-gradient(150deg, rgba(18, 12, 58, 0.86), rgba(9, 6, 32, 0.88));
+  background: linear-gradient(
+    150deg,
+    rgba(18, 12, 58, 0.86),
+    rgba(9, 6, 32, 0.88)
+  );
   border: 1px solid var(--surface-border);
   border-radius: 28px;
   padding: clamp(22px, 2.6vw, 32px);
@@ -146,4 +164,3 @@
   font-size: 0.8rem;
   background: rgba(138, 77, 255, 0.28);
 }
-

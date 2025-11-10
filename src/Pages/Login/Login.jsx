@@ -1,34 +1,34 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
-import './Login.css';
-import Button from '../../components/button/Button';
-import Table from '../../components/Table/Table';
-import TextField from '../../components/TextField/TextField';
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import "./Login.css";
+import Button from "../../components/button/Button";
+import Table from "../../components/Table/Table";
+import TextField from "../../components/TextField/TextField";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { rol, setRol } = useContext(AuthContext);
   const [rankingData, setRankingData] = useState([]);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // Estado para el mensaje de error
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
   useEffect(() => {
     // Mostrar error si viene desde una ruta protegida
     if (location.state && location.state.error) {
       setErrorMessage(location.state.error);
       // Limpiar el estado de navegación para que no reaparezca al refrescar
-      navigate('/', { replace: true, state: null });
+      navigate("/", { replace: true, state: null });
     }
   }, [location.state, navigate]);
 
   useEffect(() => {
-    if (rol === 'administrador' || rol === 'tutor' || rol === 'estudiante') {
-      navigate('/dashboard');
+    if (rol === "administrador" || rol === "tutor" || rol === "estudiante") {
+      navigate("/dashboard");
     } else if (rol === null || rol === undefined) {
-      navigate('/');
+      navigate("/");
     }
   }, [rol]);
 
@@ -63,7 +63,7 @@ const Login = () => {
         setRankingData(sortedData);
       })
       .catch((error) => {
-        console.error('Error al obtener el ranking:', error);
+        console.error("Error al obtener el ranking:", error);
       });
   }, []);
 
@@ -72,23 +72,30 @@ const Login = () => {
   }, [rankingData]);
 
   // Columnas para la tabla, actualizadas para mostrar solo las que necesitamos
-  const columns = ['Pos', 'Nombre', 'Apellido', 'Carrera', 'Semestre', 'Puntos CEDHI'];
+  const columns = [
+    "Pos",
+    "Nombre",
+    "Apellido",
+    "Carrera",
+    "Semestre",
+    "Puntos CEDHI",
+  ];
 
   // Custom render para las filas
   const customRender = (column, row, index) => {
     switch (column) {
-      case 'Pos':
+      case "Pos":
         return index + 1;
-      case 'Nombre':
+      case "Nombre":
         return row.nombre;
-      case 'Apellido':
+      case "Apellido":
         return row.apellido;
-      case 'Carrera':
+      case "Carrera":
         return row.carrera;
-      case 'Semestre': {
+      case "Semestre": {
         const value = row.semestre_display ?? row.semestre;
         if (!value && value !== 0) {
-          return 'N/A';
+          return "N/A";
         }
         const numericValue = Number(value);
         if (!Number.isNaN(numericValue) && `${numericValue}` === `${value}`) {
@@ -96,7 +103,7 @@ const Login = () => {
         }
         return value;
       }
-      case 'Puntos CEDHI':
+      case "Puntos CEDHI":
         return row.credito_total;
       default:
         return row[column];
@@ -107,16 +114,16 @@ const Login = () => {
     e.preventDefault(); // Evita que el formulario recargue la página
 
     // Resetear cualquier mensaje de error previo
-    setErrorMessage('');
+    setErrorMessage("");
 
     // Validaciones básicas
     if (!email.trim()) {
-      setErrorMessage('El correo electrónico es obligatorio');
+      setErrorMessage("El correo electrónico es obligatorio");
       return;
     }
 
     if (!password.trim()) {
-      setErrorMessage('La contraseña es obligatoria');
+      setErrorMessage("La contraseña es obligatoria");
       return;
     }
 
@@ -127,12 +134,12 @@ const Login = () => {
 
     // Realiza el POST para enviar email y password
     fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(loginData),
-      credentials: 'include',
+      credentials: "include",
     })
       .then((response) => {
         if (response.ok) {
@@ -140,35 +147,43 @@ const Login = () => {
         } else {
           // Verificar el tipo de error según el código de estado
           if (response.status === 401) {
-            throw new Error('Credenciales incorrectas. Verifica tu correo y contraseña.');
+            throw new Error(
+              "Credenciales incorrectas. Verifica tu correo y contraseña.",
+            );
           } else if (response.status === 404) {
-            throw new Error('Usuario no encontrado. Verifica tu correo electrónico.');
+            throw new Error(
+              "Usuario no encontrado. Verifica tu correo electrónico.",
+            );
           } else if (response.status === 403) {
-            throw new Error('Acceso denegado. Tu cuenta podría estar desactivada.');
+            throw new Error(
+              "Acceso denegado. Tu cuenta podría estar desactivada.",
+            );
           } else {
-            throw new Error('Error en el servidor. Intenta más tarde.');
+            throw new Error("Error en el servidor. Intenta más tarde.");
           }
         }
       })
       .then((data) => {
         setRol(data.rol); // Guardamos el rol en el contexto
         switch (data.rol) {
-          case 'administrador':
-            navigate('/dashboard');
+          case "administrador":
+            navigate("/dashboard");
             break;
-          case 'estudiante':
-            navigate('/dashboard');
+          case "estudiante":
+            navigate("/dashboard");
             break;
-          case 'tutor':
-            navigate('/dashboard');
+          case "tutor":
+            navigate("/dashboard");
             break;
           default:
-            setErrorMessage('Rol de usuario no reconocido');
+            setErrorMessage("Rol de usuario no reconocido");
         }
       })
       .catch((error) => {
-        console.error('Error en la autenticación:', error);
-        setErrorMessage(error.message || 'Error al iniciar sesión. Intenta nuevamente.');
+        console.error("Error en la autenticación:", error);
+        setErrorMessage(
+          error.message || "Error al iniciar sesión. Intenta nuevamente.",
+        );
       });
   };
 
@@ -190,7 +205,6 @@ const Login = () => {
             <span> Evoluciona. Crece. Trasciende.</span>
           </p>
         </header>
-
 
         <section className="login-panels">
           <div className="panel card-form">
@@ -214,7 +228,9 @@ const Login = () => {
                 />
               </div>
 
-              {errorMessage && <div className="error-message">{errorMessage}</div>}
+              {errorMessage && (
+                <div className="error-message">{errorMessage}</div>
+              )}
 
               <Button text="Iniciar sesión" styleType="black" type="submit" />
             </form>
@@ -239,7 +255,11 @@ const Login = () => {
             </div>
 
             {rankingData.length > 0 ? (
-              <Table columns={columns} data={rankingData.slice(0, 10)} customRender={customRender} />
+              <Table
+                columns={columns}
+                data={rankingData.slice(0, 10)}
+                customRender={customRender}
+              />
             ) : (
               <div className="ranking-empty">
                 <p>No se pudo cargar el ranking en este momento.</p>

@@ -1,5 +1,5 @@
-import React, { useEffect, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useEffect, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 // Este componente interceptará errores 401 globalmente
 const AuthHandler = () => {
@@ -14,14 +14,14 @@ const AuthHandler = () => {
 
         // Si la respuesta es 401, ejecutamos el logout
         if (response.status === 401) {
-          console.log('Error 401: Sesión expirada o no autorizada');
+          console.log("Error 401: Sesión expirada o no autorizada");
           logout();
-          return Promise.reject(new Error('No autorizado'));
+          return Promise.reject(new Error("No autorizado"));
         }
 
         return response;
       } catch (error) {
-        console.error('Error en fetch:', error);
+        console.error("Error en fetch:", error);
         throw error;
       }
     };

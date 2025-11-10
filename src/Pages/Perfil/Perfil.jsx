@@ -5,20 +5,21 @@ import React, {
   useLayoutEffect,
   useMemo,
   useState,
-} from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import './Perfil.css';
-import NavbarE from '../Navbar/NavbarE';
+} from "react";
+import { AuthContext } from "../../context/AuthContext";
+import "./Perfil.css";
+import NavbarE from "../Navbar/NavbarE";
+
 const formatFechaMovimiento = (valor) => {
-  if (!valor) return '-';
+  if (!valor) return "-";
   const fecha = new Date(valor);
   if (Number.isNaN(fecha.getTime())) return valor;
-  return fecha.toLocaleString('es-PE', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  return fecha.toLocaleString("es-PE", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
@@ -27,60 +28,63 @@ const Perfil = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [datos, setDatos] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [actividadesRecientes, setActividadesRecientes] = useState([]);
   const [imagenPerfil, setImagenPerfil] = useState(null);
   const [imagenError, setImagenError] = useState(false);
   const [nivelesPendientes, setNivelesPendientes] = useState([]);
   const [animIndex, setAnimIndex] = useState(0);
   const [mostrandoOverlay, setMostrandoOverlay] = useState(false);
-  const [overlayStage, setOverlayStage] = useState('video'); // 'video' | 'card'
+  const [overlayStage, setOverlayStage] = useState("video"); // 'video' | 'card'
   const [confirmandoNivel, setConfirmandoNivel] = useState(false);
   const [videoDisponible, setVideoDisponible] = useState(true);
-  const estudianteDni = datos?.dni || '';
+  const estudianteDni = datos?.dni || "";
 
   useLayoutEffect(() => {
     const root = document.documentElement;
-    const navbarElement = document.querySelector('.navbar-container');
+    const navbarElement = document.querySelector(".navbar-container");
 
     if (!navbarElement) {
-      root.style.setProperty('--navbar-current-width', '220px');
+      root.style.setProperty("--navbar-current-width", "220px");
       setCollapsed(false);
       return () => {
-        root.style.removeProperty('--navbar-current-width');
+        root.style.removeProperty("--navbar-current-width");
       };
     }
 
     const updateLayoutFromNavbar = () => {
       const width = navbarElement.getBoundingClientRect().width || 0;
-      root.style.setProperty('--navbar-current-width', `${width}px`);
-      setCollapsed(navbarElement.classList.contains('collapsed'));
+      root.style.setProperty("--navbar-current-width", `${width}px`);
+      setCollapsed(navbarElement.classList.contains("collapsed"));
     };
 
     updateLayoutFromNavbar();
 
     let resizeObserver = null;
-    if (typeof ResizeObserver !== 'undefined') {
+    if (typeof ResizeObserver !== "undefined") {
       resizeObserver = new ResizeObserver(() => {
         updateLayoutFromNavbar();
       });
       resizeObserver.observe(navbarElement);
     } else {
-      window.addEventListener('resize', updateLayoutFromNavbar);
+      window.addEventListener("resize", updateLayoutFromNavbar);
     }
 
     let mutationObserver = null;
-    if (typeof MutationObserver !== 'undefined') {
+    if (typeof MutationObserver !== "undefined") {
       mutationObserver = new MutationObserver(updateLayoutFromNavbar);
-      mutationObserver.observe(navbarElement, { attributes: true, attributeFilter: ['class'] });
+      mutationObserver.observe(navbarElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
     }
 
     return () => {
-      root.style.removeProperty('--navbar-current-width');
+      root.style.removeProperty("--navbar-current-width");
       if (resizeObserver) {
         resizeObserver.disconnect();
       } else {
-        window.removeEventListener('resize', updateLayoutFromNavbar);
+        window.removeEventListener("resize", updateLayoutFromNavbar);
       }
       if (mutationObserver) {
         mutationObserver.disconnect();
@@ -90,44 +94,48 @@ const Perfil = () => {
 
   // Cargar datos del estudiante
   useEffect(() => {
-    if (rol === 'estudiante') {
+    if (rol === "estudiante") {
       const cargarDatosEstudiante = fetch(
         `${import.meta.env.VITE_API_URL}/api/estudiante/InitEstudiante`,
         {
-          method: 'GET',
-          credentials: 'include',
-        }
+          method: "GET",
+          credentials: "include",
+        },
       );
 
       const actividadesUrl = `${import.meta.env.VITE_API_URL}/api/estudiante/getActividadesAsistidas?limit=50`;
       const cargarActividades = fetch(actividadesUrl, {
-        method: 'GET',
-        credentials: 'include',
-      }).catch(() => ({ ok: false, headers: new Headers(), text: () => Promise.resolve('') }));
+        method: "GET",
+        credentials: "include",
+      }).catch(() => ({
+        ok: false,
+        headers: new Headers(),
+        text: () => Promise.resolve(""),
+      }));
 
       Promise.all([cargarDatosEstudiante, cargarActividades])
         .then(async ([resDatos, resActividades]) => {
           // Datos del estudiante
           if (!resDatos.ok) {
-            const ct = resDatos.headers.get('content-type') || '';
-            if (ct.includes('application/json')) {
+            const ct = resDatos.headers.get("content-type") || "";
+            if (ct.includes("application/json")) {
               const err = await resDatos.json();
-              throw new Error(err?.msg || 'Error al obtener datos');
+              throw new Error(err?.msg || "Error al obtener datos");
             } else {
               const txt = await resDatos.text();
-              throw new Error(txt || 'Error al obtener datos');
+              throw new Error(txt || "Error al obtener datos");
             }
           }
-          const ctDatos = resDatos.headers.get('content-type') || '';
-          const datosEstudiante = ctDatos.includes('application/json')
+          const ctDatos = resDatos.headers.get("content-type") || "";
+          const datosEstudiante = ctDatos.includes("application/json")
             ? await resDatos.json()
             : null;
 
           // Actividades asistidas
           let actividades = [];
           if (resActividades && resActividades.ok) {
-            const ctAct = resActividades.headers.get('content-type') || '';
-            if (ctAct.includes('application/json')) {
+            const ctAct = resActividades.headers.get("content-type") || "";
+            if (ctAct.includes("application/json")) {
               try {
                 actividades = await resActividades.json();
               } catch (_) {
@@ -136,7 +144,7 @@ const Perfil = () => {
             }
           } else if (resActividades && !resActividades.ok) {
             console.warn(
-              'Historial estudiante no disponible:',
+              "Historial estudiante no disponible:",
               resActividades.status,
               await resActividades.text(),
             );
@@ -150,7 +158,7 @@ const Perfil = () => {
               datosEstudiante.url_foto,
               datosEstudiante.foto_url,
               datosEstudiante.imagen_persona,
-            ].find((src) => typeof src === 'string' && src.trim().length > 0);
+            ].find((src) => typeof src === "string" && src.trim().length > 0);
 
             setImagenPerfil(posibleAvatar || null);
             setImagenError(false);
@@ -161,22 +169,24 @@ const Perfil = () => {
             if (pendientes.length > 0) {
               setNivelesPendientes(pendientes);
               setAnimIndex(0);
-              setOverlayStage('video');
+              setOverlayStage("video");
               setMostrandoOverlay(true);
             } else {
               setNivelesPendientes([]);
               setMostrandoOverlay(false);
             }
           } else {
-            throw new Error('Respuesta inválida de datos');
+            throw new Error("Respuesta inválida de datos");
           }
 
-          setActividadesRecientes(Array.isArray(actividades) ? actividades : []);
+          setActividadesRecientes(
+            Array.isArray(actividades) ? actividades : [],
+          );
           setLoading(false);
         })
         .catch((err) => {
           console.error(err);
-          setError('No se pudieron cargar tus datos. Intenta más tarde.');
+          setError("No se pudieron cargar tus datos. Intenta más tarde.");
           setLoading(false);
         });
     }
@@ -188,11 +198,11 @@ const Perfil = () => {
   const progreso = nivelActual?.progreso ?? 0;
   const avatarNivel = nivelActual?.nombre_imagen
     ? `/ImagenNiveles/${nivelActual.nombre_imagen}`
-    : '/ImagenNiveles/semilla.png';
+    : "/ImagenNiveles/semilla.png";
   const nivelPendienteActual = nivelesPendientes[animIndex] || null;
   const obtenerVideoNivel = (nivel) => {
     if (!nivel?.nombre_imagen) return null;
-    const base = nivel.nombre_imagen.replace(/\.[^.]+$/, '');
+    const base = nivel.nombre_imagen.replace(/\.[^.]+$/, "");
     if (!base) return null;
     return `/VideosNiveles/${base}.mp4`;
   };
@@ -202,23 +212,26 @@ const Perfil = () => {
 
   useEffect(() => {
     setVideoDisponible(true);
-    setOverlayStage(videoNivelActual ? 'video' : 'card');
+    setOverlayStage(videoNivelActual ? "video" : "card");
   }, [videoNivelActual]);
   const avatarSrc = useMemo(() => {
-    const isAbsoluteUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
-    const apiBase = import.meta.env.VITE_API_URL || '';
-    const normalizeBase = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
+    const isAbsoluteUrl = (value) =>
+      typeof value === "string" && /^https?:\/\//i.test(value);
+    const apiBase = import.meta.env.VITE_API_URL || "";
+    const normalizeBase = apiBase.endsWith("/")
+      ? apiBase.slice(0, -1)
+      : apiBase;
 
     if (imagenPerfil && !imagenError) {
       if (isAbsoluteUrl(imagenPerfil)) {
         return imagenPerfil;
       }
 
-      if (imagenPerfil.startsWith('/')) {
+      if (imagenPerfil.startsWith("/")) {
         return normalizeBase ? `${normalizeBase}${imagenPerfil}` : imagenPerfil;
       }
 
-      const sanitizedPath = imagenPerfil.startsWith('uploads/')
+      const sanitizedPath = imagenPerfil.startsWith("uploads/")
         ? `/${imagenPerfil}`
         : `/uploads/${imagenPerfil}`;
 
@@ -236,66 +249,68 @@ const Perfil = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/estudiante/confirmarNivel`,
         {
-          method: 'PUT',
-          credentials: 'include',
+          method: "PUT",
+          credentials: "include",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ id_nivel: ultimo.id_nivel }),
-        }
+        },
       );
 
       if (!response.ok) {
-        console.error('No se pudo confirmar el nivel');
+        console.error("No se pudo confirmar el nivel");
       }
     } catch (error) {
-      console.error('Error confirmando nivel:', error);
+      console.error("Error confirmando nivel:", error);
     } finally {
       setConfirmandoNivel(false);
       setDatos((prev) =>
         prev
           ? {
               ...prev,
-              nivel: nivelesPendientes[nivelesPendientes.length - 1] || prev.nivel,
+              nivel:
+                nivelesPendientes[nivelesPendientes.length - 1] || prev.nivel,
               niveles_pendientes: [],
             }
-          : prev
+          : prev,
       );
       setNivelesPendientes([]);
     }
   }, [nivelesPendientes]);
 
   const avanzarAnimacion = useCallback(() => {
-    if (overlayStage === 'video') {
-      setOverlayStage('card');
+    if (overlayStage === "video") {
+      setOverlayStage("card");
       return;
     }
 
     if (animIndex < nivelesPendientes.length - 1) {
       setAnimIndex((idx) => idx + 1);
-      setOverlayStage('video');
+      setOverlayStage("video");
       setVideoDisponible(true);
     } else {
       setMostrandoOverlay(false);
       confirmarNiveles();
       setAnimIndex(0);
-      setOverlayStage('video');
+      setOverlayStage("video");
     }
   }, [overlayStage, animIndex, nivelesPendientes, confirmarNiveles]);
 
   const renderNavbar = () => {
-    if (rol === 'estudiante') return <NavbarE onCollapsedChange={setCollapsed} />;
+    if (rol === "estudiante")
+      return <NavbarE onCollapsedChange={setCollapsed} />;
     return null;
   };
 
-  if (rol !== 'estudiante') return null;
+  if (rol !== "estudiante") return null;
 
   return (
     <>
       {renderNavbar()}
       {mostrandoOverlay && nivelPendienteActual && (
         <div className="nivel-overlay">
-          {overlayStage === 'video' && videoNivelActual && videoDisponible ? (
+          {overlayStage === "video" && videoNivelActual && videoDisponible ? (
             <>
               <video
                 className="nivel-video-background"
@@ -314,15 +329,18 @@ const Perfil = () => {
                   autoPlay
                   playsInline
                   muted
-                  onEnded={() => setOverlayStage('card')}
+                  onEnded={() => setOverlayStage("card")}
                   onError={() => {
                     setVideoDisponible(false);
-                    setOverlayStage('card');
+                    setOverlayStage("card");
                   }}
                 >
                   <track kind="captions" />
                 </video>
-                <button className="nivel-video-skip" onClick={() => setOverlayStage('card')}>
+                <button
+                  className="nivel-video-skip"
+                  onClick={() => setOverlayStage("card")}
+                >
                   Saltar animación
                 </button>
               </div>
@@ -330,19 +348,22 @@ const Perfil = () => {
           ) : (
             <div className="nivel-modal">
               <h2>¡Has alcanzado un nuevo nivel!</h2>
-              <p className="nivel-modal-subtitle">{nivelPendienteActual.nombre_nivel}</p>
+              <p className="nivel-modal-subtitle">
+                {nivelPendienteActual.nombre_nivel}
+              </p>
               <div className="nivel-modal-body">
                 <img
                   src={
                     nivelPendienteActual.nombre_imagen
                       ? `/ImagenNiveles/${nivelPendienteActual.nombre_imagen}`
-                      : '/ImagenNiveles/semilla.png'
+                      : "/ImagenNiveles/semilla.png"
                   }
                   alt={nivelPendienteActual.nombre_nivel}
                 />
                 <div className="nivel-modal-text">
                   <p>
-                    Rango: {nivelPendienteActual.rango_inicio} – {nivelPendienteActual.rango_fin}
+                    Rango: {nivelPendienteActual.rango_inicio} –{" "}
+                    {nivelPendienteActual.rango_fin}
                   </p>
                   {nivelPendienteActual.descripcion && (
                     <p>{nivelPendienteActual.descripcion}</p>
@@ -355,26 +376,36 @@ const Perfil = () => {
                 disabled={confirmandoNivel}
               >
                 {animIndex < nivelesPendientes.length - 1
-                  ? 'Siguiente nivel'
+                  ? "Siguiente nivel"
                   : confirmandoNivel
-                    ? 'Confirmando...'
-                    : 'Entendido'}
+                    ? "Confirmando..."
+                    : "Entendido"}
               </button>
             </div>
           )}
         </div>
       )}
-      <div className={`perfil-container ${collapsed ? 'navbar-collapsed' : ''}`}>
+      <div
+        className={`perfil-container ${collapsed ? "navbar-collapsed" : ""}`}
+      >
         <div className="perfil-content">
           {loading ? (
             <div className="perfil-loading">
-              <img src="/Winay.png" alt="Winay XP Logo" className="perfil-logo" />
+              <img
+                src="/Winay.png"
+                alt="Winay XP Logo"
+                className="perfil-logo"
+              />
               <div className="perfil-spinner"></div>
               <p>Cargando tu perfil...</p>
             </div>
           ) : error ? (
             <div className="perfil-error-container">
-              <img src="/Winay.png" alt="Winay XP Logo" className="perfil-logo error-logo" />
+              <img
+                src="/Winay.png"
+                alt="Winay XP Logo"
+                className="perfil-logo error-logo"
+              />
               <div className="perfil-error">{error}</div>
             </div>
           ) : (
@@ -395,7 +426,7 @@ const Perfil = () => {
                         onError={handleImageError}
                       />
                       <div className="perfil-nivel-badge">
-                        {nivelActual?.nombre_nivel || 'Sin nivel'}
+                        {nivelActual?.nombre_nivel || "Sin nivel"}
                       </div>
                     </div>
                     <div className="perfil-info-principal">
@@ -405,7 +436,7 @@ const Perfil = () => {
                       <p className="perfil-carrera">{datos.nombre_carrera}</p>
                       <div className="perfil-nivel-info">
                         <span className="nivel-actual">
-                          {nivelActual?.nombre_nivel || 'Sin nivel'}
+                          {nivelActual?.nombre_nivel || "Sin nivel"}
                         </span>
                         <div className="barra-nivel-container">
                           <div className="nivel-barra">
@@ -416,15 +447,13 @@ const Perfil = () => {
                               }}
                             ></div>
                           </div>
-                          <div className="nivel-porcentaje">
-                            {progreso}%
-                          </div>
+                          <div className="nivel-porcentaje">{progreso}%</div>
                         </div>
                         <p className="nivel-actual">
-                          Nivel actual: {nivelActual?.id_nivel ?? '—'}
+                          Nivel actual: {nivelActual?.id_nivel ?? "—"}
                         </p>
                         <p className="nivel-descripcion">
-                          {nivelActual?.descripcion || ''}
+                          {nivelActual?.descripcion || ""}
                         </p>
                       </div>
                     </div>
@@ -433,7 +462,8 @@ const Perfil = () => {
                   <div className="perfil-datos">
                     <div className="datos-columna">
                       <p>
-                        <span className="datos-etiqueta">Semestre:</span> {datos.semestre}
+                        <span className="datos-etiqueta">Semestre:</span>{" "}
+                        {datos.semestre}
                       </p>
                       <p>
                         <span className="datos-etiqueta">DNI:</span> {datos.dni}
@@ -441,10 +471,11 @@ const Perfil = () => {
                     </div>
                     <div className="datos-columna">
                       <p>
-                        <span className="datos-etiqueta">Email:</span> {datos.email}
+                        <span className="datos-etiqueta">Email:</span>{" "}
+                        {datos.email}
                       </p>
                       <p>
-                        <span className="datos-etiqueta">Estado:</span>{' '}
+                        <span className="datos-etiqueta">Estado:</span>{" "}
                         <span className="estado-activo">{datos.rol}</span>
                       </p>
                     </div>
@@ -455,20 +486,23 @@ const Perfil = () => {
                 <div className="estadisticas-container">
                   {[
                     {
-                      titulo: 'Puntos',
+                      titulo: "Puntos",
                       valor: datos.credito_total || 0,
-                      icono: '⭐',
-                      color: 'rgba(246, 199, 67, 0.25)',
+                      icono: "⭐",
+                      color: "rgba(246, 199, 67, 0.25)",
                     },
                     {
-                      titulo: 'Puntos Disponibles',
+                      titulo: "Puntos Disponibles",
                       valor: datos.cobro_credito || 0,
-                      icono: '💰',
-                      color: 'rgba(16, 185, 129, 0.25)',
+                      icono: "💰",
+                      color: "rgba(16, 185, 129, 0.25)",
                     },
                   ].map((stat, i) => (
                     <div className="estadistica-card" key={i}>
-                      <div className="estadistica-icono" style={{ backgroundColor: stat.color }}>
+                      <div
+                        className="estadistica-icono"
+                        style={{ backgroundColor: stat.color }}
+                      >
                         {stat.icono}
                       </div>
                       <div className="estadistica-info">
@@ -498,16 +532,27 @@ const Perfil = () => {
                           {actividadesRecientes.map((mov) => {
                             const creditos = Number(mov.creditos ?? 0);
                             return (
-                              <tr key={mov.id_movimiento ?? `${mov.fecha_asistencia}-${mov.motivo}`}>
-                                <td>{formatFechaMovimiento(mov.fecha_asistencia)}</td>
-                                <td className={`tipo-badge tipo-${mov.tipo_movimiento || 'otro'}`}>
-                                  {mov.tipo_movimiento || '—'}
+                              <tr
+                                key={
+                                  mov.id_movimiento ??
+                                  `${mov.fecha_asistencia}-${mov.motivo}`
+                                }
+                              >
+                                <td>
+                                  {formatFechaMovimiento(mov.fecha_asistencia)}
                                 </td>
-                                <td>{mov.nombre_actividad || mov.motivo || '—'}</td>
+                                <td
+                                  className={`tipo-badge tipo-${mov.tipo_movimiento || "otro"}`}
+                                >
+                                  {mov.tipo_movimiento || "—"}
+                                </td>
+                                <td>
+                                  {mov.nombre_actividad || mov.motivo || "—"}
+                                </td>
                                 <td>
                                   <span
                                     className={`perfil-historial-credito ${
-                                      creditos >= 0 ? 'positivo' : 'negativo'
+                                      creditos >= 0 ? "positivo" : "negativo"
                                     }`}
                                   >
                                     {creditos > 0 ? `+${creditos}` : creditos}
@@ -515,8 +560,8 @@ const Perfil = () => {
                                 </td>
                                 <td>
                                   <div className="autor-col">
-                                    <span>{mov.autor || 'Sistema'}</span>
-                                    <small>{mov.rol_autor || ''}</small>
+                                    <span>{mov.autor || "Sistema"}</span>
+                                    <small>{mov.rol_autor || ""}</small>
                                   </div>
                                 </td>
                               </tr>

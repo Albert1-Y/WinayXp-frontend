@@ -4,7 +4,9 @@
   margin-left: 220px;
   width: calc(100vw - 220px);
   padding: clamp(24px, 3vw, 40px);
-  transition: margin-left 0.3s ease, width 0.3s ease;
+  transition:
+    margin-left 0.3s ease,
+    width 0.3s ease;
   color: var(--text-main);
   overflow-x: hidden;
   overflow-y: auto;
@@ -15,21 +17,36 @@
 }
 
 .actividades-container::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -45%;
-  background: conic-gradient(from 30deg, rgba(246, 199, 67, 0.2), rgba(138, 77, 255, 0.5), rgba(94, 162, 255, 0.28), rgba(255, 106, 158, 0.26));
+  background: conic-gradient(
+    from 30deg,
+    rgba(246, 199, 67, 0.2),
+    rgba(138, 77, 255, 0.5),
+    rgba(94, 162, 255, 0.28),
+    rgba(255, 106, 158, 0.26)
+  );
   filter: blur(140px);
   opacity: 0.75;
   z-index: 0;
 }
 
 .actividades-container::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(1px 1px at 32px 40px, rgba(255, 255, 255, 0.55), transparent),
-    radial-gradient(1px 1px at 220px 160px, rgba(255, 255, 255, 0.34), transparent);
+  background-image:
+    radial-gradient(
+      1px 1px at 32px 40px,
+      rgba(255, 255, 255, 0.55),
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 220px 160px,
+      rgba(255, 255, 255, 0.34),
+      transparent
+    );
   opacity: 0.28;
   z-index: 0;
 }
@@ -43,7 +60,11 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  background: linear-gradient(150deg, rgba(18, 12, 58, 0.84), rgba(9, 6, 32, 0.9));
+  background: linear-gradient(
+    150deg,
+    rgba(18, 12, 58, 0.84),
+    rgba(9, 6, 32, 0.9)
+  );
   border: 1px solid var(--surface-border);
   border-radius: 28px;
   padding: clamp(20px, 2.6vw, 32px);
@@ -101,7 +122,9 @@
   border: 1px solid var(--input-border);
   background: var(--input-bg);
   color: var(--text-main);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .date-field input:focus {

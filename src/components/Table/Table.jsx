@@ -1,5 +1,5 @@
-import React from 'react';
-import './Table.css';
+import React from "react";
+import "./Table.css";
 
 const Table = ({ columns, data, customRender }) => {
   return (
@@ -18,7 +18,9 @@ const Table = ({ columns, data, customRender }) => {
               {columns.map((column, colIndex) => (
                 <td key={colIndex}>
                   {/* Solo llamar a customRender una vez */}
-                  {customRender ? customRender(column, row, rowIndex) : row[column]}
+                  {customRender
+                    ? customRender(column, row, rowIndex)
+                    : row[column]}
                 </td>
               ))}
             </tr>

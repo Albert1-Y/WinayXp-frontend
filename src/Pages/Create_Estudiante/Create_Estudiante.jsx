@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from '../Navbar/Navbar';
-import NavbarT from '../Navbar/NavbarT';
-import TextField from '../../components/TextField/TextField';
-import Button from '../../components/button/Button';
-import { useNavigate } from 'react-router-dom';
-import './Create_Estudiante.css';
-import { AuthContext } from '../../context/AuthContext';
-import { useContext } from 'react';
+import React, { useState, useEffect } from "react";
+import Navbar from "../Navbar/Navbar";
+import NavbarT from "../Navbar/NavbarT";
+import TextField from "../../components/TextField/TextField";
+import Button from "../../components/button/Button";
+import { useNavigate } from "react-router-dom";
+import "./Create_Estudiante.css";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 
 const Create_Estudiante = () => {
   const navigate = useNavigate();
@@ -14,7 +14,9 @@ const Create_Estudiante = () => {
   const { rol } = useContext(AuthContext);
   useEffect(() => {
     const handleNavbarChange = () => {
-      const collapsedNavbar = document.querySelector('.navbar-container.collapsed');
+      const collapsedNavbar = document.querySelector(
+        ".navbar-container.collapsed",
+      );
       setNavbarCollapsed(!!collapsedNavbar);
     };
 
@@ -22,7 +24,7 @@ const Create_Estudiante = () => {
     observer.observe(document.body, {
       subtree: true,
       attributes: true,
-      attributeFilter: ['class'],
+      attributeFilter: ["class"],
     });
 
     handleNavbarChange();
@@ -33,39 +35,39 @@ const Create_Estudiante = () => {
   }, []);
   const renderNavbar = () => {
     switch (rol) {
-      case 'administrador':
+      case "administrador":
         return <Navbar />;
-      case 'estudiante':
+      case "estudiante":
         return <NavbarE />;
-      case 'tutor':
+      case "tutor":
         return <NavbarT />;
       default:
-        alert('Tu sesión ha expirado');
+        alert("Tu sesión ha expirado");
         localStorage.clear();
-        navigate('/');
+        navigate("/");
         return null;
     }
   };
   const [formData, setFormData] = useState({
-    dni: '',
-    nombre_persona: '',
-    apellido: '',
-    email: '',
-    carrera: '',
-    semestre: '',
-    password: '',
-    confirmPassword: '',
+    dni: "",
+    nombre_persona: "",
+    apellido: "",
+    email: "",
+    carrera: "",
+    semestre: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({
-    dni: '',
-    nombre_persona: '',
-    apellido: '',
-    email: '',
-    carrera: '',
-    semestre: '',
-    password: '',
-    confirmPassword: '',
+    dni: "",
+    nombre_persona: "",
+    apellido: "",
+    email: "",
+    carrera: "",
+    semestre: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -80,66 +82,66 @@ const Create_Estudiante = () => {
   };
 
   const validateField = (name, value) => {
-    let error = '';
+    let error = "";
 
     switch (name) {
-      case 'dni':
+      case "dni":
         if (!value.trim()) {
-          error = 'El DNI es obligatorio';
+          error = "El DNI es obligatorio";
         } else if (!/^\d+$/.test(value)) {
-          error = 'El DNI debe contener solo números';
+          error = "El DNI debe contener solo números";
         } else if (value.length !== 8) {
-          error = 'El DNI debe tener 8 dígitos';
+          error = "El DNI debe tener 8 dígitos";
         }
         break;
 
-      case 'nombre_persona':
+      case "nombre_persona":
         if (!value.trim()) {
-          error = 'El nombre es obligatorio';
+          error = "El nombre es obligatorio";
         } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
-          error = 'El nombre solo debe contener letras';
+          error = "El nombre solo debe contener letras";
         }
         break;
 
-      case 'apellido':
+      case "apellido":
         if (!value.trim()) {
-          error = 'El apellido es obligatorio';
+          error = "El apellido es obligatorio";
         } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
-          error = 'El apellido solo debe contener letras';
+          error = "El apellido solo debe contener letras";
         }
         break;
 
-      case 'email':
+      case "email":
         if (!value.trim()) {
-          error = 'El correo electrónico es obligatorio';
+          error = "El correo electrónico es obligatorio";
         } else if (!/\S+@\S+\.\S+/.test(value)) {
-          error = 'Formato de correo electrónico inválido';
+          error = "Formato de correo electrónico inválido";
         }
         break;
 
-      case 'semestre':
+      case "semestre":
         if (!value.trim()) {
-          error = 'El semestre es obligatorio';
+          error = "El semestre es obligatorio";
         } else if (isNaN(value) || parseInt(value) <= 0) {
-          error = 'El semestre debe ser un número positivo';
+          error = "El semestre debe ser un número positivo";
         } else if (parseInt(value) > 14) {
-          error = 'El semestre no puede ser mayor a 14';
+          error = "El semestre no puede ser mayor a 14";
         }
         break;
 
-      case 'password':
+      case "password":
         if (!value.trim()) {
-          error = 'La contraseña es obligatoria';
+          error = "La contraseña es obligatoria";
         } else if (value.length < 6) {
-          error = 'La contraseña debe tener al menos 6 caracteres';
+          error = "La contraseña debe tener al menos 6 caracteres";
         }
         break;
 
-      case 'confirmPassword':
+      case "confirmPassword":
         if (!value.trim()) {
-          error = 'Confirmar contraseña es obligatorio';
+          error = "Confirmar contraseña es obligatorio";
         } else if (value !== formData.password) {
-          error = 'Las contraseñas no coinciden';
+          error = "Las contraseñas no coinciden";
         }
         break;
 
@@ -172,7 +174,7 @@ const Create_Estudiante = () => {
   const handleSubmit = () => {
     // Validar el formulario completo
     if (!validateForm()) {
-      alert('Por favor, corrija los errores en el formulario');
+      alert("Por favor, corrija los errores en el formulario");
       return;
     }
 
@@ -182,30 +184,30 @@ const Create_Estudiante = () => {
       nombre_persona: formData.nombre_persona,
       apellido: formData.apellido,
       email: formData.email,
-      rol: 'estudiante',
+      rol: "estudiante",
       carrera: formData.carrera || null,
       semestre: parseInt(formData.semestre, 10),
       password: formData.password,
     };
 
-    console.log('JSON final listo para enviar:', estudianteData);
+    console.log("JSON final listo para enviar:", estudianteData);
 
     fetch(`${import.meta.env.VITE_API_URL}/api/admin/registerE`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify(estudianteData),
     })
       .then((response) => {
         if (response.ok) {
-          alert('Estudiante creado exitosamente');
-          navigate('/estudiante'); // Redirigir después del éxito
+          alert("Estudiante creado exitosamente");
+          navigate("/estudiante"); // Redirigir después del éxito
           return response.json();
         } else {
           return response.json().then((data) => {
-            throw new Error(data.message || 'Error en la solicitud');
+            throw new Error(data.message || "Error en la solicitud");
           });
         }
       })
@@ -213,21 +215,29 @@ const Create_Estudiante = () => {
         console.log(data);
       })
       .catch((error) => {
-        console.error('Error al enviar los datos del estudiante:', error);
-        alert(`Error: ${error.message || 'Hubo un error al registrar al estudiante'}`);
+        console.error("Error al enviar los datos del estudiante:", error);
+        alert(
+          `Error: ${error.message || "Hubo un error al registrar al estudiante"}`,
+        );
       });
   };
 
   return (
-    <div className={`create-estudiante-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
+    <div
+      className={`create-estudiante-container ${navbarCollapsed ? "navbar-collapsed" : ""}`}
+    >
       {renderNavbar()}
       <div className="create-estudiante-content">
         <h1 className="create-estudiante-title">Crear Estudiante</h1>
-        <h3 className="create-estudiante-subtitle">Añade un nuevo estudiante al sistema</h3>
+        <h3 className="create-estudiante-subtitle">
+          Añade un nuevo estudiante al sistema
+        </h3>
 
         <div className="academic-container">
           <h2 className="info-title">Información Personal</h2>
-          <p className="info-subtitle">Ingresa la información básica del estudiante</p>
+          <p className="info-subtitle">
+            Ingresa la información básica del estudiante
+          </p>
           <div className="info-grid">
             <div className="input-group">
               <TextField
@@ -258,7 +268,9 @@ const Create_Estudiante = () => {
                 value={formData.apellido}
                 onChange={handleChange}
               />
-              {errors.apellido && <div className="error-message">{errors.apellido}</div>}
+              {errors.apellido && (
+                <div className="error-message">{errors.apellido}</div>
+              )}
             </div>
 
             <div className="input-group">
@@ -268,14 +280,18 @@ const Create_Estudiante = () => {
                 value={formData.email}
                 onChange={handleChange}
               />
-              {errors.email && <div className="error-message">{errors.email}</div>}
+              {errors.email && (
+                <div className="error-message">{errors.email}</div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="academic-container">
           <h2 className="academic-title">Información Académica</h2>
-          <p className="academic-subtitle">Asignación académica del estudiante</p>
+          <p className="academic-subtitle">
+            Asignación académica del estudiante
+          </p>
           <div className="academic-grid">
             <div className="input-group">
               <TextField
@@ -284,7 +300,9 @@ const Create_Estudiante = () => {
                 value={formData.carrera}
                 onChange={handleChange}
               />
-              {errors.carrera && <div className="error-message">{errors.carrera}</div>}
+              {errors.carrera && (
+                <div className="error-message">{errors.carrera}</div>
+              )}
             </div>
 
             <div className="input-group">
@@ -295,7 +313,9 @@ const Create_Estudiante = () => {
                 value={formData.semestre}
                 onChange={handleChange}
               />
-              {errors.semestre && <div className="error-message">{errors.semestre}</div>}
+              {errors.semestre && (
+                <div className="error-message">{errors.semestre}</div>
+              )}
             </div>
           </div>
         </div>
@@ -311,7 +331,9 @@ const Create_Estudiante = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
-              {errors.password && <div className="error-message">{errors.password}</div>}
+              {errors.password && (
+                <div className="error-message">{errors.password}</div>
+              )}
             </div>
 
             <div className="input-group">
@@ -330,8 +352,16 @@ const Create_Estudiante = () => {
         </div>
 
         <div className="action-buttons">
-          <Button text="Cancelar" styleType="white" onClick={() => navigate('/estudiante')} />
-          <Button text="Guardar Estudiante" styleType="black" onClick={handleSubmit} />
+          <Button
+            text="Cancelar"
+            styleType="white"
+            onClick={() => navigate("/estudiante")}
+          />
+          <Button
+            text="Guardar Estudiante"
+            styleType="black"
+            onClick={handleSubmit}
+          />
         </div>
       </div>
     </div>

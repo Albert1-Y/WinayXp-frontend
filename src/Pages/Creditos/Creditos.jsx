@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
-import NavbarE from '../Navbar/NavbarE';
-import NavbarT from '../Navbar/NavbarT';
-import Button from '../../components/button/Button';
-import TextField from '../../components/TextField/TextField';
-import { AuthContext } from '../../context/AuthContext';
-import './Creditos.css';
-import { fetchHistorialMovimientos } from '../../utils/historialApi';
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Navbar from "../Navbar/Navbar";
+import NavbarE from "../Navbar/NavbarE";
+import NavbarT from "../Navbar/NavbarT";
+import Button from "../../components/button/Button";
+import TextField from "../../components/TextField/TextField";
+import { AuthContext } from "../../context/AuthContext";
+import "./Creditos.css";
+import { fetchHistorialMovimientos } from "../../utils/historialApi";
 
 const DEFAULT_FILTERS = {
-  id_estudiante: '',
-  dni: '',
-  tipo_movimiento: '',
-  fecha_inicio: '',
-  fecha_fin: '',
+  id_estudiante: "",
+  dni: "",
+  tipo_movimiento: "",
+  fecha_inicio: "",
+  fecha_fin: "",
   limit: 20,
   offset: 0,
 };
@@ -26,23 +26,24 @@ const clampLimit = (value) => {
 };
 
 const parseFiltersFromParams = (params) => ({
-  id_estudiante: params.get('id_estudiante') || DEFAULT_FILTERS.id_estudiante,
-  dni: params.get('dni') || DEFAULT_FILTERS.dni,
-  tipo_movimiento: params.get('tipo_movimiento') || DEFAULT_FILTERS.tipo_movimiento,
-  fecha_inicio: params.get('fecha_inicio') || DEFAULT_FILTERS.fecha_inicio,
-  fecha_fin: params.get('fecha_fin') || DEFAULT_FILTERS.fecha_fin,
-  limit: clampLimit(params.get('limit') ?? DEFAULT_FILTERS.limit),
-  offset: Math.max(0, Number(params.get('offset')) || DEFAULT_FILTERS.offset),
+  id_estudiante: params.get("id_estudiante") || DEFAULT_FILTERS.id_estudiante,
+  dni: params.get("dni") || DEFAULT_FILTERS.dni,
+  tipo_movimiento:
+    params.get("tipo_movimiento") || DEFAULT_FILTERS.tipo_movimiento,
+  fecha_inicio: params.get("fecha_inicio") || DEFAULT_FILTERS.fecha_inicio,
+  fecha_fin: params.get("fecha_fin") || DEFAULT_FILTERS.fecha_fin,
+  limit: clampLimit(params.get("limit") ?? DEFAULT_FILTERS.limit),
+  offset: Math.max(0, Number(params.get("offset")) || DEFAULT_FILTERS.offset),
 });
 
 const buildSearchParamsObject = (filters, extras = {}) => {
   const entries = {};
   Object.entries(filters).forEach(([key, value]) => {
-    if (value === '' || value === null || value === undefined) return;
+    if (value === "" || value === null || value === undefined) return;
     entries[key] = value;
   });
   Object.entries(extras).forEach(([key, value]) => {
-    if (value === '' || value === null || value === undefined) return;
+    if (value === "" || value === null || value === undefined) return;
     entries[key] = value;
   });
   return entries;
@@ -53,19 +54,19 @@ const Creditos = () => {
   const navigate = useNavigate();
   const [navbarCollapsed, setNavbarCollapsed] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const movimientoObjetivo = searchParams.get('movimiento') || null;
+  const movimientoObjetivo = searchParams.get("movimiento") || null;
 
   const [appliedFilters, setAppliedFilters] = useState(() =>
-    parseFiltersFromParams(searchParams)
+    parseFiltersFromParams(searchParams),
   );
   const [formFilters, setFormFilters] = useState(() =>
-    parseFiltersFromParams(searchParams)
+    parseFiltersFromParams(searchParams),
   );
 
   const [historial, setHistorial] = useState([]);
   const [historialCount, setHistorialCount] = useState(0);
   const [historialLoading, setHistorialLoading] = useState(false);
-  const [historialError, setHistorialError] = useState('');
+  const [historialError, setHistorialError] = useState("");
   const [reloadHistorialKey, setReloadHistorialKey] = useState(0);
 
   const [students, setStudents] = useState([]);
@@ -86,7 +87,9 @@ const Creditos = () => {
 
   useEffect(() => {
     const handleNavbarChange = () => {
-      const collapsedNavbar = document.querySelector('.navbar-container.collapsed');
+      const collapsedNavbar = document.querySelector(
+        ".navbar-container.collapsed",
+      );
       setNavbarCollapsed(!!collapsedNavbar);
     };
 
@@ -94,7 +97,7 @@ const Creditos = () => {
     observer.observe(document.body, {
       subtree: true,
       attributes: true,
-      attributeFilter: ['class'],
+      attributeFilter: ["class"],
     });
 
     handleNavbarChange();
@@ -105,8 +108,8 @@ const Creditos = () => {
     const controller = new AbortController();
     setStudentsLoading(true);
     fetch(`${import.meta.env.VITE_API_URL}/api/admin/IntMostrarEstudiantes`, {
-      method: 'GET',
-      credentials: 'include',
+      method: "GET",
+      credentials: "include",
       signal: controller.signal,
     })
       .then((res) => res.json())
@@ -115,7 +118,7 @@ const Creditos = () => {
           const opciones = data.map((est) => ({
             value: est.id_persona,
             label: `${est.nombre_persona} ${est.apellido} - ${est.dni}`,
-            dni: est.dni?.toString() ?? '',
+            dni: est.dni?.toString() ?? "",
           }));
           setStudents(opciones);
         } else {
@@ -123,8 +126,8 @@ const Creditos = () => {
         }
       })
       .catch((error) => {
-        if (error.name === 'AbortError') return;
-        console.error('Error al cargar estudiantes:', error);
+        if (error.name === "AbortError") return;
+        console.error("Error al cargar estudiantes:", error);
       })
       .finally(() => setStudentsLoading(false));
 
@@ -135,7 +138,7 @@ const Creditos = () => {
     const controller = new AbortController();
     const cargarHistorial = async () => {
       setHistorialLoading(true);
-      setHistorialError('');
+      setHistorialError("");
       try {
         const payload = await fetchHistorialMovimientos(appliedFilters, {
           signal: controller.signal,
@@ -143,9 +146,9 @@ const Creditos = () => {
         setHistorial(Array.isArray(payload?.data) ? payload.data : []);
         setHistorialCount(payload?.count ?? 0);
       } catch (error) {
-        if (error.name === 'AbortError') return;
-        console.error('Error al obtener historial:', error);
-        setHistorialError('No se pudo cargar el historial de movimientos.');
+        if (error.name === "AbortError") return;
+        console.error("Error al obtener historial:", error);
+        setHistorialError("No se pudo cargar el historial de movimientos.");
       } finally {
         setHistorialLoading(false);
       }
@@ -157,14 +160,14 @@ const Creditos = () => {
 
   const renderNavbar = () => {
     switch (rol) {
-      case 'administrador':
+      case "administrador":
         return <Navbar />;
-      case 'tutor':
+      case "tutor":
         return <NavbarT />;
-      case 'estudiante':
+      case "estudiante":
         return <NavbarE />;
       default:
-        navigate('/');
+        navigate("/");
         return null;
     }
   };
@@ -177,16 +180,16 @@ const Creditos = () => {
   };
 
   const handleStudentSearchChange = (value) => {
-    handleFilterChange('dni', value.trim());
+    handleFilterChange("dni", value.trim());
   };
 
   const handleApplyFilters = () => {
     const normalized = {
-      id_estudiante: formFilters.id_estudiante || '',
-      dni: formFilters.dni || '',
-      tipo_movimiento: formFilters.tipo_movimiento || '',
-      fecha_inicio: formFilters.fecha_inicio || '',
-      fecha_fin: formFilters.fecha_fin || '',
+      id_estudiante: formFilters.id_estudiante || "",
+      dni: formFilters.dni || "",
+      tipo_movimiento: formFilters.tipo_movimiento || "",
+      fecha_inicio: formFilters.fecha_inicio || "",
+      fecha_fin: formFilters.fecha_fin || "",
       limit: clampLimit(formFilters.limit),
       offset: 0,
     };
@@ -202,7 +205,7 @@ const Creditos = () => {
 
   const handlePageChange = (direction) => {
     const nextOffset =
-      direction === 'next'
+      direction === "next"
         ? appliedFilters.offset + appliedFilters.limit
         : Math.max(0, appliedFilters.offset - appliedFilters.limit);
     const normalized = {
@@ -218,20 +221,23 @@ const Creditos = () => {
       return { desde: 0, hasta: 0 };
     }
     const desde = appliedFilters.offset + 1;
-    const hasta = Math.min(appliedFilters.offset + appliedFilters.limit, historialCount);
+    const hasta = Math.min(
+      appliedFilters.offset + appliedFilters.limit,
+      historialCount,
+    );
     return { desde, hasta };
   }, [appliedFilters.offset, appliedFilters.limit, historialCount]);
 
   const formatFecha = (value) => {
-    if (!value) return '-';
+    if (!value) return "-";
     const fecha = new Date(value);
     if (Number.isNaN(fecha.getTime())) return value;
-    return fecha.toLocaleString('es-PE', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return fecha.toLocaleString("es-PE", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -241,25 +247,25 @@ const Creditos = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/admin/descargar-plantilla-historicos`,
         {
-          method: 'GET',
-          credentials: 'include',
-        }
+          method: "GET",
+          credentials: "include",
+        },
       );
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'plantilla_carga_historica.xlsx';
+      link.download = "plantilla_carga_historica.xlsx";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error al descargar plantilla:', error);
-      alert('No se pudo descargar la plantilla. Intenta nuevamente.');
+      console.error("Error al descargar plantilla:", error);
+      alert("No se pudo descargar la plantilla. Intenta nuevamente.");
     } finally {
       setDownloadLoading(false);
     }
@@ -270,35 +276,38 @@ const Creditos = () => {
     setImportErrores([]);
     setImportFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const handleImportarHistoricos = async (event) => {
     event.preventDefault();
     if (!importFile) {
-      alert('Selecciona un archivo .xlsx para continuar.');
+      alert("Selecciona un archivo .xlsx para continuar.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', importFile);
+    formData.append("file", importFile);
 
     setImportLoading(true);
     setImportResumen(null);
     setImportErrores([]);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/importar-historicos`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/importar-historicos`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        },
+      );
 
       const payload = await response.json();
 
       if (!response.ok || !payload.ok) {
-        throw new Error(payload?.msg || 'Error en la importación.');
+        throw new Error(payload?.msg || "Error en la importación.");
       }
 
       setImportResumen({
@@ -310,8 +319,8 @@ const Creditos = () => {
       setImportErrores(payload.errores || []);
       setReloadHistorialKey((prev) => prev + 1);
     } catch (error) {
-      console.error('Error al importar históricos:', error);
-      alert(error.message || 'No se pudo importar el archivo.');
+      console.error("Error al importar históricos:", error);
+      alert(error.message || "No se pudo importar el archivo.");
     } finally {
       setImportLoading(false);
     }
@@ -327,7 +336,9 @@ const Creditos = () => {
     : null;
 
   return (
-    <div className={`creditos-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
+    <div
+      className={`creditos-container ${navbarCollapsed ? "navbar-collapsed" : ""}`}
+    >
       {renderNavbar()}
       <div className="creditos-content">
         <div className="creditos-header">
@@ -337,7 +348,11 @@ const Creditos = () => {
           </div>
           <div className="creditos-header-actions">
             <Button
-              text={downloadLoading ? 'Descargando...' : 'Descargar plantilla histórica'}
+              text={
+                downloadLoading
+                  ? "Descargando..."
+                  : "Descargar plantilla histórica"
+              }
               styleType="white"
               onClick={handleDownloadPlantilla}
               disabled={downloadLoading}
@@ -370,7 +385,9 @@ const Creditos = () => {
               <label>Tipo</label>
               <select
                 value={formFilters.tipo_movimiento}
-                onChange={(e) => handleFilterChange('tipo_movimiento', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange("tipo_movimiento", e.target.value)
+                }
               >
                 <option value="">Todos</option>
                 <option value="asistencia">Asistencia</option>
@@ -384,7 +401,9 @@ const Creditos = () => {
               <TextField
                 type="date"
                 value={formFilters.fecha_inicio}
-                onChange={(e) => handleFilterChange('fecha_inicio', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange("fecha_inicio", e.target.value)
+                }
               />
             </div>
             <div className="filter-field">
@@ -392,14 +411,18 @@ const Creditos = () => {
               <TextField
                 type="date"
                 value={formFilters.fecha_fin}
-                onChange={(e) => handleFilterChange('fecha_fin', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange("fecha_fin", e.target.value)
+                }
               />
             </div>
             <div className="filter-field">
               <label>Registros por página</label>
               <select
                 value={formFilters.limit}
-                onChange={(e) => handleFilterChange('limit', clampLimit(e.target.value))}
+                onChange={(e) =>
+                  handleFilterChange("limit", clampLimit(e.target.value))
+                }
               >
                 {[20, 50, 100, 200].map((size) => (
                   <option key={size} value={size}>
@@ -410,16 +433,28 @@ const Creditos = () => {
             </div>
           </div>
           <div className="filter-actions">
-            <Button text="Aplicar filtros" styleType="black" onClick={handleApplyFilters} />
-            <Button text="Limpiar" styleType="danger" onClick={handleResetFilters} />
+            <Button
+              text="Aplicar filtros"
+              styleType="black"
+              onClick={handleApplyFilters}
+            />
+            <Button
+              text="Limpiar"
+              styleType="danger"
+              onClick={handleResetFilters}
+            />
             {highlightedMovimiento && (
-              <Button text="Limpiar movimiento" styleType="white" onClick={handleClearMovimiento} />
+              <Button
+                text="Limpiar movimiento"
+                styleType="white"
+                onClick={handleClearMovimiento}
+              />
             )}
           </div>
           {highlightedMovimiento && (
             <div className="movement-hint">
-              Resaltando el movimiento #{highlightedMovimiento}. Cambia los filtros o usa
-              &quot;Limpiar movimiento&quot; para quitar el foco.
+              Resaltando el movimiento #{highlightedMovimiento}. Cambia los
+              filtros o usa &quot;Limpiar movimiento&quot; para quitar el foco.
             </div>
           )}
         </div>
@@ -429,13 +464,19 @@ const Creditos = () => {
             <div>
               <h2>Historial de Movimientos</h2>
               <p>
-                Mostrando {registrosVisibles.desde} - {registrosVisibles.hasta} de {historialCount}{' '}
-                movimientos
+                Mostrando {registrosVisibles.desde} - {registrosVisibles.hasta}{" "}
+                de {historialCount} movimientos
               </p>
             </div>
-            <Button text="Refrescar" styleType="white" onClick={() => setReloadHistorialKey((prev) => prev + 1)} />
+            <Button
+              text="Refrescar"
+              styleType="white"
+              onClick={() => setReloadHistorialKey((prev) => prev + 1)}
+            />
           </div>
-          {historialError && <div className="error-banner">{historialError}</div>}
+          {historialError && (
+            <div className="error-banner">{historialError}</div>
+          )}
           <div className="historial-table-wrapper">
             <table>
               <thead>
@@ -471,17 +512,23 @@ const Creditos = () => {
                       mov.id_movimiento?.toString() === highlightedMovimiento;
 
                     const creditos = Number(mov.creditos ?? 0);
-                    const nombreCompleto =
-                      mov.estudiante?.nombre
-                        ? `${mov.estudiante?.nombre} ${mov.estudiante?.apellido ?? ''}`.trim()
-                        : mov.estudiante ||
-                          mov.nombre_estudiante ||
-                          `${mov.nombre_persona ?? ''} ${mov.apellido ?? ''}`.trim() ||
-                          '-';
-                    const dni = mov.estudiante?.dni ?? mov.dni_estudiante ?? mov.dni ?? 'N/A';
+                    const nombreCompleto = mov.estudiante?.nombre
+                      ? `${mov.estudiante?.nombre} ${mov.estudiante?.apellido ?? ""}`.trim()
+                      : mov.estudiante ||
+                        mov.nombre_estudiante ||
+                        `${mov.nombre_persona ?? ""} ${mov.apellido ?? ""}`.trim() ||
+                        "-";
+                    const dni =
+                      mov.estudiante?.dni ??
+                      mov.dni_estudiante ??
+                      mov.dni ??
+                      "N/A";
 
                     return (
-                      <tr key={mov.id_movimiento ?? `${mov.created_at}-${dni}`} className={esDestacado ? 'highlight-row' : ''}>
+                      <tr
+                        key={mov.id_movimiento ?? `${mov.created_at}-${dni}`}
+                        className={esDestacado ? "highlight-row" : ""}
+                      >
                         <td>{formatFecha(mov.created_at)}</td>
                         <td>
                           <div className="estudiante-col">
@@ -490,23 +537,27 @@ const Creditos = () => {
                           </div>
                         </td>
                         <td>
-                          <span className={`tipo-badge tipo-${mov.tipo_movimiento || 'otro'}`}>
-                            {mov.tipo_movimiento || '-'}
+                          <span
+                            className={`tipo-badge tipo-${mov.tipo_movimiento || "otro"}`}
+                          >
+                            {mov.tipo_movimiento || "-"}
                           </span>
                         </td>
                         <td>
-                          <span className={`creditos ${creditos >= 0 ? 'positivo' : 'negativo'}`}>
+                          <span
+                            className={`creditos ${creditos >= 0 ? "positivo" : "negativo"}`}
+                          >
                             {creditos > 0 ? `+${creditos}` : creditos}
                           </span>
                         </td>
-                        <td>{mov.motivo || '-'}</td>
+                        <td>{mov.motivo || "-"}</td>
                         <td>
                           <div className="autor-col">
-                            <span>{mov.autor || '-'}</span>
-                            <small>{mov.rol_autor || ''}</small>
+                            <span>{mov.autor || "-"}</span>
+                            <small>{mov.rol_autor || ""}</small>
                           </div>
                         </td>
-                        <td>{mov.nombre_actividad || '-'}</td>
+                        <td>{mov.nombre_actividad || "-"}</td>
                       </tr>
                     );
                   })}
@@ -517,13 +568,13 @@ const Creditos = () => {
             <Button
               text="Anterior"
               styleType="white"
-              onClick={() => handlePageChange('prev')}
+              onClick={() => handlePageChange("prev")}
               disabled={appliedFilters.offset === 0 || historialLoading}
             />
             <Button
               text="Siguiente"
               styleType="white"
-              onClick={() => handlePageChange('next')}
+              onClick={() => handlePageChange("next")}
               disabled={
                 historialLoading ||
                 appliedFilters.offset + appliedFilters.limit >= historialCount
@@ -535,9 +586,12 @@ const Creditos = () => {
         <div className="creditos-grid">
           <div className="creditos-panel">
             <h2>Descarga de plantilla</h2>
-            <p>Obtén el formato oficial para cargar actividades y asistencias históricas.</p>
+            <p>
+              Obtén el formato oficial para cargar actividades y asistencias
+              históricas.
+            </p>
             <Button
-              text={downloadLoading ? 'Descargando...' : 'Descargar plantilla'}
+              text={downloadLoading ? "Descargando..." : "Descargar plantilla"}
               styleType="black"
               onClick={handleDownloadPlantilla}
               disabled={downloadLoading}
@@ -555,12 +609,16 @@ const Creditos = () => {
               />
               <div className="import-actions">
                 <Button
-                  text={importLoading ? 'Importando...' : 'Importar históricos'}
+                  text={importLoading ? "Importando..." : "Importar históricos"}
                   styleType="black"
                   disabled={importLoading}
                   type="submit"
                 />
-                <Button text="Limpiar estado" styleType="white" onClick={limpiarImportacion} />
+                <Button
+                  text="Limpiar estado"
+                  styleType="white"
+                  onClick={limpiarImportacion}
+                />
               </div>
             </form>
             {importResumen && (
@@ -568,8 +626,13 @@ const Creditos = () => {
                 <p>{importResumen.msg}</p>
                 <ul>
                   <li>Filas procesadas: {importResumen.procesados}</li>
-                  <li>Actividades creadas: {importResumen.actividades_creadas}</li>
-                  <li>Movimientos registrados: {importResumen.movimientos_registrados}</li>
+                  <li>
+                    Actividades creadas: {importResumen.actividades_creadas}
+                  </li>
+                  <li>
+                    Movimientos registrados:{" "}
+                    {importResumen.movimientos_registrados}
+                  </li>
                 </ul>
               </div>
             )}

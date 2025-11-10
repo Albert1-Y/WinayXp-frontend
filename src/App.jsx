@@ -1,21 +1,22 @@
-import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './Pages/Login/Login';
-import Dashboard from './Pages/Dashboard/Dashboard';
-import Tutores from './Pages/Tutores/Tutores';
-import Create_Tutores from './Pages/Create_Tutores/Create_Tutores';
-import Create_Estudiante from './Pages/Create_Estudiante/Create_Estudiante';
-import Estudiante from './Pages/Estudiante/Estudiante';
-import Create_Actividad from './Pages/Create_Actividad/Create_Actividad';
-import Actividad from './Pages/Actividad/Actividad';
-import Asistencia from './Pages/Asistencia/Asistencia.jsx';
-import Perfil from './Pages/Perfil/Perfil.jsx';
-import Tomar_Asistencia from './Pages/Tomar_Asistencia/Tomar_Asistencia';
-import Ranking from './Pages/RankingEstudiantes/RankingEstudiantes.jsx';
-import AuthHandler from './components/AuthHandler/AuthHandler';
-import AuthResult from './Pages/AuthResult/AuthResult';
-import ProtectedRoute from './components/ProtectedRoute';
-import Creditos from './Pages/Creditos/Creditos';
+import React from "react";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./Pages/Login/Login";
+import Dashboard from "./Pages/Dashboard/Dashboard";
+import Tutores from "./Pages/Tutores/Tutores";
+import Create_Tutores from "./Pages/Create_Tutores/Create_Tutores";
+import Create_Estudiante from "./Pages/Create_Estudiante/Create_Estudiante";
+import Estudiante from "./Pages/Estudiante/Estudiante";
+import Create_Actividad from "./Pages/Create_Actividad/Create_Actividad";
+import Actividad from "./Pages/Actividad/Actividad";
+import Asistencia from "./Pages/Asistencia/Asistencia.jsx";
+import Perfil from "./Pages/Perfil/Perfil.jsx";
+import Tomar_Asistencia from "./Pages/Tomar_Asistencia/Tomar_Asistencia";
+import Ranking from "./Pages/RankingEstudiantes/RankingEstudiantes.jsx";
+import Niveles from "./Pages/Niveles/Niveles.jsx";
+import AuthHandler from "./components/AuthHandler/AuthHandler";
+import AuthResult from "./Pages/AuthResult/AuthResult";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Creditos from "./Pages/Creditos/Creditos";
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
         <Route
           path="/tutores"
           element={
-            <ProtectedRoute allow={['administrador']}>
+            <ProtectedRoute allow={["administrador"]}>
               <Tutores />
             </ProtectedRoute>
           }
@@ -43,7 +44,7 @@ function App() {
         <Route
           path="/create_tutores"
           element={
-            <ProtectedRoute allow={['administrador']}>
+            <ProtectedRoute allow={["administrador"]}>
               <Create_Tutores />
             </ProtectedRoute>
           }
@@ -51,7 +52,7 @@ function App() {
         <Route
           path="/create_estudiante"
           element={
-            <ProtectedRoute allow={['administrador', 'tutor']}>
+            <ProtectedRoute allow={["administrador", "tutor"]}>
               <Create_Estudiante />
             </ProtectedRoute>
           }
@@ -59,7 +60,7 @@ function App() {
         <Route
           path="/estudiante"
           element={
-            <ProtectedRoute allow={['administrador', 'tutor']}>
+            <ProtectedRoute allow={["administrador", "tutor"]}>
               <Estudiante />
             </ProtectedRoute>
           }
@@ -67,7 +68,7 @@ function App() {
         <Route
           path="/create_actividad"
           element={
-            <ProtectedRoute allow={['administrador', 'tutor']}>
+            <ProtectedRoute allow={["administrador", "tutor"]}>
               <Create_Actividad />
             </ProtectedRoute>
           }
@@ -75,7 +76,7 @@ function App() {
         <Route
           path="/actividad"
           element={
-            <ProtectedRoute allow={['administrador', 'tutor']}>
+            <ProtectedRoute allow={["administrador", "tutor"]}>
               <Actividad />
             </ProtectedRoute>
           }
@@ -83,7 +84,7 @@ function App() {
         <Route
           path="/asistencia"
           element={
-            <ProtectedRoute allow={['administrador', 'tutor']}>
+            <ProtectedRoute allow={["administrador", "tutor"]}>
               <Asistencia />
             </ProtectedRoute>
           }
@@ -91,7 +92,7 @@ function App() {
         <Route
           path="/perfil"
           element={
-            <ProtectedRoute allow={['estudiante']}>
+            <ProtectedRoute allow={["estudiante"]}>
               <Perfil />
             </ProtectedRoute>
           }
@@ -99,7 +100,7 @@ function App() {
         <Route
           path="/tomar-asistencia"
           element={
-            <ProtectedRoute allow={['tutor', 'administrador']}>
+            <ProtectedRoute allow={["tutor", "administrador"]}>
               <Tomar_Asistencia />
             </ProtectedRoute>
           }
@@ -107,7 +108,7 @@ function App() {
         <Route
           path="/creditos"
           element={
-            <ProtectedRoute allow={['administrador', 'tutor']}>
+            <ProtectedRoute allow={["administrador", "tutor"]}>
               <Creditos />
             </ProtectedRoute>
           }
@@ -115,8 +116,16 @@ function App() {
         <Route
           path="/ranking"
           element={
-            <ProtectedRoute allow={['estudiante']}>
+            <ProtectedRoute allow={["estudiante"]}>
               <Ranking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/niveles"
+          element={
+            <ProtectedRoute allow={["estudiante"]}>
+              <Niveles />
             </ProtectedRoute>
           }
         />
