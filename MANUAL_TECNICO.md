@@ -55,6 +55,7 @@ Frontend/
 ├── eslint.config.js       # Configuración de ESLint
 ├── package.json           # Dependencias y scripts
 └── vite.config.js         # Configuración de Vite
+```
 
 ## 4. Arquitectura de la Aplicación
 
@@ -175,5 +176,3 @@ Para resolver problemas visuales:
 - Validar estructura de componentes
 - Revisar console.log para errores
 
-### 11.3 Problemas con la Base de Datos
-```
