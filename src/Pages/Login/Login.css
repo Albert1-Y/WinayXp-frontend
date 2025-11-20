@@ -594,6 +594,7 @@ button[type="submit"],
   position: relative;
   z-index: 1;
   height: 100%;
+  padding-bottom: clamp(32px, 3vh, 48px);
   overflow: hidden;
 }
 
@@ -661,20 +662,39 @@ button[type="submit"],
   backdrop-filter: blur(12px);
 }
 
+.card-ranking table tr:hover {
+  background: none;
+  transform: none;
+}
+
+.card-ranking thead,
+.card-ranking thead tr,
+.card-ranking thead th {
+  pointer-events: auto;
+}
+
 .card-ranking thead tr {
   position: sticky;
   top: 0;
   z-index: 2;
+  background-color: #05020f;
   box-shadow: 0 4px 12px rgba(5, 3, 25, 0.25);
 }
 
-.card-ranking tbody tr {
+.card-ranking thead tr:hover,
+.card-ranking thead th:hover {
+  background-color: #05020f;
+  transform: none;
+}
+
+.card-ranking table tbody tr {
   transition:
     background 0.2s ease,
     transform 0.2s ease;
 }
 
-.card-ranking tbody tr:hover {
+.card-ranking table tbody tr:hover {
+  background: var(--table-hover-bg);
   transform: translateX(2px);
 }
 
@@ -753,6 +773,7 @@ button[type="submit"],
   .card-ranking {
     max-height: 52vh;
     overflow: hidden;
+    margin-bottom: 20px;
   }
 
   .form-group input {

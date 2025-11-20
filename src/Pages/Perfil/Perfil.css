@@ -154,8 +154,12 @@
 }
 
 .perfil-avatar-container {
-  position: relative;
-  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 2%;
+  text-align: center;
 }
 
 .perfil-avatar {
@@ -165,18 +169,18 @@
   border: 4px solid rgba(255, 255, 255, 0.85);
   object-fit: cover;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
-  display: block;
+  /*display: block;*/
 }
 
 .perfil-nivel-badge {
-  position: absolute;
+  /*position: absolute;*/
   bottom: 4px;
   right: 4px;
   padding: 6px 14px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--student-primary), #ffd96b);
   color: #1b0b4c;
-  font-size: clamp(0.7rem, 1.4vw, 0.8rem);
+  /*font-size: clamp(0.7rem, 1.4vw, 0.8rem);*/
   font-weight: 600;
   letter-spacing: 0.05em;
   box-shadow: 0 12px 24px rgba(246, 199, 67, 0.35);
