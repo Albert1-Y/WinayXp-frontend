@@ -478,13 +478,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-.button-text {
-  display: inline;
-}
-
-.button-initials {
-  display: none;
-}
 
 /* Historial Card */
 .historial-card {
@@ -783,14 +776,6 @@
 }
 
 @media (max-width: 480px) {
-  .button-text {
-    display: none;
-  }
-  
-  .button-initials {
-    display: inline;
-  }
-  
   .cobrar-buttons .button {
     min-width: 100px;
   }

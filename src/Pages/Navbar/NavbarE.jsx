@@ -3,6 +3,7 @@ import "./Navbar.css";
 import Button from "../../components/button/Button";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { LevelsIcon, ProfileIcon, TrophyIcon } from "../../components/icons/NavIcons";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -135,16 +136,19 @@ const NavbarE = ({ onCollapsedChange }) => {
                 text="Perfil"
                 styleType="white"
                 onClick={() => handleNavigate("/perfil")}
+                icon={<ProfileIcon />}
               />
               <Button
                 text="Ranking de estudiantes"
                 styleType="white"
                 onClick={() => handleNavigate("/ranking")}
+                icon={<TrophyIcon />}
               />
               <Button
                 text="Mis niveles"
                 styleType="white"
                 onClick={() => handleNavigate("/niveles")}
+                icon={<LevelsIcon />}
               />
             </div>
           </div>

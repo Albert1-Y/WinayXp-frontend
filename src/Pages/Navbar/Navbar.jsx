@@ -3,6 +3,17 @@ import "./Navbar.css";
 import Button from "../../components/button/Button";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import {
+  AttendanceIcon,
+  CalendarIcon,
+  CalendarPlusIcon,
+  CreditIcon,
+  DashboardIcon,
+  GraduationCapIcon,
+  GraduationCapPlusIcon,
+  UserPlusIcon,
+  UsersIcon,
+} from "../../components/icons/NavIcons";
 
 const Navbar = ({ onCollapsedChange }) => {
   const navigate = useNavigate();
@@ -112,46 +123,55 @@ const Navbar = ({ onCollapsedChange }) => {
                 text="Dashboard"
                 styleType="white"
                 onClick={() => handleNavigate("/dashboard")}
+                icon={<DashboardIcon />}
               />
               <Button
                 text="Tutores"
                 styleType="white"
                 onClick={() => handleNavigate("/tutores")}
+                icon={<UsersIcon />}
               />
               <Button
                 text="Crear tutores"
                 styleType="white"
                 onClick={() => handleNavigate("/create_tutores")}
+                icon={<UserPlusIcon />}
               />
               <Button
                 text="Estudiantes"
                 styleType="white"
                 onClick={() => handleNavigate("/estudiante")}
+                icon={<GraduationCapIcon />}
               />
               <Button
                 text="Crear estudiantes"
                 styleType="white"
                 onClick={() => handleNavigate("/create_estudiante")}
+                icon={<GraduationCapPlusIcon />}
               />
               <Button
                 text="Actividades"
                 styleType="white"
                 onClick={() => handleNavigate("/actividad")}
+                icon={<CalendarIcon />}
               />
               <Button
                 text="Crear actividad"
                 styleType="white"
                 onClick={() => handleNavigate("/create_actividad")}
+                icon={<CalendarPlusIcon />}
               />
               <Button
                 text="Tomar asistencia"
                 styleType="white"
                 onClick={() => handleNavigate("/asistencia")}
+                icon={<AttendanceIcon />}
               />
               <Button
                 text="Créditos"
                 styleType="white"
                 onClick={() => handleNavigate("/creditos")}
+                icon={<CreditIcon />}
               />
             </div>
           </div>

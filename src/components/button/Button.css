@@ -85,12 +85,14 @@
   display: inline-block;
 }
 
+
 .button-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 18px;
   height: 18px;
+  color: currentColor;
 }
 
 .button-icon img,
@@ -100,21 +102,18 @@
   display: block;
 }
 
-.button-initials {
-  display: none;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+.navbar-container.collapsed .button {
+  justify-content: center;
+  gap: 0;
 }
 
 .navbar-container.collapsed .button-text {
   display: none;
 }
 
-.navbar-container.collapsed .button-initials {
-  display: inline-block;
-  font-size: 1rem;
-  text-align: center;
-  width: 100%;
+.navbar-container.collapsed .button-icon {
+  width: 24px;
+  height: 24px;
 }
 
 @media screen and (max-width: 576px) {
@@ -124,12 +123,5 @@
 
   .navbar-container.collapsed .button-text {
     font-size: 0;
-  }
-
-  .navbar-container.collapsed .button-initials {
-    display: inline-block;
-    font-size: 0.9rem;
-    text-align: center;
-    width: 100%;
   }
 }
