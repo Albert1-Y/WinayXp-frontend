@@ -687,30 +687,28 @@ const Actividades = () => {
           </div>
         )}
         <div className="actividades-table">
-          <div className="actividades-table__scroll">
-            <table>
-              <thead>
-                <tr className="table-header">
+          <table>
+            <thead>
+              <tr className="table-header">
+                {columns.map((col) => (
+                  <td key={col} className="table-cell">
+                    {col}
+                  </td>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, idx) => (
+                <tr key={idx} className="table-row">
                   {columns.map((col) => (
                     <td key={col} className="table-cell">
-                      {col}
+                      {customRender(col, row)}
                     </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {data.map((row, idx) => (
-                  <tr key={idx} className="table-row">
-                    {columns.map((col) => (
-                      <td key={col} className="table-cell">
-                        {customRender(col, row)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

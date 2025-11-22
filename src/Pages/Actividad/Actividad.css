@@ -61,7 +61,6 @@
   display: flex;
   flex-direction: column;
   gap: clamp(16px, 2.2vw, 24px);
-  overflow-x: hidden;
   min-width: 0;
 }
 
@@ -200,28 +199,43 @@
   background: rgba(11, 7, 34, 0.78);
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  overflow: hidden;
   box-shadow: var(--shadow-soft);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
   min-width: 0;
 }
 
-.actividades-table__scroll {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-inline: contain;
-  /* Ensure scroll container doesn't constrain table width */
-  min-width: 0;
+.actividades-table::-webkit-scrollbar {
+  height: 8px;
+}
+
+.actividades-table::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.actividades-table::-webkit-scrollbar-thumb {
+  background: rgba(138, 77, 255, 0.5);
+  border-radius: 10px;
+}
+
+.actividades-table::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 77, 255, 0.7);
 }
 
 .actividades-table table {
   width: max-content;
-  min-width: 960px;
+  min-width: 1120px;
   table-layout: auto;
   border-collapse: collapse;
-  /* Ensure table can expand beyond container */
-  display: table;
+  margin: 0;
+}
+
+.actividades-table thead .table-cell,
+.actividades-table tbody .table-cell {
+  white-space: nowrap;
 }
 
 .bonus-container {

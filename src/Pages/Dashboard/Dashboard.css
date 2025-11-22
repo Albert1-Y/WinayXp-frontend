@@ -162,11 +162,9 @@
 }
 
 .actividades-table {
-  width: max-content;
-  min-width: 720px;
-  table-layout: auto;
+  width: 100%;
   border-collapse: collapse;
-  display: table;
+  min-width: 720px;
 }
 
 .actividades-table th,
@@ -220,8 +218,6 @@
   border-radius: 18px;
   box-shadow: inset 0 0 12px rgba(5, 3, 25, 0.35);
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-inline: contain;
-  min-width: 0;
 }
 
 @media (max-width: 1200px) {

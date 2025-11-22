@@ -760,30 +760,28 @@ const Estudiante = () => {
         </div>
         {/* Tabla */}
         <div className="estudiantes-table">
-          <div className="estudiantes-table__scroll">
-            <table>
-              <thead>
-                <tr className="table-header">
+          <table style={{ width: '100%' }}>
+            <thead>
+              <tr className="table-header">
+                {columns.map((col) => (
+                  <th key={col} className="table-cell">
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((row, idx) => (
+                <tr key={idx} className="table-row">
                   {columns.map((col) => (
-                    <th key={col} className="table-cell">
-                      {col}
-                    </th>
+                    <td key={col} className="table-cell">
+                      {customRender(col, row)}
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((row, idx) => (
-                  <tr key={idx} className="table-row">
-                    {columns.map((col) => (
-                      <td key={col} className="table-cell">
-                        {customRender(col, row)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

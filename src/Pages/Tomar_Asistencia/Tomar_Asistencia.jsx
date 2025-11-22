@@ -630,36 +630,34 @@ const Tomar_asistencia = () => {
             Marca o desmarca las casillas para actualizar la asistencia de cada estudiante.
           </p>
           <div className="tabla-asistencia">
-            <div className="tabla-asistencia__scroll">
-              <table>
-                <thead>
-                  <tr className="table-header">
-                    {columns.map((col) => (
-                      <th key={col} className="table-cell">
-                        {col}
-                      </th>
-                    ))}
+            <table style={{ width: '100%' }}>
+              <thead>
+                <tr className="table-header">
+                  {columns.map((col) => (
+                    <th key={col} className="table-cell">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {estudiantes.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length}>No hay estudiantes registrados.</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {estudiantes.length === 0 ? (
-                    <tr>
-                      <td colSpan={columns.length}>No hay estudiantes registrados.</td>
+                ) : (
+                  estudiantes.map((row, idx) => (
+                    <tr key={idx} className="table-row">
+                      {columns.map((col) => (
+                        <td key={col} className="table-cell">
+                          {customRender(col, row)}
+                        </td>
+                      ))}
                     </tr>
-                  ) : (
-                    estudiantes.map((row, idx) => (
-                      <tr key={idx} className="table-row">
-                        {columns.map((col) => (
-                          <td key={col} className="table-cell">
-                            {customRender(col, row)}
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

@@ -125,25 +125,14 @@
   background: rgba(11, 7, 34, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--shadow-soft);
-  overflow: hidden;
-  min-width: 0;
-}
-
-.tabla-asistencia__scroll {
-  width: 100%;
   overflow-x: auto;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-inline: contain;
-  min-width: 0;
 }
 
 .tabla-asistencia table {
-  width: max-content;
+  width: 100%;
   min-width: 640px;
-  table-layout: auto;
   border-collapse: collapse;
-  display: table;
 }
 
 .tabla-asistencia th,

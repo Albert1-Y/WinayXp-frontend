@@ -165,31 +165,26 @@
 
 .actividades-table {
   width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
   background: rgba(11, 7, 34, 0.78);
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  overflow: hidden;
   box-shadow: var(--shadow-soft);
-  min-width: 0;
-}
-
-.actividades-table__scroll {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-inline: contain;
-  /* Ensure scroll container doesn't constrain table width */
-  min-width: 0;
 }
 
 .actividades-table table {
   width: max-content;
-  min-width: 960px;
+  min-width: 1120px;
   table-layout: auto;
   border-collapse: collapse;
-  /* Ensure table can expand beyond container */
-  display: table;
+}
+
+.actividades-table thead .table-cell,
+.actividades-table tbody .table-cell {
+  white-space: nowrap;
 }
 
 .table-header td,

@@ -293,30 +293,28 @@ const Asistencia = () => {
           </div>
         )}
         <div className="actividades-table">
-          <div className="actividades-table__scroll">
-            <table>
-              <thead>
-                <tr className="table-header">
+          <table>
+            <thead>
+              <tr className="table-header">
+                {columns.map((col) => (
+                  <th key={col} className="table-cell">
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, idx) => (
+                <tr key={idx} className="table-row">
                   {columns.map((col) => (
-                    <th key={col} className="table-cell">
-                      {col}
-                    </th>
+                    <td key={col} className="table-cell">
+                      {customRender(col, row)}
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {data.map((row, idx) => (
-                  <tr key={idx} className="table-row">
-                    {columns.map((col) => (
-                      <td key={col} className="table-cell">
-                        {customRender(col, row)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
