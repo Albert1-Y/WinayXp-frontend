@@ -1,24 +1,24 @@
-import React, { useEffect, useState, useContext } from "react";
-import Navbar from "../Navbar/Navbar";
-import NavbarE from "../Navbar/NavbarE";
-import NavbarT from "../Navbar/NavbarT";
-import Button from "../../components/button/Button";
-import TextField from "../../components/TextField/TextField";
-import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import "./Estudiante.css";
-import useHistorialSection from "../../hooks/useHistorialSection";
+import React, { useEffect, useState, useContext } from 'react';
+import Navbar from '../Navbar/Navbar';
+import NavbarE from '../Navbar/NavbarE';
+import NavbarT from '../Navbar/NavbarT';
+import Button from '../../components/button/Button';
+import TextField from '../../components/TextField/TextField';
+import { AuthContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import './Estudiante.css';
+import useHistorialSection from '../../hooks/useHistorialSection';
 
 const formatFechaMovimiento = (valor) => {
-  if (!valor) return "-";
+  if (!valor) return '-';
   const fecha = new Date(valor);
   if (Number.isNaN(fecha.getTime())) return valor;
-  return fecha.toLocaleString("es-PE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return fecha.toLocaleString('es-PE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
@@ -63,23 +63,20 @@ const HistorialTabla = ({ title, state, emptyLabel }) => (
           )}
           {!state.loading &&
             state.data.map((mov) => {
-              const key =
-                mov.id_movimiento ?? `${mov.created_at}-${mov.motivo ?? "mov"}`;
+              const key = mov.id_movimiento ?? `${mov.created_at}-${mov.motivo ?? 'mov'}`;
               const creditos = Number(mov.creditos ?? 0);
               return (
                 <tr key={key}>
                   <td>{formatFechaMovimiento(mov.created_at)}</td>
-                  <td>{mov.nombre_actividad || mov.motivo || "-"}</td>
+                  <td>{mov.nombre_actividad || mov.motivo || '-'}</td>
                   <td>
                     <span
-                      className={`historial-credito ${
-                        creditos >= 0 ? "positivo" : "negativo"
-                      }`}
+                      className={`historial-credito ${creditos >= 0 ? 'positivo' : 'negativo'}`}
                     >
                       {creditos > 0 ? `+${creditos}` : creditos}
                     </span>
                   </td>
-                  <td>{mov.autor || "-"}</td>
+                  <td>{mov.autor || '-'}</td>
                 </tr>
               );
             })}
@@ -96,23 +93,21 @@ const Estudiante = () => {
   const [navbarCollapsed, setNavbarCollapsed] = useState(false);
   const [showCobrarForm, setShowCobrarForm] = useState(false);
   const [puntosACobrar, setPuntosACobrar] = useState(1);
-  const [motivoCobro, setMotivoCobro] = useState("");
+  const [motivoCobro, setMotivoCobro] = useState('');
   const [cobroLoading, setCobroLoading] = useState(false);
-  const [cobroError, setCobroError] = useState("");
-  const [cobroSuccess, setCobroSuccess] = useState("");
+  const [cobroError, setCobroError] = useState('');
+  const [cobroSuccess, setCobroSuccess] = useState('');
   const [ultimoMovimientoId, setUltimoMovimientoId] = useState(null);
   const [estudianteACobrar, setEstudianteACobrar] = useState(null);
   const historialDni = selectedStudent?.dni || estudianteACobrar?.dni || null;
-  const asistenciaHist = useHistorialSection(historialDni, "asistencia");
-  const bonusHist = useHistorialSection(historialDni, "bonus");
-  const cobroHist = useHistorialSection(historialDni, "cobro");
+  const asistenciaHist = useHistorialSection(historialDni, 'asistencia');
+  const bonusHist = useHistorialSection(historialDni, 'bonus');
+  const cobroHist = useHistorialSection(historialDni, 'cobro');
 
   useEffect(() => {
     const handleNavbarChange = () => {
       // Verificamos si existe un elemento con la clase .navbar-container.collapsed
-      const collapsedNavbar = document.querySelector(
-        ".navbar-container.collapsed",
-      );
+      const collapsedNavbar = document.querySelector('.navbar-container.collapsed');
       setNavbarCollapsed(!!collapsedNavbar);
     };
 
@@ -121,7 +116,7 @@ const Estudiante = () => {
     observer.observe(document.body, {
       subtree: true,
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ['class'],
     });
 
     // Verificación inicial
@@ -138,16 +133,16 @@ const Estudiante = () => {
       estudiante = data.find((est) => est.id_persona === id_persona);
     }
     if (!estudiante) {
-      alert("No se encontró el estudiante");
+      alert('No se encontró el estudiante');
       return;
     }
 
     // Guardar el estudiante seleccionado y mostrar el formulario
     setEstudianteACobrar(estudiante);
     setPuntosACobrar(1); // Valor inicial
-    setMotivoCobro("");
-    setCobroError("");
-    setCobroSuccess("");
+    setMotivoCobro('');
+    setCobroError('');
+    setCobroSuccess('');
     setUltimoMovimientoId(null);
     setShowCobrarForm(true);
   };
@@ -171,19 +166,19 @@ const Estudiante = () => {
     setShowCobrarForm(false);
     setEstudianteACobrar(null);
     setPuntosACobrar(1);
-    setMotivoCobro("");
-    setCobroError("");
-    setCobroSuccess("");
+    setMotivoCobro('');
+    setCobroError('');
+    setCobroSuccess('');
     setUltimoMovimientoId(null);
   };
 
   const procesarCobroPuntos = async () => {
-    setCobroError("");
-    setCobroSuccess("");
+    setCobroError('');
+    setCobroSuccess('');
     setUltimoMovimientoId(null);
 
     if (!estudianteACobrar) {
-      setCobroError("Selecciona un estudiante para cobrar puntos.");
+      setCobroError('Selecciona un estudiante para cobrar puntos.');
       return;
     }
 
@@ -192,24 +187,22 @@ const Estudiante = () => {
     const saldoDisponible = Number(estudianteACobrar.cobro_credito ?? 0);
 
     if (!Number.isFinite(puntosNumerico) || puntosNumerico <= 0) {
-      setCobroError("Debes ingresar un valor válido mayor a 0.");
+      setCobroError('Debes ingresar un valor válido mayor a 0.');
       return;
     }
 
     if (saldoDisponible <= 0) {
-      setCobroError("El estudiante no tiene puntos disponibles para cobrar.");
+      setCobroError('El estudiante no tiene puntos disponibles para cobrar.');
       return;
     }
 
     if (puntosNumerico > saldoDisponible) {
-      setCobroError(
-        `El estudiante solo tiene ${saldoDisponible} puntos disponibles.`,
-      );
+      setCobroError(`El estudiante solo tiene ${saldoDisponible} puntos disponibles.`);
       return;
     }
 
     if (motivo.length < 5) {
-      setCobroError("El motivo debe tener al menos 5 caracteres.");
+      setCobroError('El motivo debe tener al menos 5 caracteres.');
       return;
     }
 
@@ -222,24 +215,21 @@ const Estudiante = () => {
     setCobroLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/admin/CobrarPuntos`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(datosACobrar),
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/CobrarPuntos`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        credentials: 'include',
+        body: JSON.stringify(datosACobrar),
+      });
 
       const text = await response.text();
       let payload = {};
       try {
         payload = text ? JSON.parse(text) : {};
       } catch (error) {
-        console.warn("Respuesta no válida JSON en CobrarPuntos:", error);
+        console.warn('Respuesta no válida JSON en CobrarPuntos:', error);
       }
 
       if (response.status === 200) {
@@ -249,48 +239,42 @@ const Estudiante = () => {
           prev
             ? {
                 ...prev,
-                credito_total: Number(
-                  saldo.credito_total ?? prev.credito_total ?? 0,
-                ),
-                cobro_credito: Number(
-                  saldo.cobro_credito ?? prev.cobro_credito ?? 0,
-                ),
+                credito_total: Number(saldo.credito_total ?? prev.credito_total ?? 0),
+                cobro_credito: Number(saldo.cobro_credito ?? prev.cobro_credito ?? 0),
               }
-            : prev,
+            : prev
         );
 
-        setCobroSuccess(payload?.msg || "Puntos cobrados correctamente.");
+        setCobroSuccess(payload?.msg || 'Puntos cobrados correctamente.');
         setUltimoMovimientoId(payload?.movimiento ?? null);
         setPuntosACobrar(1);
-        setMotivoCobro("");
+        setMotivoCobro('');
         return;
       }
 
       if (response.status === 400) {
-        if (payload?.error?.code === "SALDO_INSUFICIENTE") {
-          setCobroError(
-            payload?.msg || "El saldo del estudiante es insuficiente.",
-          );
+        if (payload?.error?.code === 'SALDO_INSUFICIENTE') {
+          setCobroError(payload?.msg || 'El saldo del estudiante es insuficiente.');
         } else {
-          setCobroError(payload?.msg || "Verifica los datos enviados.");
+          setCobroError(payload?.msg || 'Verifica los datos enviados.');
         }
         return;
       }
 
       if (response.status === 403) {
-        setCobroError("No tienes permisos para realizar cobros.");
+        setCobroError('No tienes permisos para realizar cobros.');
         return;
       }
 
       if (response.status === 404) {
-        setCobroError("El estudiante no existe o está inactivo.");
+        setCobroError('El estudiante no existe o está inactivo.');
         return;
       }
 
-      setCobroError(payload?.msg || "Ocurrió un error al cobrar los puntos.");
+      setCobroError(payload?.msg || 'Ocurrió un error al cobrar los puntos.');
     } catch (error) {
-      console.error("Error en el cobro:", error);
-      setCobroError("No se pudo procesar el cobro. Intenta nuevamente.");
+      console.error('Error en el cobro:', error);
+      setCobroError('No se pudo procesar el cobro. Intenta nuevamente.');
     } finally {
       setCobroLoading(false);
     }
@@ -301,132 +285,114 @@ const Estudiante = () => {
       id_estudiante: estudianteACobrar.id_persona,
     });
     if (ultimoMovimientoId) {
-      params.set("movimiento", ultimoMovimientoId);
+      params.set('movimiento', ultimoMovimientoId);
     }
     navigate(`/creditos?${params.toString()}`);
   };
   const renderNavbar = () => {
     switch (rol) {
-      case "administrador":
+      case 'administrador':
         return <Navbar />;
-      case "estudiante":
+      case 'estudiante':
         return <NavbarE />;
-      case "tutor":
+      case 'tutor':
         return <NavbarT />;
       default:
-        alert("Tu sesión ha expirado");
+        alert('Tu sesión ha expirado');
         localStorage.clear();
-        navigate("/");
+        navigate('/');
         return null;
     }
   };
 
   const navigate = useNavigate();
-  const columns = [
-    "ID",
-    "Nombre",
-    "DNI",
-    "Email",
-    "Semestre",
-    "Puntos CEDHI",
-    "Acciones",
-  ];
+  const columns = ['ID', 'Nombre', 'DNI', 'Email', 'Semestre', 'Puntos CEDHI', 'Acciones'];
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/admin/IntMostrarEstudiantes`, {
-      method: "GET",
-      credentials: "include",
+      method: 'GET',
+      credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Datos iniciales:", data);
+        console.log('Datos iniciales:', data);
         setData(data);
         setFilteredData(data);
       })
       .catch((error) => {
-        console.error("Error al obtener actividades:", error);
+        console.error('Error al obtener actividades:', error);
       });
   }, []);
 
   const handleSearchByDni = () => {
     if (!searchTerm.trim()) {
-      alert("Ingresa un DNI para buscar.");
+      alert('Ingresa un DNI para buscar.');
       return;
     }
 
-    fetch(
-      `${import.meta.env.VITE_API_URL}/api/admin/DatosEstudiante?dni=${searchTerm}`,
-      {
-        method: "GET",
-        credentials: "include",
-      },
-    )
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/DatosEstudiante?dni=${searchTerm}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Resultado de búsqueda:", data);
+        console.log('Resultado de búsqueda:', data);
         setFilteredData([data]);
       })
       .catch((error) => {
-        console.error("Error al buscar estudiante:", error);
+        console.error('Error al buscar estudiante:', error);
       });
   };
   const handleDelete = (id_persona) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este estudiante?")) return;
+    if (!window.confirm('¿Seguro que deseas eliminar este estudiante?')) return;
 
-    fetch(
-      `${import.meta.env.VITE_API_URL}/api/admin/EliminarEstudiante?id_persona=${id_persona}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      },
-    )
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/EliminarEstudiante?id_persona=${id_persona}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
       .then((response) => {
         if (response.ok) {
-          setData((prev) =>
-            prev.filter((estudiante) => estudiante.id_persona !== id_persona),
-          );
+          setData((prev) => prev.filter((estudiante) => estudiante.id_persona !== id_persona));
           setFilteredData((prev) =>
-            prev.filter((estudiante) => estudiante.id_persona !== id_persona),
+            prev.filter((estudiante) => estudiante.id_persona !== id_persona)
           );
-          alert("Estudiante eliminado exitosamente.");
+          alert('Estudiante eliminado exitosamente.');
         } else {
-          alert("Error al eliminar estudiante.");
+          alert('Error al eliminar estudiante.');
         }
       })
       .catch((error) => {
-        console.error("Error en la eliminación:", error);
-        alert("Error al eliminar estudiante.");
+        console.error('Error en la eliminación:', error);
+        alert('Error al eliminar estudiante.');
       });
   };
   const getColor = (Puntos_CEDHI) => {
-    if (Puntos_CEDHI >= 90) return "#10B981"; // verde
-    if (Puntos_CEDHI >= 75) return "#FBBF24"; // amarillo
-    return "#EF4444"; // rojo
+    if (Puntos_CEDHI >= 90) return '#10B981'; // verde
+    if (Puntos_CEDHI >= 75) return '#FBBF24'; // amarillo
+    return '#EF4444'; // rojo
   };
 
   const customRender = (col, row) => {
     switch (col) {
-      case "Nombre":
+      case 'Nombre':
         return `${row.nombre_persona} ${row.apellido}`;
-      case "DNI":
+      case 'DNI':
         return row.dni;
-      case "Email":
+      case 'Email':
         return row.email;
-      case "Semestre":
-        return row.semestre || "-";
-      case "ID":
+      case 'Semestre':
+        return row.semestre || '-';
+      case 'ID':
         return row.id_persona;
-      case "Puntos CEDHI":
+      case 'Puntos CEDHI':
         return (
-          <span style={{ color: getColor(row.credito_total ?? 0) }}>
-            {row.credito_total ?? 0}
-          </span>
+          <span style={{ color: getColor(row.credito_total ?? 0) }}>{row.credito_total ?? 0}</span>
         );
-      case "Acciones":
+      case 'Acciones':
         return (
           <div className="action-buttons">
             <button
@@ -441,19 +407,13 @@ const Estudiante = () => {
                 alt="Editar"
               />
             </button>
-            <button
-              className="action-button"
-              onClick={() => handleDelete(row.id_persona)}
-            >
+            <button className="action-button" onClick={() => handleDelete(row.id_persona)}>
               <img
                 src="https://media.istockphoto.com/id/928418914/es/vector/bote-de-basura-basurero-icono-de-la-papelera.jpg?s=612x612&w=0&k=20&c=rBQCvIJdlIUOaYlpEK_86WD3i7wsyLIQ6C1tjYxrTTQ="
                 alt="Eliminar"
               />
             </button>
-            <button
-              className="action-button"
-              onClick={() => handleCobrarPuntos(row.id_persona)}
-            >
+            <button className="action-button" onClick={() => handleCobrarPuntos(row.id_persona)}>
               <img
                 src="https://cdn-icons-png.flaticon.com/512/2489/2489756.png"
                 alt="Cobrar Puntos"
@@ -472,9 +432,7 @@ const Estudiante = () => {
   const motivoValido = motivoCobro.trim().length >= 5;
 
   return (
-    <div
-      className={`estudiantes-container ${navbarCollapsed ? "navbar-collapsed" : ""}`}
-    >
+    <div className={`estudiantes-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
       {renderNavbar()}
       <div className="estudiantes-content">
         {/* Header */}
@@ -483,25 +441,21 @@ const Estudiante = () => {
           <Button
             text="Crear Estudiante"
             styleType="black"
-            onClick={() => navigate("/create_estudiante")}
+            onClick={() => navigate('/create_estudiante')}
           />
         </div>
 
         {/* Búsqueda + filtros */}
         <div className="actividades-search">
           <div className="search-container">
-            <div className={"date-field"}>
+            <div className={'date-field'}>
               <TextField
                 placeholder="Buscar por DNI"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button
-              text="Buscar"
-              styleType="black"
-              onClick={handleSearchByDni}
-            />
+            <Button text="Buscar" styleType="black" onClick={handleSearchByDni} />
           </div>
         </div>
         {isEditing && selectedStudent && (
@@ -515,37 +469,32 @@ const Estudiante = () => {
               onSubmit={(e) => {
                 e.preventDefault();
 
-                fetch(
-                  `${import.meta.env.VITE_API_URL}/api/admin/ActulizarEstudiante`,
-                  {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    credentials: "include",
-                    body: JSON.stringify(selectedStudent),
+                fetch(`${import.meta.env.VITE_API_URL}/api/admin/ActulizarEstudiante`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
                   },
-                )
+                  credentials: 'include',
+                  body: JSON.stringify(selectedStudent),
+                })
                   .then((res) => {
                     if (res.ok) {
-                      alert("Estudiante actualizado correctamente.");
+                      alert('Estudiante actualizado correctamente.');
                       setIsEditing(false);
                       window.location.reload();
                     } else {
-                      alert("Error al actualizar.");
+                      alert('Error al actualizar.');
                     }
                   })
                   .catch((err) => {
-                    console.error("Error en la actualización:", err);
-                    alert("Error en la actualización.");
+                    console.error('Error en la actualización:', err);
+                    alert('Error en la actualización.');
                   });
               }}
             >
               <div className="info-container">
                 <h2 className="info-title">Información Personal</h2>
-                <p className="info-subtitle">
-                  Actualiza los datos personales del estudiante
-                </p>
+                <p className="info-subtitle">Actualiza los datos personales del estudiante</p>
                 <div className="info-grid">
                   <div className="input-field">
                     <label htmlFor="dni">DNI:</label>
@@ -589,9 +538,7 @@ const Estudiante = () => {
                     />
                   </div>
                   <div className="input-field">
-                    <label htmlFor="Correo Electrónico">
-                      Correo Electrónico:
-                    </label>
+                    <label htmlFor="Correo Electrónico">Correo Electrónico:</label>
                     <TextField
                       placeholder="Correo Electrónico"
                       type="email"
@@ -609,7 +556,7 @@ const Estudiante = () => {
                     <TextField
                       placeholder="Contraseña"
                       type="password"
-                      value={selectedStudent.password || ""}
+                      value={selectedStudent.password || ''}
                       onChange={(e) =>
                         setSelectedStudent({
                           ...selectedStudent,
@@ -623,9 +570,7 @@ const Estudiante = () => {
 
               <div className="info-container">
                 <h2 className="info-title">Detalles Académicos</h2>
-                <p className="info-subtitle">
-                  Actualiza la información académica del estudiante
-                </p>
+                <p className="info-subtitle">Actualiza la información académica del estudiante</p>
                 <div className="info-grid">
                   <div className="input-field">
                     <label htmlFor="semestre">Semestre:</label>
@@ -688,17 +633,11 @@ const Estudiante = () => {
                 </div>
               </div>
 
-              <div
-                style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}
-              >
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
                 <button type="submit" className="btn-primary">
                   Guardar Cambios
                 </button>
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={() => setIsEditing(false)}
-                >
+                <button type="button" className="btn-cancel" onClick={() => setIsEditing(false)}>
                   Cancelar
                 </button>
               </div>
@@ -726,7 +665,7 @@ const Estudiante = () => {
               </header>
               <div className="cobrar-info">
                 <p>
-                  Estudiante:{" "}
+                  Estudiante:{' '}
                   <strong>
                     {estudianteACobrar.nombre_persona} {estudianteACobrar.apellido}
                   </strong>
@@ -761,14 +700,11 @@ const Estudiante = () => {
                     <p>{cobroSuccess}</p>
                     <div className="success-actions">
                       <span>
-                        Saldo actualizado: {estudianteACobrar.credito_total ?? 0}{" "}
-                        créditos totales / {estudianteACobrar.cobro_credito ?? 0}{" "}
-                        disponibles
+                        Saldo actualizado: {estudianteACobrar.credito_total ?? 0} créditos totales /{' '}
+                        {estudianteACobrar.cobro_credito ?? 0} disponibles
                       </span>
                       <Button
-                        text={
-                          ultimoMovimientoId ? "Ver movimiento" : "Ver historial"
-                        }
+                        text={ultimoMovimientoId ? 'Ver movimiento' : 'Ver historial'}
                         styleType="white"
                         onClick={navegarHistorial}
                       />
@@ -778,16 +714,12 @@ const Estudiante = () => {
 
                 <div className="cobrar-buttons">
                   <Button
-                    text={cobroLoading ? "Procesando..." : "Confirmar Cobro"}
+                    text={cobroLoading ? 'Procesando...' : 'Confirmar Cobro'}
                     styleType="black"
                     onClick={procesarCobroPuntos}
                     disabled={cobroLoading || !puntosValidos || !motivoValido}
                   />
-                  <Button
-                    text="Cancelar"
-                    styleType="danger"
-                    onClick={cerrarFormularioCobro}
-                  />
+                  <Button text="Cancelar" styleType="danger" onClick={cerrarFormularioCobro} />
                 </div>
               </div>
             </article>
@@ -828,28 +760,30 @@ const Estudiante = () => {
         </div>
         {/* Tabla */}
         <div className="estudiantes-table">
-          <table style={{ width: "100%" }}>
-            <thead>
-              <tr className="table-header">
-                {columns.map((col) => (
-                  <th key={col} className="table-cell">
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((row, idx) => (
-                <tr key={idx} className="table-row">
+          <div className="estudiantes-table__scroll">
+            <table>
+              <thead>
+                <tr className="table-header">
                   {columns.map((col) => (
-                    <td key={col} className="table-cell">
-                      {customRender(col, row)}
-                    </td>
+                    <th key={col} className="table-cell">
+                      {col}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredData.map((row, idx) => (
+                  <tr key={idx} className="table-row">
+                    {columns.map((col) => (
+                      <td key={col} className="table-cell">
+                        {customRender(col, row)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

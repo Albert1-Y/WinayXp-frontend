@@ -1,14 +1,14 @@
-import React from "react";
+import React from 'react';
 
 const baseIconProps = {
   width: 22,
   height: 22,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
   strokeWidth: 1.6,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
 };
 
 const SvgIcon = ({ children }) => <svg {...baseIconProps}>{children}</svg>;

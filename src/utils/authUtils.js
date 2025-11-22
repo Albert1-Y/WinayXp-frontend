@@ -1,5 +1,5 @@
 // Utilidad para manejo de errores de autenticación
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 // Función para manejar errores 401
 export const handleAuthError = () => {
@@ -7,7 +7,7 @@ export const handleAuthError = () => {
   localStorage.clear();
 
   // Redireccionar al login
-  window.location.href = "/#/"; // Usamos window.location para un redirect completo
+  window.location.href = '/#/'; // Usamos window.location para un redirect completo
 };
 
 // Interceptor de fetch personalizado
@@ -18,13 +18,13 @@ export const fetchWithAuth = async (url, options = {}) => {
     // Si el servidor responde con 401, maneja el error de autenticación
     if (response.status === 401) {
       handleAuthError();
-      return Promise.reject(new Error("No autorizado"));
+      return Promise.reject(new Error('No autorizado'));
     }
 
     return response;
   } catch (error) {
     // Capturar otros errores de red
-    console.error("Error de red:", error);
+    console.error('Error de red:', error);
     throw error;
   }
 };

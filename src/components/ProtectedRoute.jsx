@@ -1,11 +1,8 @@
-import React, { useContext } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import React, { useContext } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
-const ProtectedRoute = ({
-  children,
-  allow = ["administrador", "tutor", "estudiante"],
-}) => {
+const ProtectedRoute = ({ children, allow = ['administrador', 'tutor', 'estudiante'] }) => {
   const { rol } = useContext(AuthContext);
   const location = useLocation();
 
@@ -16,7 +13,7 @@ const ProtectedRoute = ({
         replace
         state={{
           from: location,
-          error: "Acceso denegado. Inicia sesión con un usuario autorizado.",
+          error: 'Acceso denegado. Inicia sesión con un usuario autorizado.',
         }}
       />
     );

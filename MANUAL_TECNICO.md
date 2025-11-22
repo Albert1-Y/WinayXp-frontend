@@ -97,6 +97,7 @@ Componente global que intercepta y maneja errores de autenticación en toda la a
 ### 5.2 Navbar
 
 Implementado en tres variantes según el rol del usuario:
+
 - **Navbar.jsx** - Navegación general
 - **NavbarT.jsx** - Navegación para tutores
 - **NavbarE.jsx** - Navegación para estudiantes
@@ -110,6 +111,7 @@ Panel principal con estadísticas, información resumida y acceso a las funcione
 ### 6.1 Gestión de Usuarios
 
 Permite crear y administrar perfiles de:
+
 - Administradores
 - Tutores
 - Estudiantes
@@ -125,6 +127,7 @@ Incluye funcionalidades para registrar y monitorear la asistencia de estudiantes
 ### 6.4 Gamificación
 
 Implementa elementos de gamificación como:
+
 - Sistema de niveles (visualmente representados)
 - Ranking de estudiantes
 - Puntos por participación y asistencia
@@ -132,6 +135,7 @@ Implementa elementos de gamificación como:
 ## 7. Estilos y Diseño UI
 
 La interfaz utiliza CSS modular con archivos específicos para cada componente y página:
+
 - Diseño responsivo
 - Estructura basada en grid y flexbox
 - Componentes de formulario estilizados con feedback visual
@@ -139,22 +143,30 @@ La interfaz utiliza CSS modular con archivos específicos para cada componente y
 ## 8. Integración con Backend
 
 ### 8.1 API REST
+
 La aplicación se comunica con el backend mediante:
+
 - API REST
 - Manejo de tokens JWT
 
 ### 8.2 Estructura del Backend
 
 ### 9.1 Comandos Frontend
+
 ### 9.1 Comandos Principales
+
 - **npm run dev**: Inicia el servidor de desarrollo
 - **npm run build**: Construye la aplicación para producción
 - **npm run preview**: Previsualiza la versión de producción
 
 ### 9.2 Comandos Backend
+
 ### 9.2 Configuración de Vite
+
 ### 9.3 Configuraciones
+
 La configuración básica de Vite se encuentra en `vite.config.js`, utilizando el plugin de React.
+
 ## 10. Consideraciones de Seguridad
 
 - Validación de entradas en formularios
@@ -162,17 +174,21 @@ La configuración básica de Vite se encuentra en `vite.config.js`, utilizando e
 - Protección de rutas según roles de usuario
 - Interceptores para sesiones expiradas
 - Validación de datos en el Backend
+
 ## 11. Solución de Problemas Comunes
 
 ### 11.1 Errores de Autenticación
+
 Si se presentan problemas de autenticación, verificar:
+
 - Estado del token JWT
 - Configuración de CORS en el backend
 - Funcionamiento del AuthHandler
 
 ### 11.2 Problemas de Renderizado
+
 Para resolver problemas visuales:
+
 - Verificar compatibilidad CSS
 - Validar estructura de componentes
 - Revisar console.log para errores
-

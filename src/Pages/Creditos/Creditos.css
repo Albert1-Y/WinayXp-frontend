@@ -108,14 +108,20 @@
 
 .historial-table-wrapper {
   overflow-x: auto;
+  overflow-y: auto;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  min-width: 0;
 }
 
 .historial-table-wrapper table {
-  width: 100%;
-  border-collapse: collapse;
+  width: max-content;
   min-width: 880px;
+  table-layout: auto;
+  border-collapse: collapse;
+  display: table;
 }
 
 .historial-table-wrapper th,
@@ -205,7 +211,7 @@
   gap: 16px;
 }
 
-.import-form input[type="file"] {
+.import-form input[type='file'] {
   color: var(--text-main);
 }
 

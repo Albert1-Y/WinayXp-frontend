@@ -1,14 +1,7 @@
-import React, { useState } from "react";
-import "./TextField.css";
+import React, { useState } from 'react';
+import './TextField.css';
 
-const TextField = ({
-  name,
-  value,
-  onChange,
-  type = "text",
-  placeholder,
-  ...rest
-}) => {
+const TextField = ({ name, value, onChange, type = 'text', placeholder, ...rest }) => {
   return (
     <input
       className="textfield"

@@ -1,23 +1,23 @@
-import React, { useRef, useState, useEffect } from "react";
-import { BrowserMultiFormatReader } from "@zxing/browser";
-import Navbar from "../Navbar/Navbar";
-import NavbarT from "../Navbar/NavbarT";
-import { useLocation, useNavigate } from "react-router-dom";
-import Button from "../../components/button/Button";
-import TextField from "../../components/TextField/TextField";
-import "./Tomar_asistencia.css";
-import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
+import React, { useRef, useState, useEffect } from 'react';
+import { BrowserMultiFormatReader } from '@zxing/browser';
+import Navbar from '../Navbar/Navbar';
+import NavbarT from '../Navbar/NavbarT';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Button from '../../components/button/Button';
+import TextField from '../../components/TextField/TextField';
+import './Tomar_asistencia.css';
+import { AuthContext } from '../../context/AuthContext';
+import { useContext } from 'react';
 
 const Tomar_asistencia = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const actividad = state?.actividad;
-  const [ultimoDniEscaneado, setUltimoDniEscaneado] = useState("");
+  const [ultimoDniEscaneado, setUltimoDniEscaneado] = useState('');
   const [estudiantes, setEstudiantes] = useState([]);
   const [asistencias, setAsistencias] = useState({});
   const [manualMode, setManualMode] = useState(true);
-  const [dniManual, setDniManual] = useState("");
+  const [dniManual, setDniManual] = useState('');
   const [scannerActive, setScannerActive] = useState(false);
   const [loadingCamera, setLoadingCamera] = useState(false);
   const [navbarCollapsed, setNavbarCollapsed] = useState(false);
@@ -26,16 +26,14 @@ const Tomar_asistencia = () => {
   const [decodingControls, setDecodingControls] = useState(null);
   const isProcessing = useRef(false);
   const { rol } = useContext(AuthContext);
-  const columns = ["Nombre", "Apellido", "DNI", "Asistencia"];
+  const columns = ['Nombre', 'Apellido', 'DNI', 'Asistencia'];
   const [lastScannedTime, setLastScannedTime] = useState(0);
   const [scanCooldown, setScanCooldown] = useState(false);
   // Efecto para detectar el estado del navbar colapsado
   useEffect(() => {
     const handleNavbarChange = () => {
       // Verificamos si existe un elemento con la clase .navbar-container.collapsed
-      const collapsedNavbar = document.querySelector(
-        ".navbar-container.collapsed",
-      );
+      const collapsedNavbar = document.querySelector('.navbar-container.collapsed');
       setNavbarCollapsed(!!collapsedNavbar);
     };
 
@@ -44,7 +42,7 @@ const Tomar_asistencia = () => {
     observer.observe(document.body, {
       subtree: true,
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ['class'],
     });
 
     // Verificación inicial
@@ -61,9 +59,9 @@ const Tomar_asistencia = () => {
     fetch(
       `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaActividad?id_actividad=${actividad.id_actividad}`,
       {
-        method: "GET",
-        credentials: "include",
-      },
+        method: 'GET',
+        credentials: 'include',
+      }
     )
       .then((res) => res.json())
       .then((data) => {
@@ -84,49 +82,46 @@ const Tomar_asistencia = () => {
         }
       })
       .catch((err) => {
-        console.error("❌ Error al obtener asistentes previos:", err);
+        console.error('❌ Error al obtener asistentes previos:', err);
       });
   }, [actividad]);
   const renderNavbar = () => {
     switch (rol) {
-      case "administrador":
+      case 'administrador':
         return <Navbar />;
-      case "estudiante":
+      case 'estudiante':
         return <NavbarE />;
-      case "tutor":
+      case 'tutor':
         return <NavbarT />;
       default:
-        alert("Tu sesión ha expirado");
+        alert('Tu sesión ha expirado');
         localStorage.clear();
-        navigate("/");
+        navigate('/');
         return null;
     }
   };
   const registrarAsistenciaPorDNI = (dni, estado = true) => {
     const dniRecortado = dni.length === 13 ? dni.slice(-8) : dni;
 
-    return fetch(
-      `${import.meta.env.VITE_API_URL}/api/admin/DatosEstudiante?dni=${dniRecortado}`,
-      {
-        method: "GET",
-        credentials: "include",
-      },
-    )
+    return fetch(`${import.meta.env.VITE_API_URL}/api/admin/DatosEstudiante?dni=${dniRecortado}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
       .then(async (response) => {
         if (!response.ok) {
           const text = await response.text();
-          console.error("❌ Error DatosEstudiante:", response.status, text);
-          alert("Estudiante no encontrado.");
-          throw new Error("Estudiante no encontrado");
+          console.error('❌ Error DatosEstudiante:', response.status, text);
+          alert('Estudiante no encontrado.');
+          throw new Error('Estudiante no encontrado');
         }
         return response.json();
       })
       .then((data) => {
-        console.log("✅ Estudiante encontrado:", data);
+        console.log('✅ Estudiante encontrado:', data);
 
         if (!data?.id_persona) {
-          alert("Estudiante inválido.");
-          throw new Error("Estudiante inválido");
+          alert('Estudiante inválido.');
+          throw new Error('Estudiante inválido');
         }
 
         const url = `${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudiante`;
@@ -136,19 +131,19 @@ const Tomar_asistencia = () => {
           estado: estado,
         };
 
-        console.log("📤 Enviando a:", url);
-        console.log("📦 Payload:", payload);
+        console.log('📤 Enviando a:', url);
+        console.log('📦 Payload:', payload);
 
         return fetch(url, {
-          method: "PUT",
-          credentials: "include",
+          method: 'PUT',
+          credentials: 'include',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(payload),
         }).then(async (res) => {
           const text = await res.text();
-          console.log("📥 Respuesta RAW:", text);
+          console.log('📥 Respuesta RAW:', text);
 
           try {
             const json = JSON.parse(text);
@@ -177,22 +172,22 @@ const Tomar_asistencia = () => {
               }));
 
               alert(
-                `✅ Asistencia ${estado ? "registrada" : "cancelada"} para ${data.nombre_persona} ${data.apellido}`,
+                `✅ Asistencia ${estado ? 'registrada' : 'cancelada'} para ${data.nombre_persona} ${data.apellido}`
               );
               return Promise.resolve();
             } else {
-              alert("❌ Error en la respuesta JSON: " + JSON.stringify(json));
-              throw new Error("Error en respuesta JSON");
+              alert('❌ Error en la respuesta JSON: ' + JSON.stringify(json));
+              throw new Error('Error en respuesta JSON');
             }
           } catch (e) {
-            alert("❌ Respuesta no fue JSON. Revisa consola.");
+            alert('❌ Respuesta no fue JSON. Revisa consola.');
             throw e;
           }
         });
       })
       .catch((error) => {
-        console.error("❌ Error general:", error);
-        alert("Error inesperado al registrar asistencia. Revisa consola.");
+        console.error('❌ Error general:', error);
+        alert('Error inesperado al registrar asistencia. Revisa consola.');
         throw error;
       });
   };
@@ -202,14 +197,14 @@ const Tomar_asistencia = () => {
     const nuevoEstado = !asistencias[dni];
 
     if (!estudiante || !estudiante.id_persona) {
-      alert("Falta id_persona o dni en los datos del estudiante.");
+      alert('Falta id_persona o dni en los datos del estudiante.');
       return;
     }
 
     fetch(`${import.meta.env.VITE_API_URL}/api/admin/AsistenciaEstudiante`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         id_persona: estudiante.id_persona,
         id_actividad: actividad.id_actividad,
@@ -224,22 +219,22 @@ const Tomar_asistencia = () => {
             [dni]: nuevoEstado,
           }));
         } else {
-          alert("No se pudo cambiar el estado de asistencia.");
+          alert('No se pudo cambiar el estado de asistencia.');
         }
       })
       .catch((err) => {
-        console.error("Error:", err);
-        alert("Error al actualizar asistencia.");
+        console.error('Error:', err);
+        alert('Error al actualizar asistencia.');
       });
   };
 
   const handleManualSubmit = () => {
     if (!dniManual.trim()) {
-      alert("Ingresa un DNI.");
+      alert('Ingresa un DNI.');
       return;
     }
     registrarAsistenciaPorDNI(dniManual);
-    setDniManual("");
+    setDniManual('');
   };
   //dcannn
 
@@ -251,18 +246,18 @@ const Tomar_asistencia = () => {
     setLastScannedTime(0);
 
     try {
-      console.log("🔄 Solicitando acceso a la cámara...");
+      console.log('🔄 Solicitando acceso a la cámara...');
 
       const constraints = {
         video: {
-          facingMode: "environment",
+          facingMode: 'environment',
           width: { ideal: 640 },
           height: { ideal: 480 },
         },
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log("✅ Cámara obtenida");
+      console.log('✅ Cámara obtenida');
 
       const track = stream.getVideoTracks()[0];
       const capabilities = track.getCapabilities();
@@ -275,15 +270,13 @@ const Tomar_asistencia = () => {
         await track.applyConstraints({
           advanced: [{ zoom: zoomValor }],
         });
-        console.log("🔍 Zoom óptico aplicado:", zoomValor);
+        console.log('🔍 Zoom óptico aplicado:', zoomValor);
       } else {
-        console.warn(
-          "⚠️ Zoom óptico no disponible, se aplicará zoom digital por CSS",
-        );
+        console.warn('⚠️ Zoom óptico no disponible, se aplicará zoom digital por CSS');
       }
 
       if (!videoRef.current) {
-        alert("Error al inicializar cámara");
+        alert('Error al inicializar cámara');
         stream.getTracks().forEach((t) => t.stop());
         setScannerActive(false);
         setLoadingCamera(false);
@@ -291,7 +284,7 @@ const Tomar_asistencia = () => {
       }
 
       videoRef.current.srcObject = stream;
-      videoRef.current.setAttribute("playsinline", true);
+      videoRef.current.setAttribute('playsinline', true);
       await videoRef.current.play();
 
       // Preparar el lector de códigos
@@ -299,21 +292,21 @@ const Tomar_asistencia = () => {
         try {
           codeReader.current.reset();
         } catch (e) {
-          console.warn("⚠️ No se pudo resetear lector:", e);
+          console.warn('⚠️ No se pudo resetear lector:', e);
         }
       }
 
       codeReader.current = new BrowserMultiFormatReader();
 
       const timeoutId = setTimeout(() => {
-        console.warn("⏱️ Timeout de inicio");
+        console.warn('⏱️ Timeout de inicio');
         setLoadingCamera(false);
-        alert("La cámara tardó demasiado en iniciar.");
+        alert('La cámara tardó demasiado en iniciar.');
         stopScanner();
       }, 8000);
 
       const controls = await codeReader.current.decodeFromConstraints(
-        { video: { facingMode: "environment" } },
+        { video: { facingMode: 'environment' } },
         videoRef.current,
         (result, err) => {
           clearTimeout(timeoutId);
@@ -324,8 +317,7 @@ const Tomar_asistencia = () => {
             const codigo = result.getText().trim();
 
             if (now - lastScannedTime < 1500) return;
-            if (codigo === ultimoDniEscaneado && now - lastScannedTime < 3000)
-              return;
+            if (codigo === ultimoDniEscaneado && now - lastScannedTime < 3000) return;
 
             isProcessing.current = true;
             setLastScannedTime(now);
@@ -340,22 +332,22 @@ const Tomar_asistencia = () => {
             }
           }
 
-          if (err && !err.name?.toLowerCase().includes("notfound")) {
-            console.error("❌ Error de lectura:", err);
+          if (err && !err.name?.toLowerCase().includes('notfound')) {
+            console.error('❌ Error de lectura:', err);
           }
-        },
+        }
       );
 
       setDecodingControls(controls);
     } catch (err) {
-      console.error("❌ Error al iniciar cámara:", err);
-      alert("No se pudo acceder a la cámara: " + err.message);
+      console.error('❌ Error al iniciar cámara:', err);
+      alert('No se pudo acceder a la cámara: ' + err.message);
       setScannerActive(false);
       setLoadingCamera(false);
     }
   };
   const stopScanner = async () => {
-    console.log("🛑 Deteniendo escáner...");
+    console.log('🛑 Deteniendo escáner...');
 
     setScannerActive(false);
     setLoadingCamera(false);
@@ -364,9 +356,9 @@ const Tomar_asistencia = () => {
     if (decodingControls) {
       try {
         decodingControls.stop();
-        console.log("✅ Controles de decodificación detenidos");
+        console.log('✅ Controles de decodificación detenidos');
       } catch (e) {
-        console.warn("Error al detener controles:", e);
+        console.warn('Error al detener controles:', e);
       }
       setDecodingControls(null);
     }
@@ -392,12 +384,12 @@ const Tomar_asistencia = () => {
           codeReader.current.reset();
         }
       } catch (e) {
-        console.warn("Error al limpiar lector:", e);
+        console.warn('Error al limpiar lector:', e);
       }
       codeReader.current = null;
     }
 
-    console.log("✅ Escáner completamente detenido");
+    console.log('✅ Escáner completamente detenido');
     window.location.reload();
   };
 
@@ -405,20 +397,20 @@ const Tomar_asistencia = () => {
     // Resetear estados al montar el componente
     isProcessing.current = false;
     setLastScannedTime(0);
-    setUltimoDniEscaneado("");
+    setUltimoDniEscaneado('');
 
     // ... resto del useEffect
   }, []);
 
   const customRender = (col, row) => {
     switch (col) {
-      case "Nombre":
+      case 'Nombre':
         return row.nombre;
-      case "Apellido":
+      case 'Apellido':
         return row.apellido;
-      case "DNI":
+      case 'DNI':
         return row.dni;
-      case "Asistencia":
+      case 'Asistencia':
         return (
           <input
             type="checkbox"
@@ -437,9 +429,7 @@ const Tomar_asistencia = () => {
     <>
       {renderNavbar()}
 
-      <div
-        className={`asistencia-detalle-container ${navbarCollapsed ? "navbar-collapsed" : ""}`}
-      >
+      <div className={`asistencia-detalle-container ${navbarCollapsed ? 'navbar-collapsed' : ''}`}>
         <div className="info-container">
           <h2>Asistencia - {actividad.nombre_actividad}</h2>
           <p>
@@ -454,39 +444,34 @@ const Tomar_asistencia = () => {
 
           <div
             style={{
-              display: "flex",
-              gap: "1rem",
-              margin: "1rem 0",
-              alignItems: "center",
+              display: 'flex',
+              gap: '1rem',
+              margin: '1rem 0',
+              alignItems: 'center',
             }}
           >
             <Button
-              text={manualMode ? "Ocultar modo manual" : "Mostrar modo manual"}
+              text={manualMode ? 'Ocultar modo manual' : 'Mostrar modo manual'}
               onClick={() => setManualMode((prev) => !prev)}
             />
             <Button
-              text={scannerActive ? "Detener Escáner" : "Código de Barras"}
+              text={scannerActive ? 'Detener Escáner' : 'Código de Barras'}
               onClick={scannerActive ? stopScanner : startScanner}
             />
-            <Button
-              text="Volver"
-              styleType="white"
-              onClick={() => navigate(-1)}
-            />
+            <Button text="Volver" styleType="white" onClick={() => navigate(-1)} />
           </div>
 
           {manualMode && (
-            <div style={{ marginBottom: "1rem" }}>
-              <p style={{ marginBottom: "0.5rem", color: "#4b5563" }}>
-                Ingresa el DNI del estudiante para registrar asistencia sin usar
-                la cámara.
+            <div style={{ marginBottom: '1rem' }}>
+              <p style={{ marginBottom: '0.5rem', color: '#4b5563' }}>
+                Ingresa el DNI del estudiante para registrar asistencia sin usar la cámara.
               </p>
               <div
                 style={{
-                  display: "flex",
-                  gap: "1rem",
-                  alignItems: "center",
-                  flexWrap: "wrap",
+                  display: 'flex',
+                  gap: '1rem',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
                 }}
               >
                 <TextField
@@ -502,46 +487,46 @@ const Tomar_asistencia = () => {
           {scannerActive && (
             <div
               style={{
-                position: "fixed",
+                position: 'fixed',
                 top: 0,
                 left: 0,
-                width: "100vw",
-                height: "100vh",
-                backgroundColor: "rgba(0, 0, 0, 0.9)",
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
                 zIndex: 9999,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <div
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  height: "100%",
-                  maxWidth: "100vw",
-                  maxHeight: "100vh",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "1rem",
-                  boxSizing: "border-box",
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: '100vw',
+                  maxHeight: '100vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '1rem',
+                  boxSizing: 'border-box',
                 }}
               >
                 {/* Botón ✕ rojo plano */}
                 <button
                   onClick={stopScanner}
                   style={{
-                    position: "absolute",
-                    top: "1rem",
-                    right: "1rem",
-                    background: "transparent",
-                    border: "none",
-                    color: "#ff4d4f",
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    cursor: "pointer",
+                    position: 'absolute',
+                    top: '1rem',
+                    right: '1rem',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ff4d4f',
+                    fontSize: '2rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
                     zIndex: 10000,
                   }}
                   aria-label="Cerrar"
@@ -552,31 +537,31 @@ const Tomar_asistencia = () => {
                 {/* Recuadro guía */}
                 <div
                   style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: "80%",
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '80%',
                     height: 70,
-                    border: "3px dashed #1976d2",
+                    border: '3px dashed #1976d2',
                     borderRadius: 12,
                     zIndex: 2,
-                    pointerEvents: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(255,255,255,0.08)",
+                    pointerEvents: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255,255,255,0.08)',
                   }}
                 >
                   <span
                     style={{
-                      color: "#1976d2",
-                      fontWeight: "bold",
-                      background: "rgba(255,255,255,0.9)",
-                      padding: "2px 12px",
+                      color: '#1976d2',
+                      fontWeight: 'bold',
+                      background: 'rgba(255,255,255,0.9)',
+                      padding: '2px 12px',
                       borderRadius: 8,
-                      fontSize: "0.9rem",
-                      textAlign: "center",
+                      fontSize: '0.9rem',
+                      textAlign: 'center',
                     }}
                   >
                     Escanea el código de barras aquí
@@ -587,14 +572,14 @@ const Tomar_asistencia = () => {
                 <video
                   ref={videoRef}
                   style={{
-                    width: "70%",
-                    height: "auto",
-                    maxHeight: "60vh",
+                    width: '70%',
+                    height: 'auto',
+                    maxHeight: '60vh',
                     borderRadius: 8,
-                    background: "#000",
-                    transform: "scale(1.2)", // Zoom digital
-                    objectFit: "cover",
-                    boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)",
+                    background: '#000',
+                    transform: 'scale(1.2)', // Zoom digital
+                    objectFit: 'cover',
+                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
                   }}
                 />
 
@@ -602,21 +587,21 @@ const Tomar_asistencia = () => {
                 {loadingCamera && (
                   <div
                     style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: "80%",
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '80%',
                       height: 100,
-                      border: "3px dashed #1976d2",
+                      border: '3px dashed #1976d2',
                       borderRadius: 12,
                       zIndex: 2,
-                      pointerEvents: "none",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: "rgba(255,255,255,0.08)",
-                      animation: "pulseBorder 2s infinite",
+                      pointerEvents: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(255,255,255,0.08)',
+                      animation: 'pulseBorder 2s infinite',
                     }}
                   >
                     Cargando cámara...
@@ -626,56 +611,55 @@ const Tomar_asistencia = () => {
                 {/* Estado */}
                 <p
                   style={{
-                    marginTop: "0.5rem",
-                    color: ultimoDniEscaneado ? "green" : "#1976d2",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    fontSize: "1rem",
+                    marginTop: '0.5rem',
+                    color: ultimoDniEscaneado ? 'green' : '#1976d2',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: '1rem',
                   }}
                 >
                   {ultimoDniEscaneado
                     ? `✅ Código detectado: ${ultimoDniEscaneado}`
-                    : !loadingCamera && "📷 Esperando captura..."}
+                    : !loadingCamera && '📷 Esperando captura...'}
                 </p>
               </div>
             </div>
           )}
           <h3>Estudiantes Registrados</h3>
-          <p style={{ marginBottom: "0.5rem", color: "#4b5563" }}>
-            Marca o desmarca las casillas para actualizar la asistencia de cada
-            estudiante.
+          <p style={{ marginBottom: '0.5rem', color: '#4b5563' }}>
+            Marca o desmarca las casillas para actualizar la asistencia de cada estudiante.
           </p>
           <div className="tabla-asistencia">
-            <table style={{ width: "100%" }}>
-              <thead>
-                <tr className="table-header">
-                  {columns.map((col) => (
-                    <th key={col} className="table-cell">
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {estudiantes.length === 0 ? (
-                  <tr>
-                    <td colSpan={columns.length}>
-                      No hay estudiantes registrados.
-                    </td>
+            <div className="tabla-asistencia__scroll">
+              <table>
+                <thead>
+                  <tr className="table-header">
+                    {columns.map((col) => (
+                      <th key={col} className="table-cell">
+                        {col}
+                      </th>
+                    ))}
                   </tr>
-                ) : (
-                  estudiantes.map((row, idx) => (
-                    <tr key={idx} className="table-row">
-                      {columns.map((col) => (
-                        <td key={col} className="table-cell">
-                          {customRender(col, row)}
-                        </td>
-                      ))}
+                </thead>
+                <tbody>
+                  {estudiantes.length === 0 ? (
+                    <tr>
+                      <td colSpan={columns.length}>No hay estudiantes registrados.</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    estudiantes.map((row, idx) => (
+                      <tr key={idx} className="table-row">
+                        {columns.map((col) => (
+                          <td key={col} className="table-cell">
+                            {customRender(col, row)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

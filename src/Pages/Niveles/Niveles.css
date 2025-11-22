@@ -3,11 +3,7 @@
   min-height: 100vh;
   margin-left: var(--navbar-current-width, 220px);
   padding: clamp(24px, 3vw, 40px);
-  background: linear-gradient(
-    145deg,
-    rgba(5, 4, 20, 0.95),
-    rgba(10, 7, 32, 0.85)
-  );
+  background: linear-gradient(145deg, rgba(5, 4, 20, 0.95), rgba(10, 7, 32, 0.85));
   color: #fff;
 }
 
@@ -77,11 +73,7 @@
 
 .nivel-card.actual {
   border-color: rgba(246, 199, 67, 0.65);
-  background: linear-gradient(
-    145deg,
-    rgba(32, 23, 65, 0.95),
-    rgba(20, 14, 44, 0.9)
-  );
+  background: linear-gradient(145deg, rgba(32, 23, 65, 0.95), rgba(20, 14, 44, 0.9));
 }
 
 .nivel-card-header {

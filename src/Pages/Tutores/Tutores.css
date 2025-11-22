@@ -17,7 +17,7 @@
 }
 
 .tutores-container::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: -45%;
   background: conic-gradient(
@@ -33,20 +33,12 @@
 }
 
 .tutores-container::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(
-      1px 1px at 32px 36px,
-      rgba(255, 255, 255, 0.55),
-      transparent
-    ),
-    radial-gradient(
-      1px 1px at 220px 160px,
-      rgba(255, 255, 255, 0.32),
-      transparent
-    );
+    radial-gradient(1px 1px at 32px 36px, rgba(255, 255, 255, 0.55), transparent),
+    radial-gradient(1px 1px at 220px 160px, rgba(255, 255, 255, 0.32), transparent);
   opacity: 0.28;
   z-index: 0;
 }
@@ -60,11 +52,7 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  background: linear-gradient(
-    150deg,
-    rgba(18, 12, 58, 0.86),
-    rgba(9, 6, 32, 0.9)
-  );
+  background: linear-gradient(150deg, rgba(18, 12, 58, 0.86), rgba(9, 6, 32, 0.9));
   border: 1px solid var(--surface-border);
   border-radius: 28px;
   padding: clamp(20px, 2.6vw, 32px);
@@ -95,12 +83,24 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
+  min-width: 0;
+}
+
+.tutores-table__scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  min-width: 0;
 }
 
 .tutores-table table {
-  width: 100%;
+  width: max-content;
   min-width: 720px;
+  table-layout: auto;
   border-collapse: collapse;
+  display: table;
 }
 
 .tutores-table th,
