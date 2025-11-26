@@ -2,193 +2,137 @@
 
 ## 1. Introducción
 
-Este manual técnico documenta la estructura, tecnologías y funcionamiento del Frontend del Sistema de Gamificación CEDHI2, una aplicación web desarrollada con React y Vite que implementa funcionalidades de gamificación para el entorno educativo.
+Este documento describe la versión actual del Frontend del Sistema de Gamificación CEDHI2 (Winay XP). Se centra únicamente en la implementación vigente: arquitectura, dependencias, módulos y operación. No incluye notas ni comparativas con versiones anteriores.
 
-## 2. Especificaciones Técnicas
+## 2. Stack y dependencias
 
-### 2.1 Tecnologías Utilizadas
+- **Framework**: React 19.0.0
+- **Build**: Vite 6.3.1
+- **Router**: React Router DOM 7.5.2 (HashRouter)
+- **Gráficos**: Chart.js 4.4.9 + React-ChartJS-2 5.3.0
+- **Escáner**: @zxing/browser 0.1.5 y react-barcode-reader 0.0.2
+- **Linting/Formato**: ESLint 9.22.0, Prettier 3.6.2
+- **Backend consumido**: API REST Node.js + PostgreSQL (el frontend no accede directamente a la base de datos)
 
-- **Framework Principal**: React 19.0.0
-- **Herramienta de Construcción**: Vite 6.3.1
-- **Enrutamiento**: React Router DOM 7.5.2
-- **Visualización de Datos**: Chart.js 4.4.9 y React-ChartJS-2 5.3.0
-- **Escaneo de Códigos**: @zxing/browser 0.1.5 y react-barcode-reader 0.0.2
-- **Herramientas de Desarrollo**: ESLint 9.22.0
-- **Base de Datos**: MySQL
+## 3. Requisitos previos
 
-### 2.2 Requisitos del Sistema
+- Node.js 18+ y npm.
+- Acceso a la API configurada (URL base en `VITE_API_URL`).
+- Puerto local disponible 5173 para desarrollo.
 
-- Node.js (versión compatible con React 19)
-- NPM o Yarn como gestor de paquetes
-- MySQL Server
-
-## 3. Estructura Completa del Proyecto
+## 4. Estructura del proyecto
 
 ```
 Sistema-de-gamificacion-CEDHI2/
 Frontend/
-├── public/                # Archivos estáticos y recursos públicos
-│   ├── CEDHIlogo.png      # Logo de la organización
-│   ├── Listados.png       # Recursos gráficos
-│   ├── Winay.png          # Recursos gráficos
-│   └── ImagenNiveles/     # Imágenes para el sistema de niveles
+├── public/                # Recursos estáticos
+│   ├── CEDHIlogo.png
+│   ├── Listados.png
+│   ├── Winay.png
+│   └── ImagenNiveles/
 ├── src/
-│   ├── assets/            # Recursos gráficos y multimedia
+│   ├── assets/            # Imágenes y multimedia
 │   ├── components/        # Componentes reutilizables
-│   │   ├── AuthHandler/   # Manejo de autenticación global
-│   │   ├── button/        # Componente de botón personalizado
-│   │   ├── Table/         # Componente de tabla reutilizable
-│   │   └── TextField/     # Componente de campo de texto
-│   ├── context/           # Contextos de React (AuthContext)
-│   ├── Pages/             # Páginas principales de la aplicación
-│   │   ├── Actividad/     # Gestión de actividades
-│   │   ├── Asistencia/    # Control de asistencia
-│   │   ├── Dashboard/     # Panel principal
-│   │   ├── Estudiante/    # Gestión de estudiantes
-│   │   ├── Login/         # Página de inicio de sesión
-│   │   ├── Navbar/        # Componentes de navegación
-│   │   └── ...            # Otras páginas específicas
-│   ├── utils/             # Utilidades y funciones auxiliares
-│   ├── App.jsx            # Componente raíz y configuración de rutas
-│   ├── main.jsx           # Punto de entrada de la aplicación
+│   │   ├── AuthHandler/
+│   │   ├── button/
+│   │   ├── Table/
+│   │   └── TextField/
+│   ├── context/           # Contextos globales (AuthContext)
+│   ├── Pages/             # Páginas principales
+│   │   ├── Actividad/
+│   │   ├── Asistencia/
+│   │   ├── Dashboard/
+│   │   ├── Estudiante/
+│   │   ├── Login/
+│   │   ├── Navbar/
+│   │   └── ...
+│   ├── utils/             # Utilidades y helpers
+│   ├── App.jsx            # Rutas y layout raíz
+│   ├── main.jsx           # Punto de entrada
 │   └── index.css          # Estilos globales
-├── eslint.config.js       # Configuración de ESLint
-├── package.json           # Dependencias y scripts
-└── vite.config.js         # Configuración de Vite
+├── eslint.config.js
+├── package.json
+└── vite.config.js
 ```
 
-## 4. Arquitectura de la Aplicación
+## 5. Arquitectura de la aplicación
 
-### 4.1 Gestión de Estado
+### 5.1 Gestión de estado
+React Context (AuthContext) maneja autenticación, roles (admin, tutor, estudiante) y persistencia básica de sesión en `localStorage`.
 
-La aplicación utiliza el API Context de React para gestionar estados globales, principalmente a través de AuthContext para la autenticación de usuarios. Este contexto proporciona:
+### 5.2 Sistema de rutas
+HashRouter con rutas principales:
+- `/` inicio de sesión
+- `/dashboard`
+- `/tutores`
+- `/estudiante`
+- `/actividad`
+- `/asistencia`
+- `/perfil`
+- `/ranking`
 
-- Control de roles de usuario (Administrador, Tutor, Estudiante)
-- Persistencia de sesión usando localStorage
-- Funcionalidad de cierre de sesión
+### 5.3 Autenticación
+Uso de tokens JWT consumidos desde el backend:
+- Interceptores y manejadores de error 401 en `AuthHandler`.
+- Redirección a login al expirar la sesión.
+- Cierre de sesión según rol desde los componentes de Navbar.
 
-### 4.2 Sistema de Rutas
+## 6. Componentes principales
 
-El enrutamiento se implementa con React Router DOM mediante HashRouter. Las rutas principales incluyen:
+- **AuthHandler**: intercepta respuestas no autorizadas y fuerza re-login.
+- **Navbar / NavbarT / NavbarE**: navegación adaptada por rol.
+- **Dashboard**: panel con estadísticas, descargas de reportes y accesos a módulos.
 
-- **/** - Página de inicio de sesión
-- **/dashboard** - Panel principal
-- **/tutores** - Gestión de tutores
-- **/estudiante** - Gestión de estudiantes
-- **/actividad** - Gestión de actividades
-- **/asistencia** - Control de asistencia
-- **/perfil** - Gestión de perfiles de usuario
-- **/ranking** - Clasificación de estudiantes
+## 7. Módulos funcionales
 
-### 4.3 Gestión de Autenticación
+- Gestión de usuarios (admin, tutor, estudiante).
+- Actividades (creación, edición, eliminación, exportación a Excel).
+- Asistencia (registro manual y por escaneo).
+- Gamificación (niveles, ranking, historial de créditos).
 
-El sistema implementa un manejo robusto de autenticación que incluye:
+## 8. Estilos y UX
 
-- Interceptores de fetch personalizados para manejar errores 401
-- Redirección automática al login cuando expira la sesión
-- Almacenamiento seguro de tokens en localStorage
+- CSS modular por página/componente.
+- Layouts responsivos usando flex y grid.
+- Feedback visual en formularios y tablas.
 
-## 5. Componentes Principales
+## 9. Integración con backend
 
-### 5.1 AuthHandler
+- Consumo vía `fetch` contra `import.meta.env.VITE_API_URL`.
+- Flujos cubiertos: login tradicional, OAuth Google, carga/descarga de reportes, historial de créditos, niveles, ranking y asistencia.
+- Para entornos locales, el backend debe exponer los mismos endpoints que producción.
 
-Componente global que intercepta y maneja errores de autenticación en toda la aplicación.
+## 10. Ejecución local del frontend
 
-### 5.2 Navbar
+1. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+2. Configurar variables de entorno (crear `.env.local` o ajustar `.env`):
+   ```
+   VITE_API_URL=http://localhost:3000
+   URL_FRONT=http://localhost:5173
+   ```
+   - Usa el puerto y host que exponga tu backend local.
+3. Levantar el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+   La aplicación quedará disponible en http://localhost:5173.
+4. Build de producción (opcional):
+   ```bash
+   npm run build
+   npm run preview   # sirve el build generado
+   ```
 
-Implementado en tres variantes según el rol del usuario:
+## 11. Consideraciones de seguridad
 
-- **Navbar.jsx** - Navegación general
-- **NavbarT.jsx** - Navegación para tutores
-- **NavbarE.jsx** - Navegación para estudiantes
+- Validar entradas en formularios antes de enviarlas al backend.
+- Proteger rutas según rol; limpiar estado al cerrar sesión.
+- Manejo de tokens únicamente a través del backend y `fetch` configurado.
 
-### 5.3 Dashboard
+## 12. Solución de problemas comunes
 
-Panel principal con estadísticas, información resumida y acceso a las funciones principales del sistema según el rol del usuario.
-
-## 6. Módulos Funcionales
-
-### 6.1 Gestión de Usuarios
-
-Permite crear y administrar perfiles de:
-
-- Administradores
-- Tutores
-- Estudiantes
-
-### 6.2 Sistema de Actividades
-
-Facilita la creación, edición y seguimiento de actividades educativas con componentes de gamificación.
-
-### 6.3 Control de Asistencia
-
-Incluye funcionalidades para registrar y monitorear la asistencia de estudiantes, con posibilidad de escaneo de códigos.
-
-### 6.4 Gamificación
-
-Implementa elementos de gamificación como:
-
-- Sistema de niveles (visualmente representados)
-- Ranking de estudiantes
-- Puntos por participación y asistencia
-
-## 7. Estilos y Diseño UI
-
-La interfaz utiliza CSS modular con archivos específicos para cada componente y página:
-
-- Diseño responsivo
-- Estructura basada en grid y flexbox
-- Componentes de formulario estilizados con feedback visual
-
-## 8. Integración con Backend
-
-### 8.1 API REST
-
-La aplicación se comunica con el backend mediante:
-
-- API REST
-- Manejo de tokens JWT
-
-### 8.2 Estructura del Backend
-
-### 9.1 Comandos Frontend
-
-### 9.1 Comandos Principales
-
-- **npm run dev**: Inicia el servidor de desarrollo
-- **npm run build**: Construye la aplicación para producción
-- **npm run preview**: Previsualiza la versión de producción
-
-### 9.2 Comandos Backend
-
-### 9.2 Configuración de Vite
-
-### 9.3 Configuraciones
-
-La configuración básica de Vite se encuentra en `vite.config.js`, utilizando el plugin de React.
-
-## 10. Consideraciones de Seguridad
-
-- Validación de entradas en formularios
-- Manejo seguro de tokens de autenticación
-- Protección de rutas según roles de usuario
-- Interceptores para sesiones expiradas
-- Validación de datos en el Backend
-
-## 11. Solución de Problemas Comunes
-
-### 11.1 Errores de Autenticación
-
-Si se presentan problemas de autenticación, verificar:
-
-- Estado del token JWT
-- Configuración de CORS en el backend
-- Funcionamiento del AuthHandler
-
-### 11.2 Problemas de Renderizado
-
-Para resolver problemas visuales:
-
-- Verificar compatibilidad CSS
-- Validar estructura de componentes
-- Revisar console.log para errores
+- **Errores 401/403**: revisar expiración del token y que `VITE_API_URL` apunte al backend correcto con CORS habilitado.
+- **Fallos de renderizado**: verificar que las dependencias estén instaladas y que no existan errores en consola.
+- **Recursos no cargan**: comprobar rutas de imágenes en `public/` y caché del navegador.

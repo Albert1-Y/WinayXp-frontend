@@ -26,9 +26,19 @@ const Tomar_asistencia = () => {
   const [decodingControls, setDecodingControls] = useState(null);
   const isProcessing = useRef(false);
   const { rol } = useContext(AuthContext);
+  const [scanFeedback, setScanFeedback] = useState('');
   const columns = ['Nombre', 'Apellido', 'DNI', 'Asistencia'];
+  const [videoDevices, setVideoDevices] = useState([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [lastScannedTime, setLastScannedTime] = useState(0);
   const [scanCooldown, setScanCooldown] = useState(false);
+  const triggerScanFeedback = (message) => {
+    setScanFeedback(message);
+    if (navigator?.vibrate) {
+      navigator.vibrate(200);
+    }
+    setTimeout(() => setScanFeedback(''), 2000);
+  };
   // Efecto para detectar el estado del navbar colapsado
   useEffect(() => {
     const handleNavbarChange = () => {
@@ -171,6 +181,7 @@ const Tomar_asistencia = () => {
                 [tempId]: estado,
               }));
 
+              triggerScanFeedback(`Leído y enviado: ${data.dni}`);
               alert(
                 `✅ Asistencia ${estado ? 'registrada' : 'cancelada'} para ${data.nombre_persona} ${data.apellido}`
               );
@@ -239,56 +250,34 @@ const Tomar_asistencia = () => {
   //dcannn
 
   const startScanner = async () => {
+    if (scannerActive) return;
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      alert('Tu navegador no permite acceso a la cámara.');
+      return;
+    }
+
     setScannerActive(true);
     setLoadingCamera(true);
     isProcessing.current = false;
     setScanCooldown(false);
     setLastScannedTime(0);
+    setUltimoDniEscaneado('');
 
     try {
-      console.log('🔄 Solicitando acceso a la cámara...');
-
-      const constraints = {
-        video: {
-          facingMode: 'environment',
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-        },
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log('✅ Cámara obtenida');
-
-      const track = stream.getVideoTracks()[0];
-      const capabilities = track.getCapabilities();
-
-      // Intentar aplicar zoom óptico (si está disponible)
-      if (capabilities.zoom) {
-        const maxZoom = capabilities.zoom.max;
-        const zoomValor = Math.min(maxZoom, 2); // Zoom x2 como máximo
-
-        await track.applyConstraints({
-          advanced: [{ zoom: zoomValor }],
-        });
-        console.log('🔍 Zoom óptico aplicado:', zoomValor);
-      } else {
-        console.warn('⚠️ Zoom óptico no disponible, se aplicará zoom digital por CSS');
+      // Verificar que exista al menos una cámara disponible
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameras = devices.filter((d) => d.kind === 'videoinput');
+      const hasCamera = cameras.length > 0;
+      if (!hasCamera) {
+        throw new Error('No se detectó una cámara disponible');
+      }
+      setVideoDevices(cameras);
+      if (!selectedDeviceId && cameras.length > 0) {
+        setSelectedDeviceId(cameras[0].deviceId);
       }
 
-      if (!videoRef.current) {
-        alert('Error al inicializar cámara');
-        stream.getTracks().forEach((t) => t.stop());
-        setScannerActive(false);
-        setLoadingCamera(false);
-        return;
-      }
-
-      videoRef.current.srcObject = stream;
-      videoRef.current.setAttribute('playsinline', true);
-      await videoRef.current.play();
-
-      // Preparar el lector de códigos
-      if (codeReader.current) {
+      // Preparar el lector (reinicia si ya había uno)
+      if (codeReader.current?.reset) {
         try {
           codeReader.current.reset();
         } catch (e) {
@@ -298,19 +287,15 @@ const Tomar_asistencia = () => {
 
       codeReader.current = new BrowserMultiFormatReader();
 
-      const timeoutId = setTimeout(() => {
-        console.warn('⏱️ Timeout de inicio');
-        setLoadingCamera(false);
-        alert('La cámara tardó demasiado en iniciar.');
-        stopScanner();
-      }, 8000);
-
-      const controls = await codeReader.current.decodeFromConstraints(
-        { video: { facingMode: 'environment' } },
+      const controls = await codeReader.current.decodeFromVideoDevice(
+        selectedDeviceId || undefined,
         videoRef.current,
         (result, err) => {
-          clearTimeout(timeoutId);
-          setLoadingCamera(false);
+          if (err?.name === 'NotFoundException') return;
+          if (err && !err.name?.toLowerCase().includes('notfound')) {
+            console.error('❌ Error de lectura:', err);
+            return;
+          }
 
           const now = Date.now();
           if (result && !isProcessing.current) {
@@ -331,28 +316,24 @@ const Tomar_asistencia = () => {
               setTimeout(() => (isProcessing.current = false), 500);
             }
           }
-
-          if (err && !err.name?.toLowerCase().includes('notfound')) {
-            console.error('❌ Error de lectura:', err);
-          }
         }
       );
 
+      // Si llegó hasta aquí, la cámara se abrió
       setDecodingControls(controls);
+      setLoadingCamera(false);
     } catch (err) {
       console.error('❌ Error al iniciar cámara:', err);
       alert('No se pudo acceder a la cámara: ' + err.message);
-      setScannerActive(false);
-      setLoadingCamera(false);
+      stopScanner(true);
     }
   };
-  const stopScanner = async () => {
+  const stopScanner = async (skipResetState = false) => {
     console.log('🛑 Deteniendo escáner...');
 
     setScannerActive(false);
     setLoadingCamera(false);
 
-    // 1. Detener los controles de decodificación primero
     if (decodingControls) {
       try {
         decodingControls.stop();
@@ -363,7 +344,6 @@ const Tomar_asistencia = () => {
       setDecodingControls(null);
     }
 
-    // 2. Detener el stream de video
     if (videoRef.current?.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
       tracks.forEach((track) => {
@@ -373,10 +353,8 @@ const Tomar_asistencia = () => {
       videoRef.current.srcObject = null;
     }
 
-    // 3. Limpiar el lector de códigos
     if (codeReader.current) {
       try {
-        // Detener cualquier decodificación en curso
         if (codeReader.current.stopContinuousDecode) {
           codeReader.current.stopContinuousDecode();
         }
@@ -389,8 +367,13 @@ const Tomar_asistencia = () => {
       codeReader.current = null;
     }
 
+    if (!skipResetState) {
+      setUltimoDniEscaneado('');
+      setLastScannedTime(0);
+      isProcessing.current = false;
+    }
+
     console.log('✅ Escáner completamente detenido');
-    window.location.reload();
   };
 
   useEffect(() => {
@@ -448,8 +431,29 @@ const Tomar_asistencia = () => {
               gap: '1rem',
               margin: '1rem 0',
               alignItems: 'center',
+              flexWrap: 'wrap',
             }}
           >
+            <div style={{ minWidth: 220 }}>
+              <p style={{ margin: 0, color: '#4b5563', fontSize: '0.9rem' }}>Cámara</p>
+              <select
+                value={selectedDeviceId}
+                onChange={(e) => setSelectedDeviceId(e.target.value)}
+                style={{
+                  padding: '0.5rem',
+                  borderRadius: 8,
+                  border: '1px solid #d1d5db',
+                  minWidth: '100%',
+                }}
+              >
+                {videoDevices.length === 0 && <option value="">Detectando...</option>}
+                {videoDevices.map((d, idx) => (
+                  <option key={d.deviceId} value={d.deviceId}>
+                    {d.label || `Cámara ${idx + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
             <Button
               text={manualMode ? 'Ocultar modo manual' : 'Mostrar modo manual'}
               onClick={() => setManualMode((prev) => !prev)}
@@ -622,6 +626,21 @@ const Tomar_asistencia = () => {
                     ? `✅ Código detectado: ${ultimoDniEscaneado}`
                     : !loadingCamera && '📷 Esperando captura...'}
                 </p>
+                {scanFeedback && (
+                  <div
+                    style={{
+                      marginTop: '0.25rem',
+                      padding: '0.35rem 0.75rem',
+                      background: '#0f766e',
+                      color: '#fff',
+                      borderRadius: 999,
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    {scanFeedback}
+                  </div>
+                )}
               </div>
             </div>
           )}
